@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-
+#include <cmath>
 #include "Point.hpp"
 
 class PointTest : public ::testing::Test
@@ -63,10 +63,37 @@ TEST_F(PointTest, distanceToSelfIsZero)
    ASSERT_EQ(0, p7.Distance(p7));
 }
 
-TEST_F(PointTest, unitDistance)
+TEST_F(PointTest, onAxisDistance)
 {
    ASSERT_EQ(1, p1.Distance(Point(0,1)));
    ASSERT_EQ(1, p1.Distance(Point(1,0)));
    ASSERT_EQ(1, p1.Distance(Point(-1,0)));
    ASSERT_EQ(1, p1.Distance(Point(0,-1)));
+
+   ASSERT_EQ(1, p2.Distance(p1));
+
+   ASSERT_EQ(10, p1.Distance(Point(10,0)));
+   ASSERT_EQ(5, Point(5, 0).Distance(Point(10, 0)));
+   ASSERT_EQ(5, Point(0, 5).Distance(Point(0, 10)));
+   ASSERT_EQ(15, Point(5, 0).Distance(Point(-10, 0)));
+}
+
+TEST_F(PointTest, offAxisDistance)
+{
+   ASSERT_EQ(sqrt(2.0), p1.Distance(Point(1,1)));
+   ASSERT_EQ(sqrt(2.0), p1.Distance(Point(1,-1)));
+   ASSERT_EQ(sqrt(2.0), Point(2,2).Distance(Point(1,1)));
+}
+
+TEST_F(PointTest, withinDistance)
+{
+   ASSERT_TRUE(p1.Within(0, p1));
+   ASSERT_TRUE(p1.Within(1, p1));
+
+   ASSERT_TRUE(p3.Within(2.1, p4));
+
+   ASSERT_TRUE(p5.Within(0, p5));
+   ASSERT_TRUE(p5.Within(0.5, p5));
+
+   ASSERT_TRUE(p1.Within(sqrt(2.0), Point(-1, 1)));
 }
