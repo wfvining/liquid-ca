@@ -4,12 +4,11 @@ matrix:
   include:
     - os: linux
       dist: xenial
+      addons:
+        apt:
+          packages:
+            - libgtest-dev
     - os: osx
-
-addons:
-  apt:
-    packages:
-      - libgtest-dev
 
 compiler:
   - clang
