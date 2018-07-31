@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.1)
+cmake_minimum_required(VERSION 3.1)
 project(motion-ca)
 
 include_directories(include)
@@ -6,7 +6,10 @@ include_directories(include)
 add_library(model SHARED
   src/Point.cpp
   src/Heading.cpp
+  src/Agent.cpp
   )
+
+set_property(TARGET model PROPERTY CXX_STANDARD 11)
 
 find_package(Threads REQUIRED)
 

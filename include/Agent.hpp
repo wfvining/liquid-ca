@@ -4,11 +4,33 @@
 #include "Point.hpp"
 #include "Heading.hpp"
 
+#include <random>
+
 class Agent
 {
 private:
-   Point _position;
-   Heading _heading;
+   Point        _position;
+   Heading      _heading;
+   double       _speed;
+   double       _arena_size;
+   unsigned int _time;
+
+   // Random number generator for the agent
+   std::mt19937_64 _rng;
+
+public:
+   Agent(unsigned int seed, double speed, double arena_size);
+
+   /**
+    * Get the current position of the agent.
+    */
+   Point Position() const;
+
+   /**
+    * Compute the position and heading of the agent after a single
+    * timestep.
+    */
+   void Step();
 };
 
 #endif // _AGENT_HPP
