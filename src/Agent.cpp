@@ -16,6 +16,14 @@ Agent::Agent(unsigned int seed, double speed, double arena_size) :
    _heading  = Heading(heading_distribution(_rng));
 }
 
+Agent::Agent(Point p, Heading h, double speed, double arena_size) :
+   _speed(speed),
+   _arena_size(arena_size),
+   _rng(0),
+   _position(p),
+   _heading(h)
+{}
+
 Point Agent::Position() const
 {
    return _position;

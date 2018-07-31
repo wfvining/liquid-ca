@@ -19,7 +19,15 @@ private:
    std::mt19937_64 _rng;
 
 public:
+   /**
+    * Construct an agent with a random position and heading.
+    */
    Agent(unsigned int seed, double speed, double arena_size);
+
+   /**
+    * Construct an agent at position p with heading h.
+    */
+   Agent(Point p, Heading h, double speed, double arena_size);
 
    /**
     * Get the current position of the agent.
