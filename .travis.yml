@@ -6,6 +6,11 @@ matrix:
       dist: xenial
     - os: osx
 
+addons:
+  apt:
+    packages:
+      - libgtest-dev
+
 compiler:
   - clang
   - gcc
