@@ -7,10 +7,12 @@ compiler:
   - clang
   - gcc
 
-addons:
-  apt:
-    packages:
-      - libgtest-dev
+before_install:
+  - git clone http://github.com/google/googletest.git
+  - cd googletest
+  - cmake .
+  - make
+  - sudo make install
 
 script:
   - mkdir build
