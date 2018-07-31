@@ -4,10 +4,8 @@ matrix:
   include:
     - os: linux
       dist: xenial
-      addons:
-        apt:
-          packages:
-            - libgtest-dev
+      before_install:
+        - sudo apt install libgtest-dev
     - os: osx
 
 compiler:
