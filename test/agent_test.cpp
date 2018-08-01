@@ -38,3 +38,27 @@ TEST_F(AgentTest, stepNoBounce)
    EXPECT_TRUE(agent_pos_y.Position().Within(0.0000001, Point(0,1)));
    EXPECT_TRUE(agent_neg_y.Position().Within(0.0000001, Point(0,-1)));
 }
+
+TEST_F(AgentTest, bouncePerpendicular)
+{
+   for(int i=0; i < 5; i++)
+   {
+      agent_pos_x.Step();
+      agent_neg_x.Step();
+      agent_pos_y.Step();
+      agent_neg_y.Step();
+   }
+   EXPECT_TRUE(agent_pos_x.Position().Within(0.0000001, Point(5,0)));
+   EXPECT_TRUE(agent_neg_x.Position().Within(0.0000001, Point(-5,0)));
+   EXPECT_TRUE(agent_pos_y.Position().Within(0.0000001, Point(0,5)));
+   EXPECT_TRUE(agent_neg_y.Position().Within(0.0000001, Point(0,-5)));
+
+   agent_pos_x.Step();
+   agent_neg_x.Step();
+   agent_pos_y.Step();
+   agent_neg_y.Step();
+   EXPECT_TRUE(agent_pos_x.Position().Within(0.0000001, Point(4,0))) << "Agent is at: " << agent_pos_x.Position();
+   EXPECT_TRUE(agent_neg_x.Position().Within(0.0000001, Point(-4,0))) << "Agent is at: " << agent_neg_x.Position();
+   EXPECT_TRUE(agent_pos_y.Position().Within(0.0000001, Point(0,4))) << "Agent is at: " << agent_pos_y.Position();
+   EXPECT_TRUE(agent_neg_y.Position().Within(0.0000001, Point(0,-4))) << "Agent is at: " << agent_neg_y.Position();
+}

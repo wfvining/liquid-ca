@@ -18,6 +18,9 @@ private:
    // Random number generator for the agent
    std::mt19937_64 _rng;
 
+   Point Reflect(const Point& p) const;
+   bool  IsOutOfBounds(const Point& p) const;
+
 public:
    /**
     * Construct an agent with a random position and heading.

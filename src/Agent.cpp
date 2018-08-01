@@ -33,5 +33,23 @@ void Agent::Step()
 {
    double dx = _speed * cos(_heading.Radians());
    double dy = _speed * sin(_heading.Radians());
-   _position = Point(_position.GetX() + dx, _position.GetY() + dy);
+   Point new_position = Point(_position.GetX() + dx, _position.GetY() + dy);
+   if(IsOutOfBounds(_position))
+   {
+      new_position = Reflect(new_position);
+   }
+   _position = new_position;
+}
+
+bool Agent::IsOutOfBounds(const Point& p) const
+{
+   return p.GetX() < (-_arena_size / 2)
+                     || p.GetX() > (_arena_size / 2)
+      || p.GetY() < (-_arena_size / 2)
+                    || p.GetY() > (_arena_size / 2);
+}
+
+Point Agent::Reflect(const Point& p) const
+{
+   return Point(0,0); // TODO:
 }
