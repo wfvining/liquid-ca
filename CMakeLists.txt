@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 project(motion-ca)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include_directories(include)
 
 add_library(model SHARED
@@ -8,8 +11,6 @@ add_library(model SHARED
   src/Heading.cpp
   src/Agent.cpp
   )
-
-set_property(TARGET model PROPERTY CXX_STANDARD 11)
 
 find_package(Threads REQUIRED)
 
