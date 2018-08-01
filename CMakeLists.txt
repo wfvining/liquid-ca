@@ -19,7 +19,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 add_executable(model_tests
   test/point_test.cpp
-  test/heading_test.cpp)
+  test/heading_test.cpp
+  test/agent_test.cpp)
 
 # Google test must link pthreads, apparently this is not pulled in
 # automatically by the find_package(GTest) command.

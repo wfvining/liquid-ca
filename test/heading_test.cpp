@@ -69,3 +69,12 @@ TEST(HeadingTest, toRadians)
    EXPECT_EQ(0, h1.Radians());
    EXPECT_EQ(M_PI, h2.Radians());
 }
+
+TEST(HeadingTest, basicTrig)
+{
+   Heading h0(0);
+   EXPECT_EQ(0, sin(h0.Radians()));
+   EXPECT_EQ(1, cos(h0.Radians()));
+   EXPECT_GT(0.0000001, cos(Heading(M_PI_2).Radians()));
+   EXPECT_EQ(1.0, sin(Heading(M_PI_2).Radians()));
+}

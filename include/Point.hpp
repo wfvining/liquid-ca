@@ -1,6 +1,8 @@
 #ifndef _POINT_HPP
 #define _POINT_HPP
 
+#include <iostream>
+
 /**
  * A point in the plane.
  */
@@ -35,6 +37,7 @@ public:
 
    friend bool operator== (const Point& p, const Point& q);
    friend bool operator!= (const Point& p, const Point& q);
+   friend std::ostream& operator<< (std::ostream& out, const Point& p);
 };
 
 #endif // _POINT_HPP

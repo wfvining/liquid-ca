@@ -37,3 +37,8 @@ bool operator!= (const Point& p, const Point& q)
 {
    return !(p == q);
 }
+
+std::ostream& operator<< (std::ostream& out, const Point& p)
+{
+   return out << "Point(" << p._x << "," << p._y << ")";
+}

@@ -31,5 +31,7 @@ Point Agent::Position() const
 
 void Agent::Step()
 {
-   // TODO
+   double dx = _speed * cos(_heading.Radians());
+   double dy = _speed * sin(_heading.Radians());
+   _position = Point(_position.GetX() + dx, _position.GetY() + dy);
 }
