@@ -7,6 +7,11 @@ Heading::Heading(double h)
    _heading_radians = h - floor(h/(2*M_PI)) * 2*M_PI;
 }
 
+Heading::Heading()
+{
+   _heading_radians = 0;
+}
+
 Heading::~Heading() {}
 
 double Heading::Radians() const

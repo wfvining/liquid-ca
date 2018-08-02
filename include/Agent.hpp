@@ -18,7 +18,7 @@ private:
    // Random number generator for the agent
    std::mt19937_64 _rng;
 
-   Point Reflect(const Point& p) const;
+   Point Reflect(const Point& p);
    bool  IsOutOfBounds(const Point& p) const;
 
 public:
@@ -36,6 +36,11 @@ public:
     * Get the current position of the agent.
     */
    Point Position() const;
+
+   /**
+    * Get the current heading of the agent.
+    */
+   Heading GetHeading() const;
 
    /**
     * Compute the position and heading of the agent after a single

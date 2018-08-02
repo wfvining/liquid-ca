@@ -7,6 +7,7 @@ private:
    double _heading_radians;
 public:
    Heading(double h);
+   Heading();
    ~Heading();
 
    /**

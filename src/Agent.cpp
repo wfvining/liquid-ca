@@ -29,16 +29,24 @@ Point Agent::Position() const
    return _position;
 }
 
+Heading Agent::GetHeading() const
+{
+   return _heading;
+}
+
 void Agent::Step()
 {
    double dx = _speed * cos(_heading.Radians());
    double dy = _speed * sin(_heading.Radians());
    Point new_position = Point(_position.GetX() + dx, _position.GetY() + dy);
-   if(IsOutOfBounds(_position))
+   if(IsOutOfBounds(new_position))
    {
-      new_position = Reflect(new_position);
+      _position = Reflect(new_position);
    }
-   _position = new_position;
+   else
+   {
+      _position = new_position;
+   }
 }
 
 bool Agent::IsOutOfBounds(const Point& p) const
@@ -49,7 +57,23 @@ bool Agent::IsOutOfBounds(const Point& p) const
                     || p.GetY() > (_arena_size / 2);
 }
 
-Point Agent::Reflect(const Point& p) const
+Point Agent::Reflect(const Point& p)
 {
-   return Point(0,0); // TODO:
+   double new_x = p.GetX();
+   double new_y = p.GetY();
+   if(p.GetX() > _arena_size/2) {
+      new_x = _arena_size/2 - (p.GetX() - _arena_size / 2);
+   }
+   else if(p.GetX() < -_arena_size/2) {
+      new_x = -_arena_size/2 - (p.GetX() + _arena_size / 2);
+   }
+
+   if(p.GetY() > _arena_size/2) {
+      new_y = _arena_size/2 - (p.GetY() - _arena_size/2);
+   }
+   else if(p.GetY() < -_arena_size/2) {
+      new_y = -_arena_size/2 - (p.GetY() + _arena_size/2);
+   }
+
+   return Point(new_x, new_y);
 }
