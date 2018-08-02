@@ -72,6 +72,15 @@ TEST_F(AgentTest, bouncePerpendicularPosition)
    EXPECT_TRUE(agent_neg_x.Position().Within(0.0000001, Point(-4,0))) << "Agent is at: " << agent_neg_x.Position();
    EXPECT_TRUE(agent_pos_y.Position().Within(0.0000001, Point(0,4))) << "Agent is at: " << agent_pos_y.Position();
    EXPECT_TRUE(agent_neg_y.Position().Within(0.0000001, Point(0,-4))) << "Agent is at: " << agent_neg_y.Position();
+
+   Agent a(Point(5,0), Heading(0), 2, 10);
+   a.Step();
+   EXPECT_TRUE(a.Position().Within(0.0000001, Point(3, 0)));
+
+   Agent a_slow(Point(5,0), Heading(0), 0.5, 10);
+   a_slow.Step();
+   EXPECT_TRUE(a_slow.Position().Within(0.0000001, Point(4.5, 0)));
+
 }
 
 TEST_F(AgentTest, bouncePerpendicularHeading)
