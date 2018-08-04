@@ -102,3 +102,44 @@ TEST_F(AgentTest, bouncePerpendicularHeading)
    EXPECT_EQ(agent_pos_y.GetHeading(), agent_pos_y_heading + Heading(M_PI));
    EXPECT_EQ(agent_neg_y.GetHeading(), agent_neg_y_heading + Heading(M_PI));
 }
+
+TEST_F(AgentTest, bounceNonPerpendicularPosition)
+{
+   Agent a_top_left(Point(0,4.5), Heading(3*M_PI/4), 1, 10);
+   Point expected_position_a_top_left(0 - sin(3*M_PI/4), 5 - (cos(M_PI/4) - 0.5));
+   a_top_left.Step();
+   EXPECT_TRUE(a_top_left.Position().Within(0.0000001, expected_position_a_top_left));
+
+   Agent a_top_right(Point(0,4.5), Heading(M_PI/4), 1, 10);
+   Point expected_position_a_top_right(0 + sin(M_PI/4), 5 - (cos(M_PI/4) - 0.5));
+   a_top_right.Step();
+   EXPECT_TRUE(a_top_right.Position().Within(0.0000001, expected_position_a_top_right));
+
+   Agent a_bottom_left(Point(0, -4.5), Heading(-3*M_PI/4), 1, 10);
+   Point expected_position_a_bottom_left(0 - sin(3*M_PI/4), -(5 - (cos(M_PI/4) - 0.5)));
+   a_bottom_left.Step();
+   EXPECT_TRUE(a_bottom_left.Position().Within(0.0000001, expected_position_a_bottom_left));
+
+   Agent a_bottom_right(Point(0, -4.5), Heading(-M_PI/4), 1, 10);
+   Point expected_position_a_bottom_right(0 + sin(M_PI/4), -(5 - (cos(M_PI/4) - 0.5)));
+   a_bottom_right.Step();
+   EXPECT_TRUE(a_bottom_right.Position().Within(0.0000001, expected_position_a_bottom_right));
+
+   Agent a_left_up(Point(-4.5, 0), Heading(3*M_PI/4), 1, 10);
+   Point expected_position_a_left_up(-(5 - (cos(M_PI/4) - 0.5)), 0 + sin(M_PI/4));
+   a_left_up.Step();
+   EXPECT_TRUE(a_left_up.Position().Within(0.0000001, expected_position_a_left_up));
+
+   Agent a_left_down(Point(-4.5, 0), Heading(-3*M_PI/4), 1, 10);
+   Point expected_position_a_left_down(-(5 - (cos(M_PI/4) - 0.5)), 0 - sin(M_PI/4));
+   a_left_down.Step();
+   EXPECT_TRUE(a_left_down.Position().Within(0.0000001, expected_position_a_left_down));
+
+   Agent a_right_up(Point(4.5, 0), Heading(M_PI/4), 1, 10);
+   Point expected_position_a_right_up(5 - (cos(M_PI/4) - 0.5), 0 + sin(M_PI/4));
+   a_right_up.Step();
+   EXPECT_TRUE(a_right_up.Position().Within(0.0000001, expected_position_a_right_up));
+
+   Agent a_right_down(Point(4.5, 0), Heading(-M_PI/4), 1, 10);
+   Point expected_position_a_right_down(5 - (cos(M_PI/4) - 0.5), 0 - sin(M_PI/4));
+}
