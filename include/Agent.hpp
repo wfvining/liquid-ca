@@ -15,17 +15,10 @@ private:
    double       _arena_size;
    unsigned int _time;
 
-   // Random number generator for the agent
-   std::mt19937_64 _rng;
-
    Point Reflect(const Point& p);
    bool  IsOutOfBounds(const Point& p) const;
 
 public:
-   /**
-    * Construct an agent with a random position and heading.
-    */
-   Agent(unsigned int seed, double speed, double arena_size);
 
    /**
     * Construct an agent at position p with heading h.

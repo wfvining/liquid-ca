@@ -10,6 +10,7 @@ add_library(model SHARED
   src/Point.cpp
   src/Heading.cpp
   src/Agent.cpp
+  src/Model.cpp
   )
 
 find_package(Threads REQUIRED)
