@@ -38,3 +38,8 @@ Heading operator- (const Heading& h1, const Heading& h2)
 {
    return Heading(h1._heading_radians - h2._heading_radians);
 }
+
+std::ostream& operator<<(std::ostream& out, const Heading& h)
+{
+   return out << "Heading(" << h._heading_radians << ")";
+}

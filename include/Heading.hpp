@@ -1,6 +1,8 @@
 #ifndef _HEADING_HPP
 #define _HEADING_HPP
 
+#include <iostream>
+
 class Heading
 {
 private:
@@ -19,6 +21,7 @@ public:
    friend bool    operator!= (const Heading& h1, const Heading& h2);
    friend Heading operator-  (const Heading& h1, const Heading& h2);
    friend Heading operator+  (const Heading& h1, const Heading& h2);
+   friend std::ostream& operator<< (std::ostream& out, const Heading& h);
 };
 
 #endif // _HEADING_HPP
