@@ -63,20 +63,20 @@ Point Agent::Reflect(const Point& p)
    double new_y = p.GetY();
    if(p.GetX() > _arena_size/2) {
       new_x = _arena_size/2 - (p.GetX() - _arena_size / 2);
-      _heading = _heading + Heading(M_PI);
+      _heading = Heading(M_PI) - _heading;
    }
    else if(p.GetX() < -_arena_size/2) {
       new_x = -_arena_size/2 - (p.GetX() + _arena_size / 2);
-      _heading = _heading + Heading(M_PI);
+      _heading = Heading(M_PI) - _heading;
    }
 
    if(p.GetY() > _arena_size/2) {
       new_y = _arena_size/2 - (p.GetY() - _arena_size/2);
-      _heading = _heading + Heading(M_PI);
+      _heading = Heading(2*M_PI) - _heading;
    }
    else if(p.GetY() < -_arena_size/2) {
       new_y = -_arena_size/2 - (p.GetY() + _arena_size/2);
-      _heading = _heading + Heading(M_PI);
+      _heading = Heading(2*M_PI) - _heading;
    }
 
    return Point(new_x, new_y);

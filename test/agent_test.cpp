@@ -143,3 +143,30 @@ TEST_F(AgentTest, bounceNonPerpendicularPosition)
    Agent a_right_down(Point(4.5, 0), Heading(-M_PI/4), 1, 10);
    Point expected_position_a_right_down(5 - (cos(M_PI/4) - 0.5), 0 - sin(M_PI/4));
 }
+
+TEST_F(AgentTest, bounceNonPerpendicularHeading)
+{
+   Agent a_top_left(Point(0,4.5), Heading(3*M_PI/4), 1, 10);
+   a_top_left.Step();
+   EXPECT_EQ(a_top_left.GetHeading(), Heading(-3*M_PI/4));
+
+   Agent a_top_right(Point(0, 4.5), Heading(M_PI/4), 1, 10);
+   a_top_right.Step();
+   EXPECT_EQ(a_top_right.GetHeading(), Heading(-M_PI/4));
+
+   Agent a_bottom_right(Point(0, -4.5), Heading(-M_PI/4), 1, 10);
+   a_bottom_right.Step();
+   EXPECT_EQ(a_bottom_right.GetHeading(), Heading(M_PI/4));
+
+   Agent a_bottom_left(Point(0, -4.5), Heading(-3*M_PI/4), 1, 10);
+   a_bottom_left.Step();
+   EXPECT_EQ(a_bottom_left.GetHeading(), Heading(3*M_PI/4));
+
+   Agent a_right_up(Point(4.5, 0), Heading(M_PI/4), 1, 10);
+   a_right_up.Step();
+   EXPECT_EQ(a_right_up.GetHeading(), Heading(3*M_PI/4));
+
+   Agent a_right_down(Point(4.5, 0), Heading(-M_PI/4), 1, 10);
+   a_right_down.Step();
+   EXPECT_EQ(a_right_down.GetHeading(), Heading(-3*M_PI/4));
+}
