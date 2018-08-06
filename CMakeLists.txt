@@ -46,7 +46,10 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 # dependencies automatically when using CMake 2.8.11 or
 # later. Otherwise we have to add them here ourselves.
 if (CMAKE_VERSION VERSION_LESS 2.8.11)
-  include_directories("${gtest_SOURCE_DIR}/include")
+  include_directories("${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
+else()
+  target_include_directories(gmock_main SYSTEM BEFORE INTERFACE
+    "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 endif()
 
 enable_testing()
@@ -54,9 +57,8 @@ enable_testing()
 add_executable(model_tests
   test/point_test.cpp
   test/heading_test.cpp
-  test/agent_test.cpp)
+  test/agent_test.cpp
+  test/model_test.cpp)
 
-# Google test must link pthreads, apparently this is not pulled in
-# automatically by the find_package(GTest) command.
-target_link_libraries(model_tests model gtest_main)
+target_link_libraries(model_tests model gmock_main)
 add_test(ModelTests model_tests)
