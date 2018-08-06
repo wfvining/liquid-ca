@@ -5,6 +5,7 @@
 #include <random>
 
 #include "Agent.hpp"
+#include "Network.hpp"
 
 /**
  * Statistics about a model including current timestep, current
@@ -14,7 +15,7 @@
 class ModelStats
 {
 private:
-   std::vector<double> _network_density;
+   Network             _network;
    std::vector<double> _ca_density;
 
 public:
@@ -25,7 +26,7 @@ public:
     * Record the ca density and the density of the interaction network
     * at the next timestep.
     */
-   void PushState(double density, double network_density);
+   void PushState(double density, const NetworkSnapshot& snapshot);
 
    const std::vector<double>& GetDensityHistory() const;
 
@@ -58,8 +59,13 @@ private:
 
    std::mt19937_64 _rng;
 
+   double _communication_range;
+
+   NetworkSnapshot CurrentNetwork() const;
+
 public:
-   Model(int seed, double arena_size, int num_agents, double initial_density);
+   Model(double arena_size, int num_agents, double communication_range,
+         int seed, double initial_density);
    ~Model();
 
    /**
@@ -69,12 +75,24 @@ public:
    double CurrentDensity() const;
 
    /**
+    * Get the density of the communication network.
+    */
+   double NetworkDensity() const;
+
+   /**
     * Get statistics about the model.
     */
    const ModelStats& GetStats() const;
 
-   void Run();
-   void Run(int max_steps);
+   /**
+    * Evaluate the model for one time-step.
+    */
+   void Step();
+
+   /**
+    * Set the communication range of the agents.
+    */
+   void SetCommunicationRange(double range);
 };
 
 #endif // _MOTION_CA_MODEL_HPP

@@ -2,13 +2,25 @@
 
 #include <numeric> // std::accumulate
 
+/// ModelStats functions
+
 ModelStats::ModelStats() {}
 ModelStats::~ModelStats() {}
 
-Model::Model(int seed,
-             double arena_size,
+void ModelStats::PushState(double density, const NetworkSnapshot& snapshot)
+{
+   _network.AppendSnapshot(snapshot);
+   _ca_density.push_back(density);
+}
+
+/// Model functions
+
+Model::Model(double arena_size,
              int num_agents,
+             double communication_range,
+             int seed,
              double initial_density) :
+   _communication_range(communication_range),
    _rng(seed)
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
@@ -30,6 +42,8 @@ Model::Model(int seed,
          _agent_states.push_back(0);
       }
    }
+
+   _stats.PushState(CurrentDensity(), CurrentNetwork());
 }
 
 Model::~Model() {}
@@ -37,4 +51,30 @@ Model::~Model() {}
 double Model::CurrentDensity() const
 {
    return std::accumulate(_agent_states.begin(), _agent_states.end(), 0.0) / _agent_states.size();
+}
+
+NetworkSnapshot Model::CurrentNetwork() const
+{
+   NetworkSnapshot snapshot(_agents.size());
+   for(int i = 0; i < _agents.size(); i++)
+   {
+      for(int j = i+1; j < _agents.size(); j++)
+      {
+         if(_agents[i].Position().Within(_communication_range, _agents[j].Position()))
+         {
+            snapshot.AddEdge(i, j);
+         }
+      }
+   }
+   return snapshot;
+}
+
+const ModelStats& Model::GetStats() const
+{
+   return _stats;
+}
+
+void Model::Step()
+{
+   
 }

@@ -11,7 +11,7 @@ add_library(model SHARED
   src/Heading.cpp
   src/Agent.cpp
   src/Model.cpp
-  )
+  src/Network.cpp)
 
 find_package(Threads REQUIRED)
 
@@ -58,7 +58,8 @@ add_executable(model_tests
   test/point_test.cpp
   test/heading_test.cpp
   test/agent_test.cpp
-  test/model_test.cpp)
+  test/model_test.cpp
+  test/network_test.cpp)
 
 target_link_libraries(model_tests model gmock_main)
 add_test(ModelTests model_tests)
