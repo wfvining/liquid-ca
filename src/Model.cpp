@@ -1,6 +1,7 @@
 #include "Model.hpp"
 
-#include <numeric> // std::accumulate
+#include <numeric>   // std::accumulate
+#include <algorithm> // std::for_each
 
 /// ModelStats functions
 
@@ -76,5 +77,7 @@ const ModelStats& Model::GetStats() const
 
 void Model::Step()
 {
-   
+   std::for_each(_agents.begin(), _agents.end(),
+                 [](Agent& agent) { agent.Step(); });
+   _stats.PushState(CurrentDensity(), CurrentNetwork());
 }
