@@ -60,3 +60,8 @@ const NetworkSnapshot& Network::GetSnapshot(unsigned int t) const throw(std::out
       return _snapshots[t];
    }
 }
+
+unsigned int Network::Size() const
+{
+   return _snapshots.size();
+}

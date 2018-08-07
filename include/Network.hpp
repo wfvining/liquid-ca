@@ -57,6 +57,11 @@ public:
     * throws an exception.
     */
    const NetworkSnapshot& GetSnapshot(unsigned int t) const throw(std::out_of_range);
+
+   /**
+    * Get the number of snapshots in the network.
+    */
+   unsigned int Size() const;
 };
 
 #endif // _MOTION_CA_NETWORK_HPP

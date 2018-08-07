@@ -51,7 +51,7 @@ public:
    /**
     * Return the number of timesteps that the model has run for.
     */
-   int ElapsedTime() const;
+   unsigned int ElapsedTime() const;
 };
 
 /**

@@ -59,7 +59,8 @@ add_executable(model_tests
   test/heading_test.cpp
   test/agent_test.cpp
   test/model_test.cpp
-  test/network_test.cpp)
+  test/network_test.cpp
+  test/model_stats_test.cpp)
 
 target_link_libraries(model_tests model gmock_main)
 add_test(ModelTests model_tests)

@@ -51,7 +51,6 @@ TEST(ModelTest, extremelySmallArena)
    Model m1(0.25, 32, 5.0, 123, 0.5);
 }
 
-// TODO: Network changes.
 TEST(ModelTest, networkChanges)
 {
    Model m(50, 128, 5.0, 1337, 0.5);
@@ -63,31 +62,3 @@ TEST(ModelTest, networkChanges)
    const Network& network = stats.GetNetwork();
    EXPECT_FALSE(network.GetSnapshot(0) == network.GetSnapshot(24));
 }
-
-class ModelStatsTest : public ::testing::Test
-{
-public:
-   ModelStats stats;
-   NetworkSnapshot t0;
-   NetworkSnapshot t1;
-   NetworkSnapshot t2;
-   ModelStatsTest() :
-      t0(10),
-      t1(10),
-      t2(10) {
-
-      for(int i = 0; i < 9; i++)
-      {
-         t0.AddEdge(i, i+1);
-         t1.AddEdge(i, i+1);
-      }
-      t0.AddEdge(0,9);
-      t1.AddEdge(0,9);
-      t2.AddEdge(0,9);
-      t2.AddEdge(9,7);
-
-      stats.PushState(0.3, t0);
-      stats.PushState(0.3, t1);
-      stats.PushState(0.3, t2);
-   }
-};

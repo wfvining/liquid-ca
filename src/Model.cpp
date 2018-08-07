@@ -19,6 +19,32 @@ const Network& ModelStats::GetNetwork() const
    return _network;
 }
 
+unsigned int ModelStats::ElapsedTime() const
+{
+   return _network.Size();
+}
+
+bool ModelStats::IsCorrect() const
+{
+   if(_ca_density.size() == 0)
+   {
+      return false;
+   }
+   else if(_ca_density[0] >= 0.5)
+   {
+      return _ca_density.back() == 1.0;
+   }
+   else
+   {
+      return _ca_density.back() == 0.0;
+   }
+}
+
+const std::vector<double>& ModelStats::GetDensityHistory() const
+{
+   return _ca_density;
+}
+
 /// Model functions
 
 Model::Model(double arena_size,
