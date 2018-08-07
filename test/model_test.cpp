@@ -55,12 +55,13 @@ TEST(ModelTest, extremelySmallArena)
 TEST(ModelTest, networkChanges)
 {
    Model m(50, 128, 5.0, 1337, 0.5);
-   for(int i = 0; i < 100; i++)
+   for(int i = 0; i < 25; i++)
    {
       m.Step();
    }
    const ModelStats& stats = m.GetStats();
-   EXPECT_TRUE(false); // Not done.
+   const Network& network = stats.GetNetwork();
+   EXPECT_FALSE(network.GetSnapshot(0) == network.GetSnapshot(24));
 }
 
 class ModelStatsTest : public ::testing::Test

@@ -14,6 +14,11 @@ void ModelStats::PushState(double density, const NetworkSnapshot& snapshot)
    _ca_density.push_back(density);
 }
 
+const Network& ModelStats::GetNetwork() const
+{
+   return _network;
+}
+
 /// Model functions
 
 Model::Model(double arena_size,

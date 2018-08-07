@@ -28,7 +28,15 @@ public:
     */
    void PushState(double density, const NetworkSnapshot& snapshot);
 
+   /**
+    * Get the sequence of densities up to this time.
+    */
    const std::vector<double>& GetDensityHistory() const;
+
+   /**
+    * Get the network up to this time.
+    */
+   const Network& GetNetwork() const;
 
    /**
     * Return true if the density was classified correctly.

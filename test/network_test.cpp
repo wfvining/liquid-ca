@@ -16,7 +16,7 @@ public:
       {
          for(int i = 0; i < 10; i++)
          {
-            for(int j = i; j < 10; j++)
+            for(int j = i+1; j < 10; j++)
             {
                fully_connected_snapshot.AddEdge(i,j);
             }
@@ -58,4 +58,10 @@ TEST_F(NetworkTest, densityIncreasesToMax)
    ASSERT_THAT(s.Density(), ::testing::DoubleEq(2.0/3.0));
    s.AddEdge(2,0);
    ASSERT_EQ(s.Density(), 1.0);
+}
+
+TEST_F(NetworkTest, equality)
+{
+   EXPECT_EQ(fully_connected_snapshot, fully_connected_snapshot);
+   EXPECT_FALSE(fully_connected_snapshot == fully_disconnected_snapshot);
 }
