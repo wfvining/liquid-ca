@@ -23,7 +23,7 @@ public:
     * If the edge is invalid then the snapshot remains unchanged and
     * an out_of_range exception is thrown.
     */
-   void AddEdge(int i, int j) throw(std::out_of_range);
+   void AddEdge(int i, int j);
 
    /**
     * Get the density of this snapshot. (proportion of possible edges
@@ -32,6 +32,14 @@ public:
     * The density of a network with only one vertex is not a number.
     */
    double Density() const;
+
+   /**
+    * Get the set of neighbors to vertex v.
+    *
+    * If v is not a node in the network then throws an out_of_range
+    * exception.
+    */
+   std::set<int> GetNeighbors(int v) const;
 
    friend bool operator== (const NetworkSnapshot& s, const NetworkSnapshot& g);
 };
@@ -56,7 +64,7 @@ public:
     * Get the network snapshot at time t. If t is out of range then
     * throws an exception.
     */
-   const NetworkSnapshot& GetSnapshot(unsigned int t) const throw(std::out_of_range);
+   const NetworkSnapshot& GetSnapshot(unsigned int t) const;
 
    /**
     * Get the number of snapshots in the network.

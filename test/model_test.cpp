@@ -62,3 +62,28 @@ TEST(ModelTest, networkChanges)
    const Network& network = stats.GetNetwork();
    EXPECT_FALSE(network.GetSnapshot(0) == network.GetSnapshot(24));
 }
+
+TEST(ModelTest, identityRuleUpdate)
+{
+   Model m(10, 25, 1.0, 1234, 0.5);
+   double initial_density = m.CurrentDensity();
+   for(int i = 0; i < 100; i++)
+   {
+      m.Step(&identity_rule);
+      EXPECT_EQ(initial_density, m.CurrentDensity());
+   }
+}
+
+TEST(ModelTest, alwaysOneRule)
+{
+   Model m(10, 25, 1.0, 1234, 0.5);
+   m.Step(&always_one);
+   EXPECT_EQ(m.CurrentDensity(), 1.0);
+}
+
+TEST(ModelTest, alwaysZeroRule)
+{
+   Model m(10, 25, 1.0, 1234, 0.5);
+   m.Step(&always_zero);
+   EXPECT_EQ(m.CurrentDensity(), 0.0);
+}

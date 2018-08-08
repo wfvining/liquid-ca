@@ -65,3 +65,30 @@ TEST_F(NetworkTest, equality)
    EXPECT_EQ(fully_connected_snapshot, fully_connected_snapshot);
    EXPECT_FALSE(fully_connected_snapshot == fully_disconnected_snapshot);
 }
+
+TEST_F(NetworkTest, getNeighborsEmpty)
+{
+   for(int i = 0; i < 10; i++)
+   {
+      EXPECT_EQ(fully_disconnected_snapshot.GetNeighbors(i).size(), 0);
+   }
+}
+
+TEST_F(NetworkTest, getNeighborsNonEmpty)
+{
+   for(int i = 0; i < 10; i++)
+   {
+      auto neighbors = fully_connected_snapshot.GetNeighbors(i);
+      for(int j = 0; j < 10; j++)
+      {
+         if(i != j)
+         {
+            EXPECT_NE(neighbors.find(j), neighbors.end());
+         }
+         else
+         {
+            EXPECT_EQ(neighbors.find(j), neighbors.end());
+         }
+      }
+   }
+}
