@@ -111,12 +111,17 @@ void Model::Step(Rule* rule)
    std::for_each(_agents.begin(), _agents.end(),
                  [](Agent& agent) { agent.Step(); });
    NetworkSnapshot current_network = CurrentNetwork();
-
+   std::vector<int> new_states(_agents.size());
    for(int a = 0; a < _agent_states.size(); a++)
    {
       auto neighbors = current_network.GetNeighbors(a);
-      _agent_states[a] = rule(_agent_states[a], neighbors);
+      std::vector<int> neighbor_states;
+      for(int n : neighbors)
+      {
+         neighbor_states.push_back(_agent_states[a]);
+      }
+      new_states[a] = rule(_agent_states[a], neighbor_states);
    }
-
+   _agent_states = new_states;
    _stats.PushState(CurrentDensity(), current_network);
 }
