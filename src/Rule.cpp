@@ -1,6 +1,6 @@
 #include "Rule.hpp"
 
-#include <algorithm> // std::accumulate
+#include <numeric> // std::accumulate
 
 int identity_rule(int self, const std::vector<int>& neighbors)
 {
