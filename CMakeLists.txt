@@ -11,7 +11,8 @@ add_library(model SHARED
   src/Heading.cpp
   src/Agent.cpp
   src/Model.cpp
-  src/Network.cpp)
+  src/Network.cpp
+  src/Rule.cpp)
 
 find_package(Threads REQUIRED)
 

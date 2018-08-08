@@ -56,7 +56,7 @@ TEST(ModelTest, networkChanges)
    Model m(50, 128, 5.0, 1337, 0.5);
    for(int i = 0; i < 25; i++)
    {
-      m.Step();
+      m.Step(&identity_rule);
    }
    const ModelStats& stats = m.GetStats();
    const Network& network = stats.GetNetwork();

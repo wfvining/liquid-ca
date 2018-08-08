@@ -6,6 +6,7 @@
 
 #include "Agent.hpp"
 #include "Network.hpp"
+#include "Rule.hpp"
 
 /**
  * Statistics about a model including current timestep, current
@@ -95,7 +96,7 @@ public:
    /**
     * Evaluate the model for one time-step.
     */
-   void Step();
+   void Step(Rule* rule);
 
    /**
     * Set the communication range of the agents.

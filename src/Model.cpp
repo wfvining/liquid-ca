@@ -106,7 +106,7 @@ const ModelStats& Model::GetStats() const
    return _stats;
 }
 
-void Model::Step()
+void Model::Step(Rule* rule)
 {
    std::for_each(_agents.begin(), _agents.end(),
                  [](Agent& agent) { agent.Step(); });
