@@ -14,6 +14,12 @@ add_library(model SHARED
   src/Network.cpp
   src/Rule.cpp)
 
+add_executable(one_d_lattice
+  src/OneDLattice.cpp
+  src/one_dimensional_lattice.cpp)
+
+target_link_libraries(one_d_lattice model)
+
 find_package(Threads REQUIRED)
 
 ## Build googletest and testcases
