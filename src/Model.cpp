@@ -118,7 +118,7 @@ void Model::Step(Rule* rule)
       std::vector<int> neighbor_states;
       for(int n : neighbors)
       {
-         neighbor_states.push_back(_agent_states[a]);
+         neighbor_states.push_back(_agent_states[n]);
       }
       new_states[a] = rule(_agent_states[a], neighbor_states);
    }

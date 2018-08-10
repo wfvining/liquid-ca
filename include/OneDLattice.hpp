@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <random>
+#include <iostream>
 
 #include "Network.hpp"
 #include "Rule.hpp"
@@ -39,12 +40,14 @@ public:
    /**
     * Step the CA
     */
-   void Step(const Rule* rule);
+   void Step(Rule* rule);
 
    /**
     * Return true if the state vector is still changing.
     */
    bool IsChanging() const;
+
+   friend std::ostream& operator<< (std::ostream& out, const OneDLattice& l);
 };
 
 #endif // _MOTION_CA_ONE_D_LATTICE_HPP

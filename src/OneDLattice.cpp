@@ -62,7 +62,7 @@ double OneDLattice::GetDensity() const
    return (double)std::accumulate(_states.begin(), _states.end(), 0) / (double)_states.size();
 }
 
-void OneDLattice::Step(const Rule* rule)
+void OneDLattice::Step(Rule* rule)
 {
    // XXX: This is (almost) duplicate code from Model::Step
    //      - should refactor!
@@ -73,7 +73,7 @@ void OneDLattice::Step(const Rule* rule)
       std::vector<int> neighbor_states;
       for(int n : neighbors)
       {
-         neighbor_states.push_back(_states[i]);
+         neighbor_states.push_back(_states[n]);
       }
       new_states[i] = rule(_states[i], neighbor_states);
    }
@@ -84,6 +84,15 @@ void OneDLattice::Step(const Rule* rule)
 
 bool OneDLattice::IsChanging() const
 {
-   if(_steps == 0) return true;
+   if(_steps <= 1) return true;
    else            return _old_states != _states;
+}
+
+std::ostream& operator<<(std::ostream &out, const OneDLattice& l)
+{
+   for(auto s : l._states)
+   {
+      out << s;
+   }
+   return out;
 }
