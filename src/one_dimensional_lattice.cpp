@@ -33,12 +33,12 @@ int main(int argc, char** argv)
    double density_step = atof(argv[2]);
    int seed = atoi(argv[3]);
 
-   for(int radius = 1; radius <= 10; radius++)
+   for(int radius = 1; radius <= num_agents/2; radius++)
    {
       OneDLattice lattice(num_agents, radius);
       lattice.Seed(seed);
 
-      for(double density = 0.0; density <= 1.0; density += density_step)
+      for(double density = 0.0; density <= 1.01; density += density_step)
       {
          int correct = 0;
          for(int i = 0; i < NUM_REPLICAS; i++)
@@ -48,10 +48,10 @@ int main(int argc, char** argv)
             {
                correct++;
             }
-            std::cout << radius << " "
-                      << density << " "
-                      << (double)correct / (double)NUM_REPLICAS << std::endl;
          }
+         std::cout << radius << " "
+                   << density << " "
+                   << (double)correct / (double)NUM_REPLICAS << std::endl;
       }
    }
    return 0;
