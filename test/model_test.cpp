@@ -74,6 +74,14 @@ TEST(ModelTest, identityRuleUpdate)
    }
 }
 
+TEST(ModelTest, majorityRuleUnderFullyConnectedGraph)
+{
+   Model m(10, 50, 20, 1234, 0.7);
+   double initial_density = m.CurrentDensity();
+   m.Step(majority_rule);
+   EXPECT_EQ(1.0, m.CurrentDensity());
+}
+
 TEST(ModelTest, alwaysOneRule)
 {
    Model m(10, 25, 1.0, 1234, 0.5);
