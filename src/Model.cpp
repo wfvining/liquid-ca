@@ -74,7 +74,8 @@ Model::Model(double arena_size,
          _agent_states.push_back(0);
       }
    }
-
+   _turn_distribution = heading_distribution;
+   _step_distribution = std::uniform_int_distribution<int>(1,1);
    _stats.PushState(CurrentDensity(), CurrentNetwork());
 }
 
@@ -106,10 +107,28 @@ const ModelStats& Model::GetStats() const
    return _stats;
 }
 
+void Model::SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_distribution)
+{
+   _turn_distribution = turn_distribution;
+}
+
+void Model::SetStepDistribution(std::function<int(std::mt19937_64&)> step_distribution)
+{
+   _step_distribution = step_distribution;
+}
+
 void Model::Step(Rule* rule)
 {
-   std::for_each(_agents.begin(), _agents.end(),
-                 [](Agent& agent) { agent.Step(); });
+   for(Agent& agent : _agents)
+   {
+      agent.Step();
+      if(agent.ShouldTurn())
+      {
+         agent.SetHeading(agent.GetHeading() + Heading(_turn_distribution(_rng)));
+         agent.SetUpdateInterval(_step_distribution(_rng));
+      }
+   }
+
    NetworkSnapshot current_network = CurrentNetwork();
    std::vector<int> new_states(_agents.size());
    for(int a = 0; a < _agent_states.size(); a++)

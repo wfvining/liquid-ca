@@ -1,12 +1,14 @@
 #include "Agent.hpp"
 
 #include <cmath> // M_PI
+#include <climits>
 
 Agent::Agent(Point p, Heading h, double speed, double arena_size) :
    _speed(speed),
    _arena_size(arena_size),
    _position(p),
-   _heading(h)
+   _heading(h),
+   _next_update(UINT_MAX)
 {}
 
 Point Agent::Position() const
@@ -17,6 +19,11 @@ Point Agent::Position() const
 Heading Agent::GetHeading() const
 {
    return _heading;
+}
+
+void Agent::SetHeading(Heading h)
+{
+   _heading = h;
 }
 
 void Agent::Step()
@@ -32,6 +39,17 @@ void Agent::Step()
    {
       _position = new_position;
    }
+   _time++;
+}
+
+void Agent::SetUpdateInterval(int interval)
+{
+   _next_update = _time + interval;
+}
+
+bool Agent::ShouldTurn() const
+{
+   return _time >= _next_update;
 }
 
 bool Agent::IsOutOfBounds(const Point& p) const

@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <random>
+
 #include "Agent.hpp"
 #include "Point.hpp"
 
@@ -169,4 +171,35 @@ TEST_F(AgentTest, bounceNonPerpendicularHeading)
    Agent a_right_down(Point(4.5, 0), Heading(-M_PI/4), 1, 10);
    a_right_down.Step();
    EXPECT_EQ(a_right_down.GetHeading(), Heading(-3*M_PI/4));
+}
+
+TEST_F(AgentTest, setHeading)
+{
+   ASSERT_NE(agent.GetHeading(), Heading(1.0));
+   agent.SetHeading(Heading(1.0));
+   ASSERT_EQ(agent.GetHeading(), Heading(1.0));
+}
+
+TEST_F(AgentTest, updateInterval)
+{
+   ASSERT_FALSE(agent.ShouldTurn());
+   agent.Step();
+   ASSERT_FALSE(agent.ShouldTurn());
+
+   agent.SetUpdateInterval(0);
+   ASSERT_TRUE(agent.ShouldTurn());
+
+   agent.SetUpdateInterval(1);
+   ASSERT_FALSE(agent.ShouldTurn());
+   agent.Step();
+   ASSERT_TRUE(agent.ShouldTurn());
+
+   agent.SetUpdateInterval(10);
+   for(int i = 0; i < 9; i++)
+   {
+      agent.Step();
+      ASSERT_FALSE(agent.ShouldTurn());
+   }
+   agent.Step();
+   ASSERT_TRUE(agent.ShouldTurn());
 }

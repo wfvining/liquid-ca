@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <random>
+#include <functional>
 
 #include "Agent.hpp"
 #include "Network.hpp"
@@ -65,8 +66,11 @@ private:
 
    std::vector<Agent> _agents;
    std::vector<int>   _agent_states;
+   int                _steps;
 
    std::mt19937_64 _rng;
+   std::function<double(std::mt19937_64&)> _turn_distribution;
+   std::function<int(std::mt19937_64&)>    _step_distribution;
 
    double _communication_range;
 
@@ -92,6 +96,16 @@ public:
     * Get statistics about the model.
     */
    const ModelStats& GetStats() const;
+
+   /**
+    * Set the turn distribution.
+    */
+   void SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_distribution);
+
+   /**
+    * Set the step distribution.
+    */
+   void SetStepDistribution(std::function<int(std::mt19937_64&)> step_distribution);
 
    /**
     * Evaluate the model for one time-step.

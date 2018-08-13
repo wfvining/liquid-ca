@@ -14,6 +14,7 @@ private:
    double       _speed;
    double       _arena_size;
    unsigned int _time;
+   unsigned int _next_update;
 
    Point Reflect(const Point& p);
    bool  IsOutOfBounds(const Point& p) const;
@@ -36,10 +37,25 @@ public:
    Heading GetHeading() const;
 
    /**
+    * Set a new heading.
+    */
+   void SetHeading(Heading h);
+
+   /**
     * Compute the position and heading of the agent after a single
     * timestep.
     */
    void Step();
+
+   /**
+    * Set the interval to the next heading update.
+    */
+   void SetUpdateInterval(int interval);
+
+   /**
+    * Returns true if the update interval has elapsed.
+    */
+   bool ShouldTurn() const;
 };
 
 #endif // _AGENT_HPP
