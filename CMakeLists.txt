@@ -20,6 +20,10 @@ add_executable(one_d_lattice
 
 target_link_libraries(one_d_lattice model)
 
+add_executable(levy_walk
+  src/levy_walk.cpp)
+target_link_libraries(levy_walk model)
+
 find_package(Threads REQUIRED)
 
 ## Build googletest and testcases
