@@ -1,10 +1,24 @@
-#include "Model.hpp"
-
 #include <random>
 #include <iostream>
 #include <cstdlib>
 #include <functional>
 #include <cmath>
+#include <future>
+#include <map>
+#include <fstream>
+
+#include <getopt.h>
+
+#include "Model.hpp"
+
+struct model_config
+{
+   int num_agents;
+   int communication_range;
+   int arena_size;
+   int seed;
+   double mu;
+} model_config;
 
 int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
 {
@@ -12,38 +26,145 @@ int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
    return (int)round(pow((pow(max_step, mu + 1) - 1)*u(gen) + 1, 1.0/(mu + 1)));
 }
 
-int main(int argc, char** argv)
+double evaluate_ca(int num_iterations, double initial_density)
 {
-   if(argc != 8)
+   std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
+   int num_correct = 0;
+   for(int iteration = 0; iteration < num_iterations; iteration++)
    {
-      std::cout << "Wrong number of arguments: "
-                << std::endl
-                << argv[0] << " <alpha> <max-step> <comm-range> <num-agents> <arena-size> <seed> <initial-density>"
-                << std::endl;
-      return -1;
+      Model m(model_config.arena_size,
+              model_config.num_agents,
+              model_config.communication_range,
+              model_config.seed+iteration,
+              initial_density);
+
+      m.SetTurnDistribution(heading_distribution);
+      m.SetStepDistribution(std::bind(levy_flight_step,
+                                      model_config.mu,
+                                      model_config.arena_size,
+                                      std::placeholders::_1));
+
+      for(int step = 0; step < 5000; step++)
+      {
+         m.Step(majority_rule);
+         if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
+         {
+            break; // done. no need to keep evaluating.
+         }
+      }
+
+      if(m.GetStats().IsCorrect())
+      {
+         num_correct++;
+      }
    }
 
-   double alpha    = atof(argv[1]);
-   double mu       = alpha + 1.0;
-   int    max_step = atoi(argv[2]);
-   int    communication_range = atoi(argv[3]);
-   int    num_agents          = atoi(argv[4]);
-   int    arena_size          = atoi(argv[5]);
-   int    seed                = atoi(argv[6]);
-   double initial_density     = atof(argv[7]);
+   return (double) num_correct / num_iterations;
+}
 
-   std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
-   Model m(arena_size, num_agents, communication_range, seed, initial_density);
-   m.SetTurnDistribution(heading_distribution);
-   m.SetStepDistribution(std::bind(levy_flight_step, mu, max_step, std::placeholders::_1));
+int main(int argc, char** argv)
+{
+   int    opt_char;
+   int    sweep_density   = 0;
+   double density_step    = 0.01;
+   double initial_density = 0.5;
+   int    num_iterations  = 1;
+   int    save_state      = 0;
 
-   for(int i = 0; i < 5000; i++)
-   {
-      m.Step(majority_rule);
-      std::cout << m.CurrentDensity() << std::endl;
-      if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
+   model_config.communication_range = 5;
+   model_config.num_agents          = 100;
+   model_config.arena_size          = 100;
+   model_config.seed                = 1234;
+
+   static struct option long_options[] =
       {
-         break; // done. no need to keep evaluating.
+         {"sweep-density",       optional_argument, &sweep_density, 1},
+         {"initial-density",     required_argument, 0,            'd'},
+         {"communication-range", required_argument, 0,            'r'},
+         {"num-agents",          required_argument, 0,            'n'},
+         {"arena-size",          required_argument, 0,            'a'},
+         {"seed",                required_argument, 0,            's'},
+         {"iterations",          required_argument, 0,            'i'},
+         {0,0,0,0}
+      };
+
+   int option_index = 0;
+
+   while((opt_char                                              = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+                                 long_options, &option_index)) != -1) {
+
+      switch(opt_char)
+      {
+      case 0:
+         initial_density = 0.0;
+         if(optarg)
+         {
+            density_step = atof(optarg);
+         }
+         break;
+
+      case 'd':
+         initial_density = atof(optarg);
+         break;
+
+      case 'r':
+         model_config.communication_range = atoi(optarg);
+         break;
+
+      case 'n':
+         model_config.num_agents = atoi(optarg);
+         break;
+
+      case 'a':
+         model_config.arena_size = atof(optarg);
+         break;
+
+      case 's':
+         model_config.seed = atoi(optarg);
+         break;
+
+      case 'i':
+         num_iterations = atoi(optarg);
+         break;
+
+      case ':':
+         std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
+         exit(-1);
+         break;
+
+      case '?':
+         std::cout << "unrecognized option" << std::endl;
+         exit(-1);
       }
+   }
+
+   if(optind >= argc)
+   {
+      std::cout << "missing required option <alpha>" << std::endl;
+   }
+
+   double alpha    = atof(argv[optind]);
+   model_config.mu = alpha + 1.0;
+
+   std::map<double, std::future<double>> results;
+
+   while(initial_density <= 1.0)
+   {
+      results.emplace(initial_density, std::async(std::launch::async | std::launch::deferred,
+                                                  std::bind(evaluate_ca, num_iterations, initial_density)));
+
+      if(sweep_density == 1)
+      {
+         initial_density += density_step;
+      }
+      else
+      {
+         break; // exit the loop if a sweep has not been requested.
+      }
+   }
+
+   for(auto& result : results)
+   {
+      std::cout << result.first << " " << result.second.get() << std::endl;
    }
 }

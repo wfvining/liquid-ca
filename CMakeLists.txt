@@ -20,11 +20,11 @@ add_executable(one_d_lattice
 
 target_link_libraries(one_d_lattice model)
 
+find_package(Threads REQUIRED)
+
 add_executable(levy_walk
   src/levy_walk.cpp)
-target_link_libraries(levy_walk model)
-
-find_package(Threads REQUIRED)
+target_link_libraries(levy_walk model pthread)
 
 ## Build googletest and testcases
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
