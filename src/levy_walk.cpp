@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 
    std::map<double, std::future<double>> results;
 
-   while(initial_density <= 1.0)
+   while(initial_density <= 1.001)
    {
       results.emplace(initial_density, std::async(std::launch::async | std::launch::deferred,
                                                   std::bind(evaluate_ca, num_iterations, initial_density)));
