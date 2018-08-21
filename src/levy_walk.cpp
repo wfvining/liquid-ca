@@ -14,7 +14,7 @@
 struct model_config
 {
    int num_agents;
-   int communication_range;
+   double communication_range;
    int arena_size;
    int seed;
    double mu;
@@ -94,9 +94,9 @@ int main(int argc, char** argv)
 
    int option_index = 0;
 
-   while((opt_char                                              = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
-                                 long_options, &option_index)) != -1) {
-
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+                                 long_options, &option_index)) != -1)
+   {
       switch(opt_char)
       {
       case 0:
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
          break;
 
       case 'r':
-         model_config.communication_range = atoi(optarg);
+         model_config.communication_range = atof(optarg);
          break;
 
       case 'n':
