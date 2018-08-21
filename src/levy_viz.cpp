@@ -22,9 +22,9 @@ struct model_config
 int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
 {
    std::uniform_real_distribution<double> u(0,1);
-   double pmin = powf(1.0, mu+1);
-   double pmax = powf((double)max_step, mu+1);
-   double z    = powf((pmax - pmin)*u(gen) + pmin, 1.0/(mu+1));
+   double pmin = powf(1.0, -mu+1);
+   double pmax = powf((double)max_step, -mu+1);
+   double z    = powf((pmax - pmin)*u(gen) + pmin, 1.0/(-mu+1));
    int x = floor(z);
    return x;
 }
@@ -38,7 +38,6 @@ double heading(std::mt19937_64& gen)
 void evaluate_ca(double initial_density)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
-   std::exponential_distribution<int> step_distribution(model_config.mu);
    Model m(model_config.arena_size,
            model_config.num_agents,
            model_config.communication_range,
@@ -50,7 +49,6 @@ void evaluate_ca(double initial_density)
                                    model_config.mu,
                                    model_config.arena_size,
                                    std::placeholders::_1));
-   // m.SetStepDistribution(step_distribution);
    
    for(int step = 0; step < 1000; step++)
    {
@@ -146,10 +144,7 @@ int main(int argc, char** argv)
    }
 
    double alpha    = atof(argv[optind]);
-
-   std::cout << "alpha " << alpha << std::endl;
-   
-   model_config.mu = alpha;
+   model_config.mu = alpha + 1;
 
    evaluate_ca(0.5);
 }

@@ -23,7 +23,11 @@ struct model_config
 int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
 {
    std::uniform_real_distribution<double> u(0,1);
-   return (int)round(pow((pow(max_step, mu + 1) - 1)*u(gen) + 1, 1.0/(mu + 1)));
+   double pmin = powf(1.0, -mu+1);
+   double pmax = powf((double)max_step, -mu+1);
+   double z    = powf((pmax - pmin)*u(gen) + pmin, 1.0/(-mu+1));
+   int x = floor(z);
+   return x;
 }
 
 double evaluate_ca(int num_iterations, double initial_density)
