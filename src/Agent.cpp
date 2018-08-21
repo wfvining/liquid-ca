@@ -8,7 +8,7 @@ Agent::Agent(Point p, Heading h, double speed, double arena_size) :
    _arena_size(arena_size),
    _position(p),
    _heading(h),
-   _next_update(UINT_MAX),
+   _next_update(INT_MAX),
    _time(0)
 {}
 
