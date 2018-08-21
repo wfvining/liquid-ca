@@ -13,8 +13,8 @@ private:
    Heading      _heading;
    double       _speed;
    double       _arena_size;
-   unsigned int _time;
-   unsigned int _next_update;
+   int _time;
+   int _next_update;
 
    Point Reflect(const Point& p);
    bool  IsOutOfBounds(const Point& p) const;

@@ -26,6 +26,10 @@ add_executable(levy_walk
   src/levy_walk.cpp)
 target_link_libraries(levy_walk model pthread)
 
+add_executable(levy_viz
+  src/levy_viz.cpp)
+target_link_libraries(levy_viz model)
+
 ## Build googletest and testcases
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 # configure googletest

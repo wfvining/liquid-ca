@@ -107,6 +107,11 @@ const ModelStats& Model::GetStats() const
    return _stats;
 }
 
+const std::vector<Agent>& Model::GetAgents() const
+{
+   return _agents;
+}
+
 void Model::SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_distribution)
 {
    _turn_distribution = turn_distribution;
@@ -115,6 +120,10 @@ void Model::SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_dis
 void Model::SetStepDistribution(std::function<int(std::mt19937_64&)> step_distribution)
 {
    _step_distribution = step_distribution;
+   for(auto agent : _agents)
+   {
+      agent.SetUpdateInterval(_step_distribution(_rng));
+   }
 }
 
 void Model::Step(Rule* rule)

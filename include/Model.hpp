@@ -98,6 +98,11 @@ public:
    const ModelStats& GetStats() const;
 
    /**
+    * Get the agents from the model.
+    */
+   const std::vector<Agent>& GetAgents() const;
+
+   /**
     * Set the turn distribution.
     */
    void SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_distribution);
