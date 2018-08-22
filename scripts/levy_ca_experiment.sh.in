@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+data_dir=@CMAKE_BINARY_DIR@/data
+NUM_AGENTS=127
+SEED=2345
+levy_walk_program=@CMAKE_BINARY_DIR@/levy_walk
+radius_list="1 2 5 7 14 25 32 63"
+
+echo "---- CONFIGURATION ----"
+echo "data directory: ${data_dir}"
+echo "radius list: ${radius_list}"
+echo "num agents: ${NUM_AGENTS}"
+echo "seed: ${SEED}"
+echo "-----------------------"
+echo
+
+# if data dir does not exist then create it.
+if ! [ -d $data_dir ]
+then
+    mkdir $data_dir
+fi
+
+# fixed lattice experiments
+echo "running fixed latice experiments"
+@CMAKE_BINARY_DIR@/one_d_lattice ${NUM_AGENTS} 0.01 ${SEED} >${data_dir}/fixed_full.txt
+for radius in ${radius_list}
+do
+    grep "^${radius} " ${data_dir}/fixed_full.txt >${data_dir}/fixed${radius}.txt
+done
+
+# super-diffusive
+echo "running levy(0.2)"
+for communication_radius in ${radius_list}
+do
+    ${levy_walk_program} 0.2                                           \
+                         --num-agents ${NUM_AGENTS}                    \
+                         --arena-size ${NUM_AGENTS}                    \
+                         --seed       ${SEED}                          \
+                         --iterations 100                              \
+                         --communication-range ${communication_radius} \
+                         --sweep-density 0.01                          \
+                         > ${data_dir}/levy-${communication_radius}_0.2_results.txt
+done
+
+# mid range
+echo "running levy(1.2)"
+for communication_radius in ${radius_list}
+do
+    ${levy_walk_program} 1.2                                           \
+                         --num-agents ${NUM_AGENTS}                    \
+                         --arena-size ${NUM_AGENTS}                    \
+                         --seed       ${SEED}                          \
+                         --iterations 100                              \
+                         --communication-range ${communication_radius} \
+                         --sweep-density 0.01                          \
+                         > ${data_dir}/levy-${communication_radius}_1.2_results.txt
+done
+
+# brownian(ish)
+echo "running levy(1.99)"
+for communication_radius in ${radius_list}
+do
+    ${levy_walk_program} 1.99                                          \
+                         --num-agents ${NUM_AGENTS}                    \
+                         --arena-size ${NUM_AGENTS}                    \
+                         --seed ${SEED}                                \
+                         --iterations 100                              \
+                         --communication-range ${communication_radius} \
+                         --sweep-density 0.01                          \
+                         > ${data_dir}/levy-${communication_radius}_1.2_results.txt
+done

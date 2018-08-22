@@ -14,13 +14,13 @@ add_library(model SHARED
   src/Network.cpp
   src/Rule.cpp)
 
+find_package(Threads REQUIRED)
+
 add_executable(one_d_lattice
   src/OneDLattice.cpp
   src/one_dimensional_lattice.cpp)
 
-target_link_libraries(one_d_lattice model)
-
-find_package(Threads REQUIRED)
+target_link_libraries(one_d_lattice model pthread)
 
 add_executable(levy_walk
   src/levy_walk.cpp)
@@ -29,6 +29,14 @@ target_link_libraries(levy_walk model pthread)
 add_executable(levy_viz
   src/levy_viz.cpp)
 target_link_libraries(levy_viz model)
+
+configure_file(
+  scripts/levy_ca_experiment.sh.in
+  scripts/levy_ca_experiment.sh @ONLY)
+
+configure_file(
+  scripts/ca_performance.gp.in
+  scripts/ca_performance.gp @ONLY)
 
 ## Build googletest and testcases
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)

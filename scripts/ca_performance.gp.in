@@ -1,0 +1,59 @@
+data_dir = "@CMAKE_BINARY_DIR@/data"
+
+set key outside above font ',12'
+
+set ytics font ',12' 0,0.25
+set xtics font ',12' 0,0.25
+
+set xlabel "initial density" font ',12'
+set ylabel "proportion correctly classified" font ',12'
+
+set style line 1 lc rgb '#c7e9b4'  lt 1 lw 2
+set style line 2 lc rgb '#7fcdbb'  lt 3 lw 2
+set style line 3 lc rgb '#41b6c4'  lt 1 lw 2
+set style line 4 lc rgb '#1d91c0'  lt 1 lw 2
+set style line 5 lc rgb '#225ea8'  lt 1 lw 2
+set style line 6 lc rgb '#253494'  lt 1 lw 2
+set style line 7 lc rgb '#081d58'  lt 1 lw 2
+
+set multiplot layout 2,2
+unset key
+set grid
+unset xlabel
+plot data_dir.'/fixed1.txt'  u 2:3 w lines title "radius = 1"  ls 1, \
+     data_dir.'/fixed5.txt'  u 2:3 w lines title "radius = 5"  ls 2, \
+     data_dir.'/fixed7.txt'  u 2:3 w lines title "radius = 7"  ls 3, \
+     data_dir.'/fixed14.txt' u 2:3 w lines title "radius = 14" ls 4, \
+     data_dir.'/fixed25.txt' u 2:3 w lines title "radius = 25" ls 5, \
+     data_dir.'/fixed32.txt' u 2:3 w lines title "radius = 32" ls 6, \
+     data_dir.'/fixed63.txt' u 2:3 w lines title "radius = 63" ls 7
+
+set key inside bottom
+unset ylabel
+plot data_dir.'/levy-1_0.2_results.txt'  u 1:2 w lines title "radius = 1"  ls 1, \
+     data_dir.'/levy-5_0.2_results.txt'  u 1:2 w lines title "radius = 5"  ls 2, \
+     data_dir.'/levy-7_0.2_results.txt'  u 1:2 w lines title "radius = 7"  ls 3, \
+     data_dir.'/levy-14_0.2_results.txt' u 1:2 w lines title "radius = 14" ls 4, \
+     data_dir.'/levy-25_0.2_results.txt' u 1:2 w lines title "radius = 25" ls 5, \
+     data_dir.'/levy-32_0.2_results.txt' u 1:2 w lines title "radius = 32" ls 6, \
+     data_dir.'/levy-63_0.2_results.txt' u 1:2 w lines title "radius = 63" ls 7
+
+set xlabel
+set ylabel
+unset key
+plot data_dir.'/levy-1_1.2_results.txt'  u 1:2 w lines title "radius = 1"  ls 1, \
+     data_dir.'/levy-5_1.2_results.txt'  u 1:2 w lines title "radius = 5"  ls 2, \
+     data_dir.'/levy-7_1.2_results.txt'  u 1:2 w lines title "radius = 7"  ls 3, \
+     data_dir.'/levy-14_1.2_results.txt' u 1:2 w lines title "radius = 14" ls 4, \
+     data_dir.'/levy-25_1.2_results.txt' u 1:2 w lines title "radius = 25" ls 5, \
+     data_dir.'/levy-32_1.2_results.txt' u 1:2 w lines title "radius = 32" ls 6, \
+     data_dir.'/levy-63_1.2_results.txt' u 1:2 w lines title "radius = 63" ls 7
+
+unset ylabel
+plot data_dir.'/levy-1_1.99_results.txt'  u 1:2 w lines title "radius = 1"  ls 1, \
+     data_dir.'/levy-5_1.99_results.txt'  u 1:2 w lines title "radius = 5"  ls 2, \
+     data_dir.'/levy-7_1.99_results.txt'  u 1:2 w lines title "radius = 7"  ls 3, \
+     data_dir.'/levy-14_1.99_results.txt' u 1:2 w lines title "radius = 14" ls 4, \
+     data_dir.'/levy-25_1.99_results.txt' u 1:2 w lines title "radius = 25" ls 5, \
+     data_dir.'/levy-32_1.99_results.txt' u 1:2 w lines title "radius = 32" ls 6, \
+     data_dir.'/levy-63_1.99_results.txt' u 1:2 w lines title "radius = 63" ls 7
