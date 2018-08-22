@@ -4,6 +4,7 @@
 #include <future>
 #include <map>
 #include <utility>
+#include <functional> // std::bind
 
 #define NUM_REPLICAS 100
 
