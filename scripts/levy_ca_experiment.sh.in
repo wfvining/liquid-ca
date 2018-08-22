@@ -67,5 +67,5 @@ do
                          --iterations 100                              \
                          --communication-range ${communication_radius} \
                          --sweep-density 0.01                          \
-                         > ${data_dir}/levy-${communication_radius}_1.2_results.txt
+                         > ${data_dir}/levy-${communication_radius}_1.99_results.txt
 done
