@@ -95,3 +95,15 @@ TEST(ModelTest, alwaysZeroRule)
    m.Step(&always_zero);
    EXPECT_EQ(m.CurrentDensity(), 0.0);
 }
+
+TEST(ModelTest, agentsUpddate)
+{
+   Model m(1000, 1, 1.0, 1234, 0.5);
+   m.SetStepDistribution([](std::mt19937_64& gen) { return 2; });
+   m.SetTurnDistribution([](std::mt19937_64& gen) { return M_PI; });
+   Heading initial_heading = m.GetAgents()[0].GetHeading();
+   m.Step(majority_rule);
+   EXPECT_EQ(initial_heading, m.GetAgents()[0].GetHeading());
+   m.Step(majority_rule);
+   EXPECT_EQ(initial_heading + Heading(M_PI), m.GetAgents()[0].GetHeading());
+}
