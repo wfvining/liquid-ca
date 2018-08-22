@@ -65,7 +65,8 @@ int main(int argc, char** argv)
    std::map<int,std::future<std::map<double,double>>> futures;
    for(int radius = 1; radius <= num_agents/2; radius++)
    {
-      futures.emplace(std::make_pair(radius,std::async(std::launch::any, std::bind(evaluate_radius, radius))));
+      futures.emplace(std::make_pair(radius,std::async(std::launch::async | std::launch::deferred,
+                                                       std::bind(evaluate_radius, radius))));
    }
 
    for(auto& future : futures)
