@@ -120,7 +120,7 @@ void Model::SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_dis
 void Model::SetStepDistribution(std::function<int(std::mt19937_64&)> step_distribution)
 {
    _step_distribution = step_distribution;
-   for(auto agent : _agents)
+   for(auto& agent : _agents)
    {
       agent.SetUpdateInterval(_step_distribution(_rng));
    }
