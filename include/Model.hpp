@@ -78,7 +78,7 @@ private:
 
 public:
    Model(double arena_size, int num_agents, double communication_range,
-         int seed, double initial_density);
+         int seed, double initial_density, double agent_speed = 1.0);
    ~Model();
 
    /**

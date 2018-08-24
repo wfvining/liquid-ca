@@ -51,7 +51,8 @@ Model::Model(double arena_size,
              int num_agents,
              double communication_range,
              int seed,
-             double initial_density) :
+             double initial_density,
+             double agent_speed) :
    _communication_range(communication_range),
    _rng(seed)
 {
@@ -63,7 +64,7 @@ Model::Model(double arena_size,
    {
       Point initial_position(coordinate_distribution(_rng), coordinate_distribution(_rng));
       Heading initial_heading(heading_distribution(_rng));
-      Agent a(initial_position, initial_heading, 1.0, arena_size);
+      Agent a(initial_position, initial_heading, agent_speed, arena_size);
       _agents.push_back(a);
       if(state_distribution(_rng))
       {
@@ -78,6 +79,8 @@ Model::Model(double arena_size,
    _step_distribution = std::uniform_int_distribution<int>(1,1);
    _stats.PushState(CurrentDensity(), CurrentNetwork());
 }
+
+
 
 Model::~Model() {}
 

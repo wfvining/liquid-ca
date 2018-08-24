@@ -107,3 +107,26 @@ TEST(ModelTest, agentsUpddate)
    m.Step(majority_rule);
    EXPECT_EQ(initial_heading + Heading(M_PI), m.GetAgents()[0].GetHeading());
 }
+
+TEST(ModelTest, agentSpeedZero)
+{
+   Model m(100, 10, 1.0, 1234, 0.5, 0.0);
+   auto agents = m.GetAgents();
+   m.Step(identity_rule);
+   for(int i = 0; i < agents.size(); i++)
+   {
+      ASSERT_EQ(agents[i].Position(), m.GetAgents()[i].Position());
+   }
+}
+
+TEST(ModelTest, agnetSpeedOneHalf)
+{
+   Model m(100, 10, 1.0, 1234, 0.5, 0.5);
+   auto agents = m.GetAgents();
+   m.Step(identity_rule);
+   for(int i = 0; i < agents.size(); i++)
+   {
+      ASSERT_THAT(agents[i].Position().Distance(m.GetAgents()[i].Position()),
+                  ::testing::DoubleNear(0.5, 0.00000000000001));
+   }
+}
