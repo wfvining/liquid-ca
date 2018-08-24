@@ -26,6 +26,10 @@ add_executable(levy_walk
   src/levy_walk.cpp)
 target_link_libraries(levy_walk model pthread)
 
+add_executable(velocity_experiment
+  src/velocity_experiment.cpp)
+target_link_libraries(velocity_experiment model pthread)
+
 add_executable(levy_viz
   src/levy_viz.cpp)
 target_link_libraries(levy_viz model)
