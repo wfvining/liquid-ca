@@ -203,3 +203,15 @@ TEST_F(AgentTest, updateInterval)
    agent.Step();
    ASSERT_TRUE(agent.ShouldTurn());
 }
+
+TEST_F(AgentTest, zeroVelocityNoMovement)
+{
+   Agent a(Point(0,0), Heading(0), 0, 10);
+   agent.Step();
+   EXPECT_EQ(a.Position(), Point(0,0));
+   agent.SetUpdateInterval(0);
+   agent.Step();
+   agent.SetHeading(Heading(M_PI));
+   agent.Step();
+   EXPECT_EQ(a.Position(), Point(0,0));
+}
