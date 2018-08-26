@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <functional>
+#include <memory>
 
 #include "Agent.hpp"
 #include "Network.hpp"
@@ -28,7 +29,7 @@ public:
     * Record the ca density and the density of the interaction network
     * at the next timestep.
     */
-   void PushState(double density, const NetworkSnapshot& snapshot);
+   void PushState(double density, std::shared_ptr<NetworkSnapshot> snapshot);
 
    /**
     * Get the sequence of densities up to this time.
@@ -74,7 +75,7 @@ private:
 
    double _communication_range;
 
-   NetworkSnapshot CurrentNetwork() const;
+   std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
 
 public:
    Model(double arena_size, int num_agents, double communication_range,

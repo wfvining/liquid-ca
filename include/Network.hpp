@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include <stdexcept>
+#include <memory>
 
 class NetworkSnapshot
 {
@@ -48,7 +49,7 @@ class Network
 {
 private:
 
-   std::vector<NetworkSnapshot> _snapshots;
+   std::vector<std::shared_ptr<NetworkSnapshot>> _snapshots;
 
 public:
 
@@ -58,13 +59,13 @@ public:
    /**
     * Append a snapshot to the network.
     */
-   void AppendSnapshot(const NetworkSnapshot& snapshot);
+   void AppendSnapshot(std::shared_ptr<NetworkSnapshot> snapshot);
 
    /**
     * Get the network snapshot at time t. If t is out of range then
     * throws an exception.
     */
-   const NetworkSnapshot& GetSnapshot(unsigned int t) const;
+   std::shared_ptr<NetworkSnapshot> GetSnapshot(unsigned int t) const;
 
    /**
     * Get the number of snapshots in the network.

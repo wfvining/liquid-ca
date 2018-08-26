@@ -53,12 +53,12 @@ Network::Network() {}
 
 Network::~Network() {}
 
-void Network::AppendSnapshot(const NetworkSnapshot& snapshot)
+void Network::AppendSnapshot(std::shared_ptr<NetworkSnapshot> snapshot)
 {
    _snapshots.push_back(snapshot);
 }
 
-const NetworkSnapshot& Network::GetSnapshot(unsigned int t) const
+std::shared_ptr<NetworkSnapshot> Network::GetSnapshot(unsigned int t) const
 {
    if(t > _snapshots.size())
    {

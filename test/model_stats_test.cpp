@@ -12,23 +12,24 @@ public:
    ModelStats stats_zero;
    ModelStats stats_one;
 
-   NetworkSnapshot t0;
-   NetworkSnapshot t1;
-   NetworkSnapshot t2;
-   ModelStatsTest() :
-      t0(10),
-      t1(10),
-      t2(10) {
+   std::shared_ptr<NetworkSnapshot> t0;
+   std::shared_ptr<NetworkSnapshot> t1;
+   std::shared_ptr<NetworkSnapshot> t2;
+   ModelStatsTest()
+   {
+      t0 = std::make_shared<NetworkSnapshot>(10);
+      t1 = std::make_shared<NetworkSnapshot>(10);
+      t2 = std::make_shared<NetworkSnapshot>(10);
 
       for(int i = 0; i < 9; i++)
       {
-         t0.AddEdge(i, i+1);
-         t1.AddEdge(i, i+1);
+         t0->AddEdge(i, i+1);
+         t1->AddEdge(i, i+1);
       }
 
-      t1.AddEdge(0,9);
-      t2.AddEdge(0,9);
-      t2.AddEdge(9,7);
+      t1->AddEdge(0,9);
+      t2->AddEdge(0,9);
+      t2->AddEdge(9,7);
 
       stats.PushState(0.1, t0);
       stats.PushState(0.2, t1);

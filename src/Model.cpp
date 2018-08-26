@@ -8,7 +8,7 @@
 ModelStats::ModelStats() {}
 ModelStats::~ModelStats() {}
 
-void ModelStats::PushState(double density, const NetworkSnapshot& snapshot)
+void ModelStats::PushState(double density, std::shared_ptr<NetworkSnapshot> snapshot)
 {
    _network.AppendSnapshot(snapshot);
    _ca_density.push_back(density);
@@ -54,7 +54,8 @@ Model::Model(double arena_size,
              double initial_density,
              double agent_speed) :
    _communication_range(communication_range),
-   _rng(seed)
+   _rng(seed),
+   _stats()
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -80,8 +81,6 @@ Model::Model(double arena_size,
    _stats.PushState(CurrentDensity(), CurrentNetwork());
 }
 
-
-
 Model::~Model() {}
 
 double Model::CurrentDensity() const
@@ -89,16 +88,16 @@ double Model::CurrentDensity() const
    return std::accumulate(_agent_states.begin(), _agent_states.end(), 0.0) / _agent_states.size();
 }
 
-NetworkSnapshot Model::CurrentNetwork() const
+std::shared_ptr<NetworkSnapshot> Model::CurrentNetwork() const
 {
-   NetworkSnapshot snapshot(_agents.size());
+   std::shared_ptr<NetworkSnapshot> snapshot = std::make_shared<NetworkSnapshot>(_agents.size());
    for(int i = 0; i < _agents.size(); i++)
    {
       for(int j = i+1; j < _agents.size(); j++)
       {
          if(_agents[i].Position().Within(_communication_range, _agents[j].Position()))
          {
-            snapshot.AddEdge(i, j);
+            snapshot->AddEdge(i, j);
          }
       }
    }
@@ -141,11 +140,11 @@ void Model::Step(Rule* rule)
       }
    }
 
-   NetworkSnapshot current_network = CurrentNetwork();
+   std::shared_ptr<NetworkSnapshot> current_network = CurrentNetwork();
    std::vector<int> new_states(_agents.size());
    for(int a = 0; a < _agent_states.size(); a++)
    {
-      auto neighbors = current_network.GetNeighbors(a);
+      auto neighbors = current_network->GetNeighbors(a);
       std::vector<int> neighbor_states;
       for(int n : neighbors)
       {
