@@ -4,6 +4,9 @@
 #include <functional>
 #include <cmath>
 #include <future>
+#include <thread> // hardware_concurrency()
+#include <chrono>
+#include <utility>
 #include <map>
 #include <fstream>
 
@@ -75,7 +78,7 @@ int main(int argc, char** argv)
    int    opt_char;
    int    sweep_density   = 0;
    double density_step    = 0.01;
-   double initial_density = 0.5;
+   double initial_density = 0.0;
    int    num_iterations  = 1;
    int    save_state      = 0;
 
@@ -87,7 +90,6 @@ int main(int argc, char** argv)
 
    static struct option long_options[] =
       {
-         {"sweep-density",       optional_argument, &sweep_density, 1},
          {"initial-density",     required_argument, 0,            'd'},
          {"communication-range", required_argument, 0,            'r'},
          {"num-agents",          required_argument, 0,            'n'},
@@ -105,14 +107,6 @@ int main(int argc, char** argv)
    {
       switch(opt_char)
       {
-      case 0:
-         initial_density = 0.0;
-         if(optarg)
-         {
-            density_step = atof(optarg);
-         }
-         break;
-
       case 'd':
          initial_density = atof(optarg);
          break;
@@ -159,25 +153,46 @@ int main(int argc, char** argv)
 
    double speed = atof(argv[optind]);
 
-   std::map<double, std::future<double>> results;
-
+   std::map<double, double> results;
+   std::vector<std::pair<double, std::future<double>>> work;
    while(initial_density <= 1.001)
    {
-      results.emplace(initial_density, std::async(std::launch::async | std::launch::deferred,
-                                                  std::bind(evaluate_ca, num_iterations, speed, initial_density)));
-
-      if(sweep_density == 1)
+      if(work.size() >= std::thread::hardware_concurrency())
       {
-         initial_density += density_step;
+         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+         auto work_iter = work.begin();
+         while(work_iter != work.end())
+         {
+            if(work_iter->second.wait_for(std::chrono::milliseconds(0))
+               == std::future_status::ready)
+            {
+               results.emplace(work_iter->first, work_iter->second.get());
+               work_iter = work.erase(work_iter);
+            }
+            else
+            {
+               work_iter++;
+            }
+         }
       }
       else
       {
-         break; // exit the loop if a sweep has not been requested.
+         work.push_back(std::make_pair(initial_density,
+                                       std::async(std::launch::async | std::launch::deferred,
+                                                  evaluate_ca, num_iterations, speed, initial_density)));
+         initial_density += density_step;
       }
    }
 
-   for(auto& result : results)
+   // Finish up.
+   for(auto& w : work)
    {
-      std::cout << result.first << " " << result.second.get() << std::endl;
+      results.emplace(w.first, w.second.get());
+   }
+
+   // print the results
+   for(auto result : results)
+   {
+      std::cout << result.first << " " << result.second << std::endl;
    }
 }
