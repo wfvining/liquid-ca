@@ -155,9 +155,18 @@ int main(int argc, char** argv)
 
    std::map<double, double> results;
    std::vector<std::pair<double, std::future<double>>> work;
+   int max_threads = std::thread::hardware_concurrency();
+
+   // If the network snapshots are expected to be very dense, then
+   // scale back some to keep memory usage under control
+   if(model_config.communication_range > model_config.arena_size / 4)
+   {
+      max_threads /= 2;
+   }
+
    while(initial_density <= 1.001)
    {
-      if(work.size() >= std::thread::hardware_concurrency())
+      if(work.size() >= max_threads)
       {
          std::this_thread::sleep_for(std::chrono::milliseconds(100));
          auto work_iter = work.begin();
