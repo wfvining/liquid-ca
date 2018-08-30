@@ -30,9 +30,17 @@ add_executable(velocity_experiment
   src/velocity_experiment.cpp)
 target_link_libraries(velocity_experiment model pthread)
 
+add_executable(velocity_experiment_time
+  src/velocity_experiment_time.cpp)
+target_link_libraries(velocity_experiment_time model pthread)
+
 add_executable(levy_viz
   src/levy_viz.cpp)
 target_link_libraries(levy_viz model)
+
+add_executable(network_statistics
+  src/network_statistics.cpp)
+target_link_libraries(network_statistics model)
 
 configure_file(
   scripts/levy_ca_experiment.sh.in
