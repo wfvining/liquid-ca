@@ -35,6 +35,26 @@ public:
    double Density() const;
 
    /**
+    * Return the average degree of the network
+    */
+   double AverageDegree() const;
+
+   /**
+    * Return the variance in the degree distribution.
+    */
+   double DegreeVariance() const;
+
+   /**
+    * Return the normalized degree distribution in a vector.
+    */
+   std::vector<double> DegreeDistribution() const;
+
+   /**
+    * Get the total number of edges (undirected)
+    */
+   int EdgeCount() const;
+
+   /**
     * Get the set of neighbors to vertex v.
     *
     * If v is not a node in the network then throws an out_of_range
