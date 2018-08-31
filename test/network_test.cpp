@@ -27,12 +27,12 @@ public:
 
 TEST_F(NetworkTest, fullyConnectedDensityIsOne)
 {
-   EXPECT_EQ(1, fully_connected_snapshot.Density());
+   EXPECT_EQ(1.0, fully_connected_snapshot.Density());
 }
 
 TEST_F(NetworkTest, fullyDisconnectedDensityIsZero)
 {
-   EXPECT_EQ(0, fully_disconnected_snapshot.Density());
+   EXPECT_EQ(0.0, fully_disconnected_snapshot.Density());
 }
 
 TEST_F(NetworkTest, oneVertexDensity)
@@ -91,4 +91,16 @@ TEST_F(NetworkTest, getNeighborsNonEmpty)
          }
       }
    }
+}
+
+TEST_F(NetworkTest, edgeCount)
+{
+   EXPECT_EQ(45, fully_connected_snapshot.EdgeCount());
+   EXPECT_EQ(0, fully_disconnected_snapshot.EdgeCount());
+}
+
+TEST_F(NetworkTest, averageDegree)
+{
+   EXPECT_EQ(0, fully_disconnected_snapshot.AverageDegree());
+   EXPECT_EQ(9, fully_connected_snapshot.AverageDegree());
 }

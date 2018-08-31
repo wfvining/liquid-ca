@@ -40,14 +40,14 @@ public:
    double AverageDegree() const;
 
    /**
-    * Return the variance in the degree distribution.
+    * Return the degree distribution in a vector.
     */
-   double DegreeVariance() const;
+   std::vector<unsigned int> DegreeDistribution() const;
 
    /**
-    * Return the normalized degree distribution in a vector.
+    * Return the normalized degree distribution 
     */
-   std::vector<double> DegreeDistribution() const;
+   std::vector<double> NormalizedDegreeDistribution() const;
 
    /**
     * Get the total number of edges (undirected)
@@ -86,6 +86,12 @@ public:
     * throws an exception.
     */
    std::shared_ptr<NetworkSnapshot> GetSnapshot(unsigned int t) const;
+
+   /**
+    * Get a snapshot that represents the aggregate of all the
+    * snapshots in the network.
+    */
+   NetworkSnapshot Aggregate() const;
 
    /**
     * Get the number of snapshots in the network.

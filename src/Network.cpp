@@ -1,5 +1,7 @@
 #include "Network.hpp"
 
+#include <algorithm>
+
 /// NetworkSnapshot functions
 
 NetworkSnapshot::NetworkSnapshot(int num_vertices) :
@@ -30,7 +32,7 @@ double NetworkSnapshot::Density() const
    {
       n += v.size();
    }
-   return n / (_num_vertices * (_num_vertices-1));
+   return n / (_num_vertices * (_num_vertices-1)); // XXX
 }
 
 std::set<int> NetworkSnapshot::GetNeighbors(int v) const
@@ -40,6 +42,48 @@ std::set<int> NetworkSnapshot::GetNeighbors(int v) const
       throw std::out_of_range("Network::GetNeighbors");
    }
    return _adjacency_list[v];
+}
+
+double NetworkSnapshot::AverageDegree() const
+{
+   unsigned int total_degree = 0;
+   for(auto& adjacencies : _adjacency_list)
+   {
+      total_degree += adjacencies.size();
+   }
+   return total_degree / _num_vertices;
+}
+
+std::vector<unsigned int> NetworkSnapshot::DegreeDistribution() const
+{
+   std::vector<unsigned int> degree_distribution(_num_vertices);
+   std::fill(degree_distribution.begin(), degree_distribution.end(), 0);
+   for(auto& al : _adjacency_list)
+   {
+      unsigned int degree = al.size();
+      degree_distribution[degree] += 1;
+   }
+   return degree_distribution;
+}
+
+std::vector<double> NetworkSnapshot::NormalizedDegreeDistribution() const
+{
+   std::vector<unsigned int> degree_distribution = DegreeDistribution();
+   std::vector<double> normalized_distribution(degree_distribution.size());
+   std::transform(degree_distribution.begin(), degree_distribution.end(),
+                  normalized_distribution.begin(),
+                  [this](unsigned int d) { return (double)d/(double)_num_vertices; });
+   return normalized_distribution;
+}
+
+int NetworkSnapshot::EdgeCount() const
+{
+   int n = 0;
+   for(auto& al : _adjacency_list)
+   {
+      n += al.size();
+   }
+   return n / 2;
 }
 
 bool operator== (const NetworkSnapshot& s, const NetworkSnapshot& g)
