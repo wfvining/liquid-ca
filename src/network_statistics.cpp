@@ -53,7 +53,7 @@ void network_statistics(int num_iterations, double speed)
                                    std::placeholders::_1));
 
    std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents-1);
-   for(int step = 0; step < 2500; step++)
+   for(int step = 0; step < 5000; step++)
    {
       m.Step(majority_rule);
       auto snapshot_dist = m.GetStats()
