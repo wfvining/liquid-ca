@@ -50,7 +50,7 @@ void evaluate_ca(double initial_density)
                                    model_config.arena_size,
                                    std::placeholders::_1));
    
-   for(int step = 0; step < 1000; step++)
+   for(int step = 0; step < 2000; step++)
    {
       m.Step(majority_rule);
       for(auto agent : m.GetAgents())

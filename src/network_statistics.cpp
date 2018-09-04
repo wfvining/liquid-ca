@@ -53,6 +53,7 @@ void network_statistics(int num_iterations, double speed)
                                    std::placeholders::_1));
 
    std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents-1);
+   double num_edges = 0.0;
    for(int step = 0; step < 5000; step++)
    {
       m.Step(majority_rule);
@@ -65,7 +66,12 @@ void network_statistics(int num_iterations, double speed)
       {
          all_distributions[i].push_back(snapshot_dist[i]);
       }
+      num_edges += m.GetStats()
+         .GetNetwork()
+         .GetSnapshot(step+1)
+         ->EdgeCount();
    }
+   num_edges /= 5000.0;
 
    // compute the mean and std. deviation of the count for each degree
    std::vector<double> mean_counts(all_distributions.size());
@@ -76,7 +82,9 @@ void network_statistics(int num_iterations, double speed)
                      return (double)std::accumulate(counts.begin(), counts.end(), 0) / counts.size();
                   });
    std::vector<unsigned int> aggregate = m.GetStats().GetNetwork().Aggregate().DegreeDistribution();
-   std::cout << "degree mean-count standard-deviation aggregate-count" << std::endl;
+   std::cout << "# degree mean-count standard-deviation aggregate-count" << std::endl;
+   std::cout << "# mean edges per snapshot: " << num_edges;
+   std::cout << "# density of aggregate: " << m.GetStats().GetNetwork().Aggregate().Density();
    for(int i = 0; i < all_distributions.size(); i++)
    {
       auto& degree_counts = all_distributions[i];
