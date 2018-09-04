@@ -83,8 +83,8 @@ void network_statistics(int num_iterations, double speed)
                   });
    std::vector<unsigned int> aggregate = m.GetStats().GetNetwork().Aggregate().DegreeDistribution();
    std::cout << "# degree mean-count standard-deviation aggregate-count" << std::endl;
-   std::cout << "# mean edges per snapshot: " << num_edges;
-   std::cout << "# density of aggregate: " << m.GetStats().GetNetwork().Aggregate().Density();
+   std::cout << "# mean edges per snapshot: " << num_edges << std::endl;
+   std::cout << "# density of aggregate: " << m.GetStats().GetNetwork().Aggregate().Density() << std::endl;
    for(int i = 0; i < all_distributions.size(); i++)
    {
       auto& degree_counts = all_distributions[i];
