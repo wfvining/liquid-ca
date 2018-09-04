@@ -31,62 +31,61 @@ int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
    return x;
 }
 
-void network_statistics(int num_iterations, double speed)
+double network_statistics(int num_iterations, double speed)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
-   std::vector<double> degree_distribution(model_config.num_agents);
-   std::fill(degree_distribution.begin(), degree_distribution.end(), 0.0);
-   Model m(model_config.arena_size,
-           model_config.num_agents,
-           model_config.communication_range,
-           model_config.seed,
-           0.5,
-           speed);
-
-   m.SetTurnDistribution(heading_distribution);
-   m.SetStepDistribution(std::bind(levy_flight_step,
-                                   model_config.mu,
-                                   model_config.arena_size/speed, // this means an agent can travel
-                                   // at furthest from one end of the
-                                   // arena to another before
-                                   // turning.
-                                   std::placeholders::_1));
-
-   std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents-1);
-   for(int step = 0; step < 2500; step++)
+   std::vector<unsigned int> degree_distribution(model_config.num_agents);
+   std::fill(degree_distribution.begin(), degree_distribution.end(), 0);
+   for(int iteration = 0; iteration < num_iterations; iteration++)
    {
-      m.Step(majority_rule);
-      auto snapshot_dist = m.GetStats()
-         .GetNetwork()
-         .GetSnapshot(step+1)
-         ->DegreeDistribution();
-      // save all the snapshot information.
-      for(int i = 0; i < snapshot_dist.size(); i++)
+      Model m(model_config.arena_size,
+              model_config.num_agents,
+              model_config.communication_range,
+              model_config.seed+iteration,
+              initial_density,
+              speed);
+
+      m.SetTurnDistribution(heading_distribution);
+      m.SetStepDistribution(std::bind(levy_flight_step,
+                                      model_config.mu,
+                                      model_config.arena_size/speed, // this means an agent can travel
+                                                                     // at furthest from one end of the
+                                                                     // arena to another before
+                                                                     // turning.
+                                      std::placeholders::_1));
+
+      for(int step = 0; step < 5000; step++)
       {
-         all_distributions[i].push_back(snapshot_dist[i]);
+         m.Step(majority_rule);
+         auto snapshot = m.GetStats().GetNetwork().GetSnapshot(step+1);
+         for(int i = 0; i < model_config.num_agents; i++)
+         {
+            int degree = snapshot->GetNeighbors(i).size();
+            degree_distribution[degree] = degree_distribution[degree] + 1;
+         }
       }
+      // NetworkSnapshot aggregate = m.GetStats().GetNetwork().Aggregate();
    }
 
-   // compute the mean and std. deviation of the count for each degree
-   std::vector<double> mean_counts(all_distributions.size());
-   std::vector<double> std_deviation(all_distributions.size());
-   std::transform(all_distributions.begin(), all_distributions.end(),
-                  mean_counts.begin(),
-                  [](std::vector<unsigned int>& counts) {
-                     return (double)std::accumulate(counts.begin(), counts.end(), 0) / counts.size();
-                  });
-   std::vector<unsigned int> aggregate = m.GetStats().GetNetwork().Aggregate().DegreeDistribution();
-   std::cout << "degree mean-count standard-deviation aggregate-count" << std::endl;
-   for(int i = 0; i < all_distributions.size(); i++)
+   double expected_degree = 0.0;
+   for(int d = 0; d < degree_distribution.size(); d++)
    {
-      auto& degree_counts = all_distributions[i];
-      std_deviation[i] = sqrt(std::accumulate(degree_counts.begin(), degree_counts.end(), 0.0,
-                                              [&mean_counts, i](double sq_sum, unsigned int sample) {
-                                                 return sq_sum + pow((double)(sample - mean_counts[i]), 2.0);
-                                              }) / (double)degree_counts.size());
-      std::cout << i << " " << mean_counts[i] << " " << std_deviation[i] << " " << aggregate[i] << std::endl;
+      std::cout << d << " " << (double)degree_distribution[d]/(num_iterations*5000.0) << std::endl;
+      expected_degree += ((double)degree_distribution[d]/(num_iterations*5000.0))*d;
    }
 
+   // variance
+   double variance = 0.0;
+   for(d = 0; d < degree_distribution.size(); d++)
+   {
+      variance += pow(d - expected_degree, 2) * ((double)degree_distribution[d] / (num_iterations * 5000.0));
+   }
+
+   std::cout << "--------------" << std::endl;
+   std::cout << "expected degree: " << expected_degree << std::endl;
+   std::cout << "variance: " << variance << std::endl; 
+
+   return (double) num_correct / num_iterations;
 }
 
 int main(int argc, char** argv)

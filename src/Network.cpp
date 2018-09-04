@@ -86,9 +86,29 @@ int NetworkSnapshot::EdgeCount() const
    return n / 2;
 }
 
+void NetworkSnapshot::Union(const NetworkSnapshot& s)
+{
+   for(int i = 0; i < _adjacency_list.size(); i++)
+   {
+      _adjacency_list[i].insert(s._adjacency_list[i].begin(),
+                                s._adjacency_list[i].end());
+   }
+}
+
+int NetworkSnapshot::Size() const
+{
+   return _adjacency_list.size();
+}
+
 bool operator== (const NetworkSnapshot& s, const NetworkSnapshot& g)
 {
    return s._adjacency_list == g._adjacency_list;
+}
+
+std::ostream& operator<< (std::ostream& out, const NetworkSnapshot& s)
+{
+   // TODO
+   return out << "(snapshot)";
 }
 
 /// Network functions
@@ -117,4 +137,15 @@ std::shared_ptr<NetworkSnapshot> Network::GetSnapshot(unsigned int t) const
 unsigned int Network::Size() const
 {
    return _snapshots.size();
+}
+
+NetworkSnapshot Network::Aggregate() const
+{
+   int size = _snapshots[0]->Size();
+   NetworkSnapshot aggregate(size);
+   for(std::shared_ptr<NetworkSnapshot> snapshot : _snapshots)
+   {
+      aggregate.Union(*snapshot);
+   }
+   return aggregate;
 }

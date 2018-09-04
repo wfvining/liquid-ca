@@ -5,6 +5,7 @@
 #include <set>
 #include <stdexcept>
 #include <memory>
+#include <iostream>
 
 class NetworkSnapshot
 {
@@ -62,7 +63,15 @@ public:
     */
    std::set<int> GetNeighbors(int v) const;
 
+   /**
+    * get the number of vertices
+    */
+   int Size() const;
+
+   void Union(const NetworkSnapshot& s);
+
    friend bool operator== (const NetworkSnapshot& s, const NetworkSnapshot& g);
+   friend std::ostream& operator<< (std::ostream& out, const NetworkSnapshot& s);
 };
 
 class Network

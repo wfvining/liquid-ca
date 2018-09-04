@@ -104,3 +104,86 @@ TEST_F(NetworkTest, averageDegree)
    EXPECT_EQ(0, fully_disconnected_snapshot.AverageDegree());
    EXPECT_EQ(9, fully_connected_snapshot.AverageDegree());
 }
+
+TEST_F(NetworkTest, degreeDistribution1)
+{
+   NetworkSnapshot d1(6);
+   d1.AddEdge(0,1);
+   d1.AddEdge(2,3);
+   d1.AddEdge(4,5);
+   auto d1_dist = d1.DegreeDistribution();
+   EXPECT_EQ(d1_dist[0], 0);
+   EXPECT_EQ(d1_dist[1], 6);
+   for(auto iter = d1_dist.begin() + 2; iter < d1_dist.end(); iter++)
+   {
+      EXPECT_EQ(*iter, 0);
+   }
+}
+
+TEST_F(NetworkTest, degreeDistributionSize)
+{
+   auto full_dist = fully_connected_snapshot.DegreeDistribution();
+   auto empty_dist = fully_disconnected_snapshot.DegreeDistribution();
+   ASSERT_EQ(10, full_dist.size());
+   ASSERT_EQ(10, empty_dist.size());
+}
+
+TEST_F(NetworkTest, degreeDistributionFull)
+{
+   auto full_dist = fully_connected_snapshot.DegreeDistribution();
+   for(int i = 0; i < full_dist.size(); i++)
+   {
+      if(i == 9)
+      {
+         ASSERT_EQ(10, full_dist[i]);
+      }
+      else
+      {
+         EXPECT_EQ(0, full_dist[i]);
+      }
+   }
+}
+
+TEST_F(NetworkTest, degreeDistributionEmpty)
+{
+   auto full_dist = fully_disconnected_snapshot.DegreeDistribution();
+   for(int i = 0; i < full_dist.size(); i++)
+   {
+      if(i == 0)
+      {
+         ASSERT_EQ(10, full_dist[i]);
+      }
+      else
+      {
+         EXPECT_EQ(0, full_dist[i]);
+      }
+   }
+}
+
+TEST_F(NetworkTest, snapshotUnion)
+{
+   NetworkSnapshot snapshot1(10);
+   NetworkSnapshot snapshot2(10);
+   NetworkSnapshot snapshot3(10);
+   NetworkSnapshot snapshot_final(10);
+   snapshot1.AddEdge(0,1);
+   snapshot1.AddEdge(0,2);
+   snapshot2.AddEdge(0,1);
+   snapshot2.AddEdge(0,2);
+   snapshot3.AddEdge(0,3);
+   snapshot3.AddEdge(0,4);
+   snapshot3.AddEdge(0,5);
+   snapshot3.AddEdge(0,6);
+
+   for(int i = 1; i <= 6; i++)
+   {
+      snapshot_final.AddEdge(0,i);
+   }
+
+   NetworkSnapshot u(10);
+   u.Union(snapshot1);
+   u.Union(snapshot2);
+   u.Union(snapshot3);
+
+   ASSERT_EQ(u, snapshot_final);
+}
