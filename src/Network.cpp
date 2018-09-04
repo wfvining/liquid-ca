@@ -100,6 +100,11 @@ int NetworkSnapshot::Size() const
    return _adjacency_list.size();
 }
 
+int NetworkSnapshot::Degree(int v) const
+{
+   return _adjacency_list[v].size();
+}
+
 bool operator== (const NetworkSnapshot& s, const NetworkSnapshot& g)
 {
    return s._adjacency_list == g._adjacency_list;

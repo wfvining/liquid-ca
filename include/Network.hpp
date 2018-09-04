@@ -56,6 +56,11 @@ public:
    int EdgeCount() const;
 
    /**
+    * Get the degree of a single node
+    */
+   int Degree(int v) const;
+
+   /**
     * Get the set of neighbors to vertex v.
     *
     * If v is not a node in the network then throws an out_of_range
