@@ -52,7 +52,7 @@ void network_statistics(int num_iterations, double speed)
                                    // turning.
                                    std::placeholders::_1));
 
-   std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents-1);
+   std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents);
    double num_edges = 0.0;
    for(int step = 0; step < 5000; step++)
    {
