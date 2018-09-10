@@ -23,16 +23,6 @@ struct model_config
    double mu;
 } model_config;
 
-int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
-{
-   std::uniform_real_distribution<double> u(0,1);
-   double pmin = powf(1.0, -mu+1);
-   double pmax = powf((double)max_step, -mu+1);
-   double z    = powf((pmax - pmin)*u(gen) + pmin, 1.0/(-mu+1));
-   int x = floor(z);
-   return x;
-}
-
 double evaluate_ca(int num_iterations, double speed, double initial_density)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -47,14 +37,6 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
               initial_density,
               speed);
 
-      // m.SetTurnDistribution(heading_distribution);
-      // m.SetStepDistribution(std::bind(levy_flight_step,
-      //                                 model_config.mu,
-      //                                 model_config.arena_size/speed, // this means an agent can travel
-      //                                                                // at furthest from one end of the
-      //                                                                // arena to another before
-      //                                                                // turning.
-      //                                 std::placeholders::_1));
       m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
 
       for(int step = 0; step < 5000; step++)
