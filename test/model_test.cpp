@@ -96,16 +96,35 @@ TEST(ModelTest, alwaysZeroRule)
    EXPECT_EQ(m.CurrentDensity(), 0.0);
 }
 
+class ConstantHeading : public MovementRule
+{
+   double h;
+   int i = 0;
+public:
+   ConstantHeading(double h) : h(h) {}
+   ~ConstantHeading() {}
+   virtual Heading Turn(const Point&, const Heading& heading, std::mt19937_64&) override
+      {
+         if(i++ >= 1) {
+            return Heading(h);
+         }
+         return heading;
+      }
+   virtual std::shared_ptr<MovementRule> Clone() const override
+      {
+         return std::make_shared<ConstantHeading>(*this);
+      }
+};
+
 TEST(ModelTest, agentsUpddate)
 {
    Model m(1000, 1, 1.0, 1234, 0.5);
-   m.SetStepDistribution([](std::mt19937_64& gen) { return 2; });
-   m.SetTurnDistribution([](std::mt19937_64& gen) { return M_PI; });
+   m.SetMovementRule(ConstantHeading(M_PI));
    Heading initial_heading = m.GetAgents()[0].GetHeading();
    m.Step(majority_rule);
    EXPECT_EQ(initial_heading, m.GetAgents()[0].GetHeading());
    m.Step(majority_rule);
-   EXPECT_EQ(initial_heading + Heading(M_PI), m.GetAgents()[0].GetHeading());
+   EXPECT_EQ(Heading(M_PI), m.GetAgents()[0].GetHeading());
 }
 
 TEST(ModelTest, agentSpeedZero)

@@ -112,8 +112,20 @@ bool operator== (const NetworkSnapshot& s, const NetworkSnapshot& g)
 
 std::ostream& operator<< (std::ostream& out, const NetworkSnapshot& s)
 {
-   // TODO
-   return out << "(snapshot)";
+   // output the snapshot as dot.
+   out << "graph {" << std::endl
+       << "  node[shape=point,label=\"\"]" << std::endl;
+   for(int u = 0; u < s._adjacency_list.size(); u++)
+   {
+      out << "  " << u << std::endl;
+      for(int v : s._adjacency_list[u])
+      {
+         if(u < v) {
+            out << "  " << u << " -- " << v << std::endl;
+         }
+      }
+   }
+   return out << "}";
 }
 
 /// Network functions

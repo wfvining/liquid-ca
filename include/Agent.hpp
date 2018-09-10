@@ -3,8 +3,10 @@
 
 #include "Point.hpp"
 #include "Heading.hpp"
+#include "MovementRule.hpp"
 
 #include <random>
+#include <memory>
 
 class Agent
 {
@@ -16,6 +18,10 @@ private:
    int _time;
    int _next_update;
 
+   std::shared_ptr<MovementRule> _movement_rule;
+
+   std::mt19937_64 _gen;
+
    Point Reflect(const Point& p);
    bool  IsOutOfBounds(const Point& p) const;
 
@@ -24,7 +30,7 @@ public:
    /**
     * Construct an agent at position p with heading h.
     */
-   Agent(Point p, Heading h, double speed, double arena_size);
+   Agent(Point p, Heading h, double speed, double arena_size, int seed);
 
    /**
     * Get the current position of the agent.
@@ -46,6 +52,11 @@ public:
     * timestep.
     */
    void Step();
+
+   /**
+    * Set the movement rule for the agent.
+    */
+   void SetMovementRule(std::shared_ptr<MovementRule> movement_rule);
 
    /**
     * Set the interval to the next heading update.

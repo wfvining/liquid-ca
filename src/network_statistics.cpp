@@ -21,16 +21,6 @@ struct model_config
    double mu;
 } model_config;
 
-int levy_flight_step(double mu, int max_step, std::mt19937_64& gen)
-{
-   std::uniform_real_distribution<double> u(0,1);
-   double pmin = powf(1.0, -mu+1);
-   double pmax = powf((double)max_step, -mu+1);
-   double z    = powf((pmax - pmin)*u(gen) + pmin, 1.0/(-mu+1));
-   int x = floor(z);
-   return x;
-}
-
 void network_statistics(int num_iterations, double speed)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -43,17 +33,9 @@ void network_statistics(int num_iterations, double speed)
            0.5,
            speed);
 
-   m.SetTurnDistribution(heading_distribution);
-   m.SetStepDistribution(std::bind(levy_flight_step,
-                                   model_config.mu,
-                                   model_config.arena_size/speed, // this means an agent can travel
-                                   // at furthest from one end of the
-                                   // arena to another before
-                                   // turning.
-                                   std::placeholders::_1));
+   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
 
-   std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents-1);
-   std::vector<double> edge_counts;
+   std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents);
    double num_edges = 0.0;
    for(int step = 0; step < 5000; step++)
    {
@@ -67,11 +49,12 @@ void network_statistics(int num_iterations, double speed)
       {
          all_distributions[i].push_back(snapshot_dist[i]);
       }
-      edge_counts.push_back(m.GetStats()
-                            .GetNetwork()
-                            .GetSnapshot(step+1)
-                            ->EdgeCount());
+      num_edges += m.GetStats()
+         .GetNetwork()
+         .GetSnapshot(step+1)
+         ->EdgeCount();
    }
+   num_edges /= 5000.0;
 
    // compute the mean and std. deviation of the count for each degree
    std::vector<double> mean_counts(all_distributions.size());
@@ -82,8 +65,6 @@ void network_statistics(int num_iterations, double speed)
                      return (double)std::accumulate(counts.begin(), counts.end(), 0) / counts.size();
                   });
    std::vector<unsigned int> aggregate = m.GetStats().GetNetwork().Aggregate().DegreeDistribution();
-
-   double mean_edge_count()
 
    std::cout << "# degree mean-count standard-deviation aggregate-count" << std::endl;
    std::cout << "# mean edges per snapshot: " << num_edges << std::endl;

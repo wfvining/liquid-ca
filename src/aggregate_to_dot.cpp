@@ -2,50 +2,47 @@
 #include <iostream>
 #include <cstdlib>
 #include <functional>
+#include <algorithm> // std::fill()
 #include <cmath>
+#include <utility>
 #include <map>
 #include <fstream>
 
 #include <getopt.h>
 
 #include "Model.hpp"
-#include "MovementRule.hpp"
 
 struct model_config
 {
-   int num_agents;
-   int communication_range;
-   int arena_size;
-   int seed;
+   int    num_agents;
+   double communication_range;
+   int    arena_size;
+   int    seed;
    double mu;
 } model_config;
 
-double heading(std::mt19937_64& gen)
+void network_statistics(int num_iterations, double speed)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
-   return heading_distribution(gen);
-}
-
-void evaluate_ca(double initial_density)
-{
-   std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
+   std::vector<double> degree_distribution(model_config.num_agents);
+   std::fill(degree_distribution.begin(), degree_distribution.end(), 0.0);
    Model m(model_config.arena_size,
            model_config.num_agents,
            model_config.communication_range,
            model_config.seed,
-           initial_density);
+           0.5,
+           speed);
 
-   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
-   
-   for(int step = 0; step < 2000; step++)
+   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
+
+   for(int step = 0; step < 5000; step++)
    {
       m.Step(majority_rule);
-      for(auto agent : m.GetAgents())
-      {
-         std::cout << agent.Position().GetX() << " " << agent.Position().GetY() << " ";
-      }
-      std::cout << std::endl;
    }
+
+   NetworkSnapshot aggregate = m.GetStats().GetNetwork().Aggregate();
+
+   std::cout << aggregate << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -53,7 +50,7 @@ int main(int argc, char** argv)
    int    opt_char;
    int    sweep_density   = 0;
    double density_step    = 0.01;
-   double initial_density = 0.5;
+   double initial_density = 0.0;
    int    num_iterations  = 1;
    int    save_state      = 0;
 
@@ -61,16 +58,17 @@ int main(int argc, char** argv)
    model_config.num_agents          = 100;
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
+   model_config.mu                  = 1.2;
 
    static struct option long_options[] =
       {
-         {"sweep-density",       optional_argument, &sweep_density, 1},
          {"initial-density",     required_argument, 0,            'd'},
          {"communication-range", required_argument, 0,            'r'},
          {"num-agents",          required_argument, 0,            'n'},
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
+         {"mu",                  required_argument, 0,            'm'},
          {0,0,0,0}
       };
 
@@ -79,23 +77,14 @@ int main(int argc, char** argv)
    while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
                                  long_options, &option_index)) != -1)
    {
-
       switch(opt_char)
       {
-      case 0:
-         initial_density = 0.0;
-         if(optarg)
-         {
-            density_step = atof(optarg);
-         }
-         break;
-
       case 'd':
          initial_density = atof(optarg);
          break;
 
       case 'r':
-         model_config.communication_range = atoi(optarg);
+         model_config.communication_range = atof(optarg);
          break;
 
       case 'n':
@@ -114,6 +103,10 @@ int main(int argc, char** argv)
          num_iterations = atoi(optarg);
          break;
 
+      case 'm':
+         model_config.mu = atof(optarg);
+         break;
+
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);
@@ -127,11 +120,10 @@ int main(int argc, char** argv)
 
    if(optind >= argc)
    {
-      std::cout << "missing required option <alpha>" << std::endl;
+      std::cout << "missing required argument <agent-speed>" << std::endl;
    }
 
-   double alpha    = atof(argv[optind]);
-   model_config.mu = alpha + 1;
+   double speed = atof(argv[optind]);
 
-   evaluate_ca(0.5);
+   network_statistics(num_iterations, speed);
 }

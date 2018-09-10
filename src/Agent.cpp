@@ -3,14 +3,15 @@
 #include <cmath> // M_PI
 #include <climits>
 
-Agent::Agent(Point p, Heading h, double speed, double arena_size) :
+Agent::Agent(Point p, Heading h, double speed, double arena_size, int seed) :
    _speed(speed),
    _arena_size(arena_size),
    _position(p),
    _heading(h),
-   _next_update(INT_MAX),
-   _time(0)
-{}
+   _gen(seed)
+{
+   _movement_rule = std::make_shared<MovementRule>();
+}
 
 Point Agent::Position() const
 {
@@ -40,17 +41,12 @@ void Agent::Step()
    {
       _position = new_position;
    }
-   _time++;
+   _heading = _movement_rule->Turn(_position, _heading, _gen);
 }
 
-void Agent::SetUpdateInterval(int interval)
+void Agent::SetMovementRule(std::shared_ptr<MovementRule> rule)
 {
-   _next_update = _time + interval;
-}
-
-bool Agent::ShouldTurn() const
-{
-   return _time >= _next_update;
+   _movement_rule = rule;
 }
 
 bool Agent::IsOutOfBounds(const Point& p) const

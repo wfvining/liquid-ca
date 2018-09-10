@@ -12,7 +12,8 @@ add_library(model SHARED
   src/Agent.cpp
   src/Model.cpp
   src/Network.cpp
-  src/Rule.cpp)
+  src/Rule.cpp
+  src/MovementRule.cpp)
 
 find_package(Threads REQUIRED)
 
@@ -41,6 +42,10 @@ target_link_libraries(levy_viz model)
 add_executable(network_statistics
   src/network_statistics.cpp)
 target_link_libraries(network_statistics model)
+
+add_executable(aggregate_to_dot
+  src/aggregate_to_dot.cpp)
+target_link_libraries(aggregate_to_dot model)
 
 configure_file(
   scripts/levy_ca_experiment.sh.in
