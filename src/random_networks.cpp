@@ -1,25 +1,93 @@
-#include "Network.hpp"
-#include "Rule.hpp"
-
 #include <random>
+#include <iostream>
+#include <cstdlib>
+#include <functional>
+#include <algorithm> // std::fill()
+#include <cmath>
+#include <utility>
+#include <map>
+#include <fstream>
 
-#define NUM_NODES 127
+#include <getopt.h>
 
-int main(int argc, char**argv)
+#include "Model.hpp"
+
+struct model_config
 {
-   int seed = atoi(argv[1]);
-   int edges_per_snapshot = atoi(argv[2]);
-   std::mt19937_64 gen(seed);
-   std::uniform_int_distribution<int> node_dist(0, NUM_NODES-1);
+   int    num_agents;
+   double communication_range;
+   int    arena_size;
+   int    seed;
+   double mu;
+} model_config;
 
-   NetworkSnapshot network(NUM_NODES);
-   for(int i = 0; i < 5000; i++)
-   {
-      while(network.EdgeCount() < edges_per_snapshot)
+int main(int argc, char** argv)
+{
+   int    opt_char;
+   int    sweep_density   = 0;
+   double density_step    = 0.01;
+   double initial_density = 0.0;
+   int    num_iterations  = 1;
+   int    save_state      = 0;
+
+   model_config.communication_range = 5;
+   model_config.num_agents          = 100;
+   model_config.arena_size          = 100;
+   model_config.seed                = 1234;
+   model_config.mu                  = 1.2;
+
+   static struct option long_options[] =
       {
-         int u = node_dist(gen);
-         int v = node_dist(gen);
-         network.AddEdge(u, v);
+         {"initial-density",     required_argument, 0,            'd'},
+         {"communication-range", required_argument, 0,            'r'},
+         {"num-agents",          required_argument, 0,            'n'},
+         {"arena-size",          required_argument, 0,            'a'},
+         {"seed",                required_argument, 0,            's'},
+         {"iterations",          required_argument, 0,            'i'},
+         {0,0,0,0}
+      };
+
+   int option_index = 0;
+
+   while((opt_char = getopt_long(argc, argv, "d:r:n:a:s:i:",
+                                 long_options, &option_index)) != -1)
+   {
+      switch(opt_char)
+      {
+      case 'd':
+         initial_density = atof(optarg);
+         break;
+
+      case 'r':
+         model_config.communication_range = atof(optarg);
+         break;
+
+      case 'n':
+         model_config.num_agents = atoi(optarg);
+         break;
+
+      case 'a':
+         model_config.arena_size = atof(optarg);
+         break;
+
+      case 's':
+         model_config.seed = atoi(optarg);
+         break;
+
+      case 'i':
+         num_iterations = atoi(optarg);
+         break;
+
+      case ':':
+         std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
+         exit(-1);
+         break;
+
+      case '?':
+         std::cout << "unrecognized option" << std::endl;
+         exit(-1);
       }
    }
+
+   
 }
