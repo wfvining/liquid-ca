@@ -47,14 +47,15 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
               initial_density,
               speed);
 
-      m.SetTurnDistribution(heading_distribution);
-      m.SetStepDistribution(std::bind(levy_flight_step,
-                                      model_config.mu,
-                                      model_config.arena_size/speed, // this means an agent can travel
-                                                                     // at furthest from one end of the
-                                                                     // arena to another before
-                                                                     // turning.
-                                      std::placeholders::_1));
+      // m.SetTurnDistribution(heading_distribution);
+      // m.SetStepDistribution(std::bind(levy_flight_step,
+      //                                 model_config.mu,
+      //                                 model_config.arena_size/speed, // this means an agent can travel
+      //                                                                // at furthest from one end of the
+      //                                                                // arena to another before
+      //                                                                // turning.
+      //                                 std::placeholders::_1));
+      m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
 
       for(int step = 0; step < 5000; step++)
       {

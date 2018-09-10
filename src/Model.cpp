@@ -60,12 +60,13 @@ Model::Model(double arena_size,
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
    std::bernoulli_distribution state_distribution(initial_density);
+   std::uniform_int_distribution<int> seed_distribution;
 
    for(int i = 0; i < num_agents; i++)
    {
       Point initial_position(coordinate_distribution(_rng), coordinate_distribution(_rng));
       Heading initial_heading(heading_distribution(_rng));
-      Agent a(initial_position, initial_heading, agent_speed, arena_size);
+      Agent a(initial_position, initial_heading, agent_speed, arena_size, seed_distribution(_rng));
       _agents.push_back(a);
       if(state_distribution(_rng))
       {
@@ -114,17 +115,11 @@ const std::vector<Agent>& Model::GetAgents() const
    return _agents;
 }
 
-void Model::SetTurnDistribution(std::function<double(std::mt19937_64&)> turn_distribution)
+void Model::SetMovementRule(const MovementRule& rule)
 {
-   _turn_distribution = turn_distribution;
-}
-
-void Model::SetStepDistribution(std::function<int(std::mt19937_64&)> step_distribution)
-{
-   _step_distribution = step_distribution;
    for(auto& agent : _agents)
    {
-      agent.SetUpdateInterval(_step_distribution(_rng));
+      agent.SetMovementRule(rule.Clone());
    }
 }
 
@@ -133,11 +128,6 @@ void Model::Step(Rule* rule)
    for(Agent& agent : _agents)
    {
       agent.Step();
-      if(agent.ShouldTurn())
-      {
-         agent.SetHeading(agent.GetHeading() + Heading(_turn_distribution(_rng)));
-         agent.SetUpdateInterval(_step_distribution(_rng));
-      }
    }
 
    std::shared_ptr<NetworkSnapshot> current_network = CurrentNetwork();

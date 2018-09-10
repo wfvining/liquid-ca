@@ -9,6 +9,7 @@
 #include <getopt.h>
 
 #include "Model.hpp"
+#include "MovementRule.hpp"
 
 struct model_config
 {
@@ -44,11 +45,13 @@ void evaluate_ca(double initial_density)
            model_config.seed,
            initial_density);
 
-   m.SetTurnDistribution(heading);
-   m.SetStepDistribution(std::bind(levy_flight_step,
-                                   model_config.mu,
-                                   model_config.arena_size,
-                                   std::placeholders::_1));
+   // m.SetTurnDistribution(heading);
+   // m.SetStepDistribution(std::bind(levy_flight_step,
+   //                                 model_config.mu,
+   //                                 model_config.arena_size,
+   //                                 std::placeholders::_1));
+
+   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
    
    for(int step = 0; step < 2000; step++)
    {

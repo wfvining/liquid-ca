@@ -43,14 +43,15 @@ void network_statistics(int num_iterations, double speed)
            0.5,
            speed);
 
-   m.SetTurnDistribution(heading_distribution);
-   m.SetStepDistribution(std::bind(levy_flight_step,
-                                   model_config.mu,
-                                   model_config.arena_size/speed, // this means an agent can travel
-                                   // at furthest from one end of the
-                                   // arena to another before
-                                   // turning.
-                                   std::placeholders::_1));
+   // m.SetTurnDistribution(heading_distribution);
+   // m.SetStepDistribution(std::bind(levy_flight_step,
+   //                                 model_config.mu,
+   //                                 model_config.arena_size/speed, // this means an agent can travel
+   //                                 // at furthest from one end of the
+   //                                 // arena to another before
+   //                                 // turning.
+   //                                 std::placeholders::_1));
+   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
 
    std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents-1);
    double num_edges = 0.0;

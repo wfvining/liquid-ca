@@ -42,11 +42,12 @@ double evaluate_ca(int num_iterations, double initial_density)
               model_config.seed+iteration,
               initial_density);
 
-      m.SetTurnDistribution(heading_distribution);
-      m.SetStepDistribution(std::bind(levy_flight_step,
-                                      model_config.mu,
-                                      model_config.arena_size,
-                                      std::placeholders::_1));
+      // m.SetTurnDistribution(heading_distribution);
+      // m.SetStepDistribution(std::bind(levy_flight_step,
+      //                                 model_config.mu,
+      //                                 model_config.arena_size,
+      //                                 std::placeholders::_1));
+      m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
 
       for(int step = 0; step < 5000; step++)
       {
