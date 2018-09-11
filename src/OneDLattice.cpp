@@ -1,4 +1,5 @@
 #include "OneDLattice.hpp"
+#include <algorithm>
 
 OneDLattice::OneDLattice(int num_cells, int radius) :
    _lattice(num_cells),
@@ -86,6 +87,11 @@ bool OneDLattice::IsChanging() const
 {
    if(_steps <= 1) return true;
    else            return _old_states != _states;
+}
+
+void OneDLattice::Shuffle()
+{
+   std::shuffle(_states.begin(), _states.end(), _rng);
 }
 
 std::ostream& operator<<(std::ostream &out, const OneDLattice& l)
