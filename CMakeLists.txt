@@ -47,6 +47,10 @@ add_executable(aggregate_to_dot
   src/aggregate_to_dot.cpp)
 target_link_libraries(aggregate_to_dot model)
 
+add_executable(random_spatial
+  src/random_spatial.cpp)
+target_link_libraries(random_spatial model)
+
 configure_file(
   scripts/levy_ca_experiment.sh.in
   scripts/levy_ca_experiment.sh @ONLY)
