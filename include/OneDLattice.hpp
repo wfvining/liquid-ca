@@ -47,6 +47,11 @@ public:
     */
    bool IsChanging() const;
 
+   /**
+    * Randomly shuffle the states of the agents.
+    */
+   void Shuffle();
+
    friend std::ostream& operator<< (std::ostream& out, const OneDLattice& l);
 };
 
