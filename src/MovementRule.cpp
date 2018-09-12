@@ -41,3 +41,18 @@ std::shared_ptr<MovementRule> LevyWalk::Clone() const
 {
    return std::make_shared<LevyWalk>(*this);
 }
+
+RandomWalk::RandomWalk() : heading_distribution(0, 2*M_PI) {}
+RandomWalk::~RandomWalk() {}
+
+Heading RandomWalk::Turn(const Point& current_position,
+                         const Heading& current_heading,
+                         std::mt19937_64& gen)
+{
+   return Heading(heading_distribution(gen));
+}
+
+std::shared_ptr<MovementRule> RandomWalk::Clone() const
+{
+   return std::make_shared<RandomWalk>();
+}
