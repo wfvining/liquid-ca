@@ -5,13 +5,25 @@
 
 /// ModelStats functions
 
-ModelStats::ModelStats() {}
+ModelStats::ModelStats(int num_agents) :
+   _aggregate_network(num_agents)
+{}
+
 ModelStats::~ModelStats() {}
 
 void ModelStats::PushState(double density, std::shared_ptr<NetworkSnapshot> snapshot)
 {
-   _network.AppendSnapshot(snapshot);
+   if(!_network_summary_only) {
+      _network.AppendSnapshot(snapshot);
+   }
+   _aggregate_network.Union(*snapshot);
+   _network_density.push_back(_aggregate_network.Density());
    _ca_density.push_back(density);
+}
+
+void ModelStats::NetworkSummaryOnly()
+{
+   _network_summary_only = true;
 }
 
 const Network& ModelStats::GetNetwork() const
@@ -55,7 +67,7 @@ Model::Model(double arena_size,
              double agent_speed) :
    _communication_range(communication_range),
    _rng(seed),
-   _stats()
+   _stats(num_agents)
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -83,6 +95,11 @@ Model::Model(double arena_size,
 }
 
 Model::~Model() {}
+
+void Model::RecordNetworkDensityOnly()
+{
+   _stats.NetworkSummaryOnly();
+}
 
 double Model::CurrentDensity() const
 {

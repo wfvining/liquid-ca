@@ -15,7 +15,12 @@ public:
    std::shared_ptr<NetworkSnapshot> t0;
    std::shared_ptr<NetworkSnapshot> t1;
    std::shared_ptr<NetworkSnapshot> t2;
-   ModelStatsTest()
+   ModelStatsTest() :
+      empty(10),
+      stats(10),
+      stats_dense(10),
+      stats_zero(10),
+      stats_one(10)
    {
       t0 = std::make_shared<NetworkSnapshot>(10);
       t1 = std::make_shared<NetworkSnapshot>(10);

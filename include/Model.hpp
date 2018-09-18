@@ -20,9 +20,14 @@ class ModelStats
 private:
    Network             _network;
    std::vector<double> _ca_density;
+   std::vector<double> _network_density;
+
+   bool _network_summary_only = false;
+
+   NetworkSnapshot _aggregate_network;
 
 public:
-   ModelStats();
+   ModelStats(int num_agents);
    ~ModelStats();
 
    /**
@@ -30,6 +35,12 @@ public:
     * at the next timestep.
     */
    void PushState(double density, std::shared_ptr<NetworkSnapshot> snapshot);
+
+   /**
+    * Don't save the network snapshots, only save the density of each
+    * snapshot.
+    */
+   void NetworkSummaryOnly();
 
    /**
     * Get the sequence of densities up to this time.
@@ -40,6 +51,12 @@ public:
     * Get the network up to this time.
     */
    const Network& GetNetwork() const;
+
+   /**
+    * Returns a vector of the density of the aggregate network up to
+    * the current time step.
+    */
+   std::vector<double> AggregateDensityHistory() const;
 
    /**
     * Return true if the density was classified correctly.
@@ -92,6 +109,11 @@ public:
     * Get the density of the communication network.
     */
    double NetworkDensity() const;
+
+   /**
+    * Save the network density only.
+    */
+   void RecordNetworkDensityOnly();
 
    /**
     * Get statistics about the model.
