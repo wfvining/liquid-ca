@@ -65,4 +65,16 @@ public:
    std::shared_ptr<MovementRule> Clone() const override;
 };
 
+class RandomWalk : public MovementRule
+{
+private:
+   std::uniform_real_distribution<double> heading_distribution;
+public:
+   RandomWalk();
+   ~RandomWalk();
+
+   Heading Turn(const Point&, const Heading&, std::mt19937_64& gen) override;
+   std::shared_ptr<MovementRule> Clone() const override;
+};
+
 #endif // _MOVEMENT_RULE_HPP
