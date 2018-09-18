@@ -53,7 +53,7 @@ target_link_libraries(random_spatial model)
 
 add_executable(density_sweep
   src/density_sweep.cpp)
-target_link_libraries(random_spatial model)
+target_link_libraries(density_sweep model pthread)
 
 configure_file(
   scripts/levy_ca_experiment.sh.in
