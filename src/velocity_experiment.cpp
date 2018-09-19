@@ -36,7 +36,8 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
               initial_density,
               speed);
 
-      m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
+      // m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
+      m.SetMovementRule(RandomWalk());
       m.RecordNetworkDensityOnly();
 
       for(int step = 0; step < 5000; step++)
