@@ -49,7 +49,7 @@ target_link_libraries(aggregate_to_dot model)
 
 add_executable(random_spatial
   src/random_spatial.cpp)
-target_link_libraries(random_spatial model)
+target_link_libraries(random_spatial model pthread)
 
 add_executable(random_regular
   src/random_regular_networks.cpp
@@ -59,6 +59,10 @@ target_link_libraries(random_regular model pthread)
 add_executable(density_sweep
   src/density_sweep.cpp)
 target_link_libraries(density_sweep model pthread)
+
+add_executable(velocity_sweep
+  src/velocity_sweep.cpp)
+target_link_libraries(velocity_sweep model pthread)
 
 configure_file(
   scripts/levy_ca_experiment.sh.in

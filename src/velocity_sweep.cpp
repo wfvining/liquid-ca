@@ -25,24 +25,24 @@ struct model_config
    double num_iterations;
 } model_config;
 
-std::mutex density_lock;
-double density = 0.0;
+std::mutex speed_lock;
+double speed = 0;
 
 std::mutex results_lock;
 std::map<double, double> results;
 
-double next_density()
+double next_speed()
 {
-   double d;
+   double s;
 
-   density_lock.lock();
+   speed_lock.lock();
 
-   d = density;
-   density += 0.01;
+   s = speed;
+   speed += 0.25;
 
-   density_lock.unlock();
+   speed_lock.unlock();
 
-   return d;
+   return s;
 }
 
 void record_result(double initial_density, double proportion_correct)
@@ -54,7 +54,6 @@ void record_result(double initial_density, double proportion_correct)
 
 double evaluate_ca(int num_iterations, double speed, double initial_density)
 {
-   std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
    int num_correct = 0;
    for(int iteration = 0; iteration < num_iterations; iteration++)
    {
@@ -69,7 +68,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
       m.SetMovementRule(RandomWalk());
       m.RecordNetworkDensityOnly();
 
-      for(int step = 0; step < 5000; step++)
+      for(int step = 0; step < 1000; step++)
       {
          m.Step(majority_rule);
          if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
@@ -89,13 +88,13 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 
 void thread_main()
 {
-   double initial_density;
-   while((initial_density = next_density()) < 1.001)
+   double speed;
+   while((speed = next_speed()) < 100.1)
    {
       double proportion_correct = evaluate_ca(model_config.num_iterations,
-                                              model_config.speed,
-                                              initial_density);
-      record_result(initial_density, proportion_correct);
+                                              speed,
+                                              0.5);
+      record_result(speed, proportion_correct);
    }
 }
 

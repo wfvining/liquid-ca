@@ -6,6 +6,7 @@
 #include <utility>
 #include <map>
 #include <fstream>
+#include <thread>
 
 #include <getopt.h>
 
@@ -19,7 +20,33 @@ struct model_config
    int    arena_size;
    int    seed;
    double mu;
+   int    num_iterations;
 } model_config;
+
+std::mutex density_lock;
+double init_density = 0.0;
+
+std::mutex results_lock;
+std::map<double, double> results;
+
+double next_density()
+{
+   double d;
+   
+   density_lock.lock();
+   d = init_density;
+   init_density += 0.01;
+   density_lock.unlock();
+
+   return d;
+}
+
+void store_result(double initial_density, double proportion_correct)
+{
+   results_lock.lock();
+   results.emplace(initial_density, proportion_correct);
+   results_lock.unlock();
+}
 
 std::shared_ptr<NetworkSnapshot> make_spatial(int seed)
 {
@@ -84,20 +111,20 @@ bool evaluate_ca(int seed, double initial_density)
    return density(agent_states) == round(actual_density);
 }
 
-void run_sweep(int num_iterations)
+void run_sweep()
 {
-   std::map<double, double> results;
-   for(double density = 0.0; density < 1.001; density += 0.01)
+   double d;
+   while((d = next_density()) < 1.001)
    {
       int correct = 0;
-      for(int replica = 0; replica < num_iterations; replica++)
+      for(int replica = 0; replica < model_config.num_iterations; replica++)
       {
-         if(evaluate_ca(model_config.seed+replica, density))
+         if(evaluate_ca(model_config.seed+replica, d))
          {
             correct++;
          }
       }
-      std::cout << density << " " << (double)correct / (double)num_iterations << std::endl;
+      store_result(d, (double)correct / (double)model_config.num_iterations);
    }
 }
 
@@ -107,7 +134,7 @@ int main(int argc, char** argv)
    int    sweep_density   = 0;
    double density_step    = 0.01;
    double initial_density = 0.0;
-   int    num_iterations  = 1;
+   int    num_iterations  = 100;
    int    save_state      = 0;
 
    model_config.communication_range = 5;
@@ -115,6 +142,7 @@ int main(int argc, char** argv)
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
+   model_config.num_iterations      = 100;
 
    static struct option long_options[] =
       {
@@ -155,7 +183,7 @@ int main(int argc, char** argv)
          break;
 
       case 'i':
-         num_iterations = atoi(optarg);
+         model_config.num_iterations = atoi(optarg);
          break;
 
       case ':':
@@ -169,6 +197,22 @@ int main(int argc, char** argv)
       }
    }
 
-   run_sweep(num_iterations);
+   int num_threads = std::thread::hardware_concurrency();
+   std::vector<std::thread> threads;
+   for(int i = 0; i < num_threads; i++)
+   {
+      threads.push_back(std::thread(run_sweep));
+   }
+
+   for(auto& thread : threads)
+   {
+      thread.join();
+   }
+
+   for(auto result : results)
+   {
+      std::cout << result.first << " " << result.second << std::endl;
+   }
+   
    return 0;
 }
