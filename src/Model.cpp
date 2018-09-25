@@ -57,6 +57,11 @@ const std::vector<double>& ModelStats::GetDensityHistory() const
    return _ca_density;
 }
 
+std::vector<double> ModelStats::AggregateDensityHistory() const
+{
+   return _network_density;
+}
+
 /// Model functions
 
 Model::Model(double arena_size,
