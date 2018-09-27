@@ -89,10 +89,12 @@ private:
    std::mt19937_64 _rng;
    std::function<double(std::mt19937_64&)> _turn_distribution;
    std::function<int(std::mt19937_64&)>    _step_distribution;
+   std::bernoulli_distribution             _noise;
 
    double _communication_range;
 
    std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
+   int Noise(int i);
 
 public:
    Model(double arena_size, int num_agents, double communication_range,
@@ -140,6 +142,11 @@ public:
     */
    void SetStepDistribution(std::function<int(std::mt19937_64&)> step_distribution);
 
+   /**
+    * Set the amount of noise. p is a real number in [0,1].
+    */
+   void SetNoise(double p);
+   
    /**
     * Evaluate the model for one time-step.
     */

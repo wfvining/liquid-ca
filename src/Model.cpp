@@ -72,7 +72,8 @@ Model::Model(double arena_size,
              double agent_speed) :
    _communication_range(communication_range),
    _rng(seed),
-   _stats(num_agents)
+   _stats(num_agents),
+   _noise(0.0)
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -145,6 +146,23 @@ void Model::SetMovementRule(const MovementRule& rule)
    }
 }
 
+void Model::SetNoise(double p)
+{
+   _noise = std::bernoulli_distribution(p);
+}
+
+int Model::Noise(int i)
+{
+   if(_noise(_rng))
+   {
+      return 1 - i;
+   }
+   else
+   {
+      return i;
+   }
+}
+
 void Model::Step(Rule* rule)
 {
    for(Agent& agent : _agents)
@@ -160,7 +178,7 @@ void Model::Step(Rule* rule)
       std::vector<int> neighbor_states;
       for(int n : neighbors)
       {
-         neighbor_states.push_back(_agent_states[n]);
+         neighbor_states.push_back(Noise(_agent_states[n]));
       }
       new_states[a] = rule(_agent_states[a], neighbor_states);
    }
