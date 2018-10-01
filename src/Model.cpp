@@ -180,7 +180,7 @@ void Model::Step(Rule* rule)
       for(int n : neighbors)
       {
          if(_noise_probability < 0.0) {
-            if(_noise(_rng))
+            if(!_noise(_rng))
             {
                neighbor_states.push_back(_agent_states[n]);
             }
