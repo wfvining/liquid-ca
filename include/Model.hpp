@@ -90,6 +90,7 @@ private:
    std::function<double(std::mt19937_64&)> _turn_distribution;
    std::function<int(std::mt19937_64&)>    _step_distribution;
    std::bernoulli_distribution             _noise;
+   double                                  _noise_probability;
 
    double _communication_range;
 

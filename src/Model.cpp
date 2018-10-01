@@ -148,7 +148,8 @@ void Model::SetMovementRule(const MovementRule& rule)
 
 void Model::SetNoise(double p)
 {
-   _noise = std::bernoulli_distribution(p);
+   _noise_probability = p;
+   _noise = std::bernoulli_distribution(fabs(p));
 }
 
 int Model::Noise(int i)
@@ -178,7 +179,16 @@ void Model::Step(Rule* rule)
       std::vector<int> neighbor_states;
       for(int n : neighbors)
       {
-         neighbor_states.push_back(Noise(_agent_states[n]));
+         if(_noise_probability < 0.0) {
+            if(_noise(_rng))
+            {
+               neighbor_states.push_back(_agent_states[n]);
+            }
+         }
+         else
+         {
+            neighbor_states.push_back(Noise(_agent_states[n]));
+         }
       }
       new_states[a] = rule(_agent_states[a], neighbor_states);
    }
