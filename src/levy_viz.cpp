@@ -35,7 +35,8 @@ void evaluate_ca(double initial_density)
            model_config.seed,
            initial_density);
 
-   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
+//   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
+   m.SetMovementRule(RandomWalk());
    
    for(int step = 0; step < 2000; step++)
    {

@@ -21,8 +21,8 @@ struct model_config
    int    arena_size;
    int    seed;
    double mu;
-   double speed;
    double num_iterations;
+   double noise;
 } model_config;
 
 std::mutex speed_lock;
@@ -38,7 +38,7 @@ double next_speed()
    speed_lock.lock();
 
    s = speed;
-   speed += 0.25;
+   speed += 1.0;
 
    speed_lock.unlock();
 
@@ -67,6 +67,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
       // m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
       m.SetMovementRule(RandomWalk());
       m.RecordNetworkDensityOnly();
+      m.SetNoise(model_config.noise);
 
       for(int step = 0; step < 1000; step++)
       {
@@ -89,7 +90,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 void thread_main()
 {
    double speed;
-   while((speed = next_speed()) < 100.1)
+   while((speed = next_speed()) < 300.1)
    {
       double proportion_correct = evaluate_ca(model_config.num_iterations,
                                               speed,
@@ -112,6 +113,7 @@ int main(int argc, char** argv)
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
+   model_config.noise               = 0.0;
 
    static struct option long_options[] =
       {
@@ -122,6 +124,7 @@ int main(int argc, char** argv)
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
+         {"noise",               required_argument, 0,            'N'},
          {0,0,0,0}
       };
 
@@ -160,6 +163,10 @@ int main(int argc, char** argv)
          model_config.mu = atof(optarg);
          break;
 
+      case 'N':
+         model_config.noise = atof(optarg);
+         break;
+
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);
@@ -170,13 +177,6 @@ int main(int argc, char** argv)
          exit(-1);
       }
    }
-
-   if(optind >= argc)
-   {
-      std::cout << "missing required argument <agent-speed>" << std::endl;
-   }
-
-   model_config.speed = atof(argv[optind]);
 
    int max_threads = std::thread::hardware_concurrency();
    std::vector<std::thread> threads;
