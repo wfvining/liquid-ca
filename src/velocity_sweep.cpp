@@ -27,6 +27,7 @@ struct model_config
 
 std::mutex speed_lock;
 double speed = 0;
+double max_speed = 300.0;
 
 std::mutex results_lock;
 std::map<double, double> results;
@@ -90,7 +91,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 void thread_main()
 {
    double speed;
-   while((speed = next_speed()) < 300.1)
+   while((speed = next_speed()) <= max_speed)
    {
       double proportion_correct = evaluate_ca(model_config.num_iterations,
                                               speed,
@@ -125,6 +126,7 @@ int main(int argc, char** argv)
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
          {"noise",               required_argument, 0,            'N'},
+         {"max-speed",           required_argument, 0,            'M'},
          {0,0,0,0}
       };
 
@@ -165,6 +167,10 @@ int main(int argc, char** argv)
 
       case 'N':
          model_config.noise = atof(optarg);
+         break;
+
+      case 'M':
+         max_speed = atof(optarg);
          break;
 
       case ':':
