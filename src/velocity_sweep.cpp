@@ -28,6 +28,7 @@ struct model_config
 std::mutex speed_lock;
 double speed = 0;
 double max_speed = 300.0;
+double max_time  = 1000.0;
 
 std::mutex results_lock;
 std::map<double, double> results;
@@ -70,7 +71,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
       m.RecordNetworkDensityOnly();
       m.SetNoise(model_config.noise);
 
-      for(int step = 0; step < 1000; step++)
+      for(int step = 0; step < max_time; step++)
       {
          m.Step(majority_rule);
          if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
@@ -127,6 +128,7 @@ int main(int argc, char** argv)
          {"mu",                  required_argument, 0,            'm'},
          {"noise",               required_argument, 0,            'N'},
          {"max-speed",           required_argument, 0,            'M'},
+         {"max-time",            required_argument, 0,            't'},
          {0,0,0,0}
       };
 
@@ -173,6 +175,10 @@ int main(int argc, char** argv)
          max_speed = atof(optarg);
          break;
 
+      case 't':
+         max_time = atoi(optarg);
+         break;
+         
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);

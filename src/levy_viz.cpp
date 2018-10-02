@@ -18,6 +18,7 @@ struct model_config
    int arena_size;
    int seed;
    double mu;
+   double speed;
 } model_config;
 
 double heading(std::mt19937_64& gen)
@@ -33,7 +34,8 @@ void evaluate_ca(double initial_density)
            model_config.num_agents,
            model_config.communication_range,
            model_config.seed,
-           initial_density);
+           initial_density,
+           model_config.speed);
 
 //   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
    m.SetMovementRule(RandomWalk());
@@ -62,6 +64,7 @@ int main(int argc, char** argv)
    model_config.num_agents          = 100;
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
+   model_config.speed               = 1;
 
    static struct option long_options[] =
       {
@@ -72,6 +75,7 @@ int main(int argc, char** argv)
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
+         {"speed",               required_argument, 0,            'S'},
          {0,0,0,0}
       };
 
@@ -91,6 +95,10 @@ int main(int argc, char** argv)
          }
          break;
 
+      case 'S':
+         model_config.speed = atof(optarg);
+         break;
+         
       case 'd':
          initial_density = atof(optarg);
          break;
