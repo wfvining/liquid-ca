@@ -52,6 +52,17 @@ bool ModelStats::IsCorrect() const
    }
 }
 
+bool ModelStats::IsSynchronized() const
+{
+   if(_ca_density.size() < 2)
+   {
+      return false;
+   }
+
+   return _ca_density.back() == 1 - *(_ca_density.rbegin()+1)
+      && _ca_density.back() == *(_ca_density.rbegin()+2);
+}
+
 const std::vector<double>& ModelStats::GetDensityHistory() const
 {
    return _ca_density;

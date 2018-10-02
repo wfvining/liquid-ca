@@ -11,6 +11,7 @@ public:
    ModelStats stats_dense;
    ModelStats stats_zero;
    ModelStats stats_one;
+   ModelStats stats_synchronized;
 
    std::shared_ptr<NetworkSnapshot> t0;
    std::shared_ptr<NetworkSnapshot> t1;
@@ -20,7 +21,8 @@ public:
       stats(10),
       stats_dense(10),
       stats_zero(10),
-      stats_one(10)
+      stats_one(10),
+      stats_synchronized(10)
    {
       t0 = std::make_shared<NetworkSnapshot>(10);
       t1 = std::make_shared<NetworkSnapshot>(10);
@@ -46,6 +48,10 @@ public:
 
       stats_zero.PushState(0.0, t0);
       stats_one.PushState(1.0, t1);
+
+      stats_synchronized.PushState(0.23, t0);
+      stats_synchronized.PushState(0.0, t0);
+      stats_synchronized.PushState(1.0, t0);
    }
 };
 
@@ -100,4 +106,12 @@ TEST_F(ModelStatsTest, incorrectClassification)
 
    stats_dense.PushState(0.0, t1);
    EXPECT_FALSE(stats.IsCorrect());
+}
+
+TEST_F(ModelStatsTest, synchronizedTest)
+{
+   EXPECT_FALSE(stats_synchronized.IsSynchronized());
+   stats_synchronized.PushState(0.0, t0);
+   EXPECT_TRUE(stats_synchronized.IsSynchronized());
+   EXPECT_FALSE(stats_dense.IsSynchronized());
 }

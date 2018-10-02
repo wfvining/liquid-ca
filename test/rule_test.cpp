@@ -33,3 +33,17 @@ TEST_F(RuleTest, absoluteMajority)
    EXPECT_EQ(0, majority_rule(0, all_zeros));
    EXPECT_EQ(0, majority_rule(1, all_zeros));
 }
+
+TEST_F(RuleTest, contratian)
+{
+   EXPECT_EQ(0, contrarian_rule(0, all_ones));
+   EXPECT_EQ(0, contrarian_rule(1, all_ones));
+   EXPECT_EQ(1, contrarian_rule(0, all_zeros));
+   EXPECT_EQ(1, contrarian_rule(1, all_zeros));
+
+   EXPECT_EQ(0, contrarian_rule(0, slim_majority_ones));
+   EXPECT_EQ(1, contrarian_rule(1, slim_majority_zeros));
+
+   EXPECT_EQ(0, contrarian_rule(1, {}));
+   EXPECT_EQ(1, contrarian_rule(0, {}));
+}

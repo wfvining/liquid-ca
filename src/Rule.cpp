@@ -36,3 +36,20 @@ int majority_rule(int self, const std::vector<int>& neighbors)
       return 0;
    }
 }
+
+int contrarian_rule(int self, const std::vector<int>& neighbors)
+{
+   int n = std::accumulate(neighbors.begin(), neighbors.end(), self);
+   if((double) n > ((double)neighbors.size()+1) / 2.0)
+   {
+      return 0;
+   }
+   else if((double)n == (double)(neighbors.size()+1) / 2.0)
+   {
+      return 1-self;
+   }
+   else
+   {
+      return 1;
+   }
+}
