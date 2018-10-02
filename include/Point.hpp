@@ -35,6 +35,11 @@ public:
     */
    bool Within(double d, const Point& p) const;
 
+   /**
+    * Test whether this point is north of some other point.
+    */
+   bool NorthOf(const Point& p) const;
+
    friend bool operator== (const Point& p, const Point& q);
    friend bool operator!= (const Point& p, const Point& q);
    friend std::ostream& operator<< (std::ostream& out, const Point& p);

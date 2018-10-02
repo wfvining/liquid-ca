@@ -23,6 +23,15 @@ double Point::Distance(const Point& p) const
    return sqrt(pow(_x - p._x, 2) + pow(_y - p._y, 2));
 }
 
+bool Point::NorthOf(const Point& p) const
+{
+   // TODO: return true if this is in the 90 degree sector above the
+   // point p.
+   double adjusted_x = _x - p._x;
+   double adjusted_y = _y - p._y;
+   return false;
+}
+
 bool Point::Within(double d, const Point& p) const
 {
    return Distance(p) <= d;

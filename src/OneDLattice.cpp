@@ -76,7 +76,19 @@ void OneDLattice::Step(Rule* rule)
       {
          neighbor_states.push_back(_states[n]);
       }
-      new_states[i] = rule(_states[i], neighbor_states);
+      std::vector<Point> neighbor_positions;
+      for(int i = 0; i < neighbors.size(); i++)
+      {
+         if(i < neighbors.size()/2)
+         {
+            neighbor_positions.push_back(Point(-1, 0));
+         }
+         else
+         {
+            neighbor_positions.push_back(Point(1, 0));
+         }
+      }
+      new_states[i] = rule(_states[i], Point(0,0), neighbor_states, neighbor_positions);
    }
    _old_states = _states;
    _states = new_states;

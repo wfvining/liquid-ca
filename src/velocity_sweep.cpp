@@ -33,6 +33,8 @@ double max_time  = 1000.0;
 std::mutex results_lock;
 std::map<double, double> results;
 
+bool synchronization = false;
+
 double next_speed()
 {
    double s;
@@ -73,14 +75,29 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 
       for(int step = 0; step < max_time; step++)
       {
-         m.Step(majority_rule);
-         if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
+         if(!synchronization)
          {
-            break; // done. no need to keep evaluating.
+            m.Step(majority_rule);
+            if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
+            {
+               break; // done. no need to keep evaluating.
+            }
+         }
+         else
+         {
+            m.Step(contrarian_rule);
+            if(m.GetStats().IsSynchronized())
+            {
+               break;
+            }
          }
       }
 
-      if(m.GetStats().IsCorrect())
+      if(!synchronization && m.GetStats().IsCorrect())
+      {
+         num_correct++;
+      }
+      else if(m.GetStats().IsSynchronized())
       {
          num_correct++;
       }
@@ -134,7 +151,7 @@ int main(int argc, char** argv)
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:S",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -177,6 +194,10 @@ int main(int argc, char** argv)
 
       case 't':
          max_time = atoi(optarg);
+         break;
+
+      case 'S':
+         synchronization = true;
          break;
          
       case ':':

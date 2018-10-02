@@ -49,29 +49,31 @@ void store_result(double initial_density, double proportion_correct)
    results_lock.unlock();
 }
 
-std::shared_ptr<NetworkSnapshot> make_spatial(int seed)
+std::shared_ptr<Model> make_spatial(int seed)
 {
-   Model m(model_config.arena_size, model_config.num_agents,
-           model_config.communication_range,
-           seed, 0.0);
-   return m.GetStats().GetNetwork().GetSnapshot(0);
+   return std::make_shared<Model>(model_config.arena_size, model_config.num_agents,
+                                  model_config.communication_range,
+                                  seed, 0.0);
 }
 
 std::vector<int> eval_network(Rule* rule,
-                              std::shared_ptr<NetworkSnapshot> n,
+                              std::shared_ptr<Model> m,
                               const std::vector<int>& states)
 {
+   auto agents = m->GetAgents();
    std::vector<int> new_states(states.size());
    for(int a = 0; a < states.size(); a++)
    {
-      auto neighbors = n->GetNeighbors(a);
+      auto neighbors = m->GetStats().GetNetwork().GetSnapshot(0)->GetNeighbors(a);
       // XXX: wouldn't it be nice if I could just do Rule.Apply(neighbors) here?
       std::vector<int> neighbor_states;
+      std::vector<Point> neighbor_positions;
       for(int n : neighbors)
       {
          neighbor_states.push_back(states[n]);
+         neighbor_positions.push_back(agents[n].Position());
       }
-      new_states[a] = rule(states[a], neighbor_states);
+      new_states[a] = rule(states[a], agents[a].Position(), neighbor_states, neighbor_positions);
    }
    return new_states;
 }
