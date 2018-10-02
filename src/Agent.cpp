@@ -32,14 +32,10 @@ void Agent::Step()
 {
    double dx = _speed * cos(_heading.Radians());
    double dy = _speed * sin(_heading.Radians());
-   Point new_position = Point(_position.GetX() + dx, _position.GetY() + dy);
-   if(IsOutOfBounds(new_position))
+   _position = Point(_position.GetX() + dx, _position.GetY() + dy);
+   while(IsOutOfBounds(_position))
    {
-      _position = Reflect(new_position);
-   }
-   else
-   {
-      _position = new_position;
+      _position = Reflect(_position);
    }
    _heading = _movement_rule->Turn(_position, _heading, _gen);
 }

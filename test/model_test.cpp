@@ -138,7 +138,7 @@ TEST(ModelTest, agentSpeedZero)
    }
 }
 
-TEST(ModelTest, agnetSpeedOneHalf)
+TEST(ModelTest, agentSpeedOneHalf)
 {
    Model m(100, 10, 1.0, 1234, 0.5, 0.5);
    auto agents = m.GetAgents();
@@ -147,5 +147,20 @@ TEST(ModelTest, agnetSpeedOneHalf)
    {
       ASSERT_THAT(agents[i].Position().Distance(m.GetAgents()[i].Position()),
                   ::testing::DoubleNear(0.5, 0.00000000000001));
+   }
+}
+
+TEST(ModelTest, agentSpeedHigh)
+{
+   Model m(100, 10, 1.0, 1234, 0.5, 200);
+   for(int i = 0; i < 1000; i++)
+   {
+      m.Step(identity_rule);
+      auto agents = m.GetAgents();
+      for(auto& agent : agents)
+      {
+         ASSERT_TRUE(agent.Position().GetX() <= 50.0 && agent.Position().GetX() >= -50.0);
+         ASSERT_TRUE(agent.Position().GetY() <= 50.0 && agent.Position().GetY() >= -50.0);
+      }
    }
 }
