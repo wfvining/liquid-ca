@@ -68,6 +68,10 @@ add_executable(density_history
   src/aggregate_density_history.cpp)
 target_link_libraries(density_history model)
 
+add_executable(sim_viz
+  src/sim_viz.cpp)
+target_link_libraries(sim_viz model sfml-graphics sfml-window sfml-system)
+
 configure_file(
   scripts/levy_ca_experiment.sh.in
   scripts/levy_ca_experiment.sh @ONLY)

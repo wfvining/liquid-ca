@@ -149,6 +149,11 @@ const std::vector<Agent>& Model::GetAgents() const
    return _agents;
 }
 
+const std::vector<int>& Model::GetStates() const
+{
+   return _agent_states;
+}
+
 void Model::SetMovementRule(const MovementRule& rule)
 {
    for(auto& agent : _agents)

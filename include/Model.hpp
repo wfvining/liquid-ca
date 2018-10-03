@@ -129,6 +129,11 @@ public:
    const std::vector<Agent>& GetAgents() const;
 
    /**
+    * Get the current states of the agents
+    */
+   const std::vector<int>& GetStates() const;
+
+   /**
     * Set the movement rule.
     */
    void SetMovementRule(const MovementRule& rule);
