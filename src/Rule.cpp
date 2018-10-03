@@ -56,65 +56,32 @@ int contrarian_rule(int self, const Point& p, const std::vector<int>& neighbors,
 
 int gkl2d(int self, const Point& p, const std::vector<int>& neighbors, const std::vector<Point>& positions)
 {
-   if(self == 0)
-   {
-      auto position_iter = positions.begin();
-      auto neighbor_iter   = neighbors.begin();
-      std::vector<int> neighbor_states;
-      int sum = 0;
-      int count = 0;
+   auto position_iter = positions.begin();
+   auto neighbor_iter   = neighbors.begin();
+   int sum = self;
+   int count = 1;
 
-      for( ; position_iter < positions.end(); ++position_iter, ++neighbor_iter)
+   for( ; position_iter < positions.end(); ++position_iter, ++neighbor_iter)
+   {
+      if((self == 0 && position_iter->NorthOf(p) || position_iter->EastOf(p))
+         || (self == 1 && position_iter->SouthOf(p) || position_iter->WestOf(p)))
       {
-         if(position_iter->NorthOf(p) || position_iter->EastOf(p))
-         {
-            sum += *neighbor_iter;
-            count++;
-         }
+         sum += *neighbor_iter;
+         count++;
       }
-      double majority = (double) sum / (double) count;
-      if(majority > 0.5)
-      {
-         return 1;
-      }
-      else if(majority == 0.5)
-      {
-         return 1 - self; // consistent with the implementation of majority rule above
-      }
-      else
-      {
-         return 0;
-      }
+   }
+   
+   double majority = (double) sum / (double) count;
+   if(majority > 0.5)
+   {
+      return 1;
+   }
+   else if(majority == 0.5)
+   {
+      return 1 - self; // consistent with the implementation of majority rule above
    }
    else
    {
-      // majority between self, south, and west
-      auto position_iter = positions.begin();
-      auto neighbor_iter   = neighbors.begin();
-      std::vector<int> neighbor_states;
-      int sum = 0;
-      int count = 0;
-
-      for( ; position_iter < positions.end(); ++position_iter, ++neighbor_iter)
-      {
-         if(position_iter->SouthOf(p) || position_iter->WestOf(p))
-         {
-            sum += *neighbor_iter;
-            count++;
-         }
-      }
-      double majority = (double) sum / (double) count;
-      if(majority > 0.5)
-      {
-         return 1;
-      }
-      else if(majority == 0.5)
-      {
-         return 1 - self; // consistent with the implementation of majority rule above
-      }
-      else
-      {
-         return 0;
-      }
+      return 0;
    }
 }

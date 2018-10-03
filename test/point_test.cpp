@@ -97,3 +97,35 @@ TEST_F(PointTest, withinDistance)
 
    ASSERT_TRUE(p1.Within(sqrt(2.0), Point(-1, 1)));
 }
+
+TEST_F(PointTest, northOf)
+{
+   ASSERT_FALSE(Point(1,-1).NorthOf(Point(0, -1)));
+   ASSERT_TRUE(Point(0,0).NorthOf(Point(0, -1)));
+   ASSERT_TRUE(Point(0,0).NorthOf(Point(0.3, -1)));
+   ASSERT_FALSE(Point(0,0).NorthOf(Point(0.3, 0.1)));
+}
+
+TEST_F(PointTest, southOf)
+{
+   ASSERT_FALSE(Point(1,-1).SouthOf(Point(0, -1)));
+   ASSERT_TRUE(Point(0,-1).SouthOf(Point(0, 0)));
+   ASSERT_TRUE(Point(0,-1).SouthOf(Point(0.3,0)));
+   ASSERT_TRUE(Point(0,0).SouthOf(Point(0.1, 0.1)));
+}
+
+TEST_F(PointTest, eastOf)
+{
+   ASSERT_FALSE(Point(0,1).EastOf(Point(0,0)));  // North
+   ASSERT_FALSE(Point(0,-1).EastOf(Point(0,0))); // South
+   ASSERT_FALSE(Point(-1,0).EastOf(Point(0,0))); // West
+   ASSERT_TRUE(Point(1,0).EastOf(Point(0,0)));   // East
+}
+
+TEST_F(PointTest, westOf)
+{
+   ASSERT_FALSE(Point(0, 1).WestOf(Point(0,0)));  // North
+   ASSERT_FALSE(Point(0,-1).WestOf(Point(0,0)));  // South
+   ASSERT_FALSE(Point(1, 0).WestOf(Point(0,0)));  // East
+   ASSERT_TRUE( Point(-1,0).WestOf(Point(0,0)));  // West
+}

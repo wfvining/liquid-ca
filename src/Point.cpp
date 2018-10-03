@@ -23,13 +23,48 @@ double Point::Distance(const Point& p) const
    return sqrt(pow(_x - p._x, 2) + pow(_y - p._y, 2));
 }
 
+/**
+ * inclusive of the minimum 
+ */
+bool in_range(double x, double min, double max)
+{
+   return x >= min && x < max;
+}
+
 bool Point::NorthOf(const Point& p) const
 {
-   // TODO: return true if this is in the 90 degree sector above the
-   // point p.
    double adjusted_x = _x - p._x;
    double adjusted_y = _y - p._y;
-   return false;
+   double theta = atan2(adjusted_y, adjusted_x);
+   return in_range(theta, M_PI/4.0, 3*M_PI/4.0);
+}
+
+bool Point::EastOf(const Point& p) const
+{
+   double adjusted_x = _x - p._x;
+   double adjusted_y = _y - p._y;
+   double theta = atan2(adjusted_y, adjusted_x);
+   return in_range(theta, -M_PI/4.0, M_PI/4.0);
+}
+
+bool Point::WestOf(const Point& p) const
+{
+   double adjusted_x = _x - p._x;
+   double adjusted_y = _y - p._y;
+   double theta = atan2(adjusted_y, adjusted_x);
+   if(theta < 0)
+   {
+      theta = 2.0*M_PI + theta;
+   }
+   return in_range(theta, 3.0*M_PI/4.0, 5.0*M_PI/4.0);
+}
+
+bool Point::SouthOf(const Point& p) const
+{
+   double adjusted_x = _x - p._x;
+   double adjusted_y = _y - p._y;
+   double theta = atan2(adjusted_y, adjusted_x);
+   return in_range(theta, -3.0*M_PI/4.0, -M_PI/4.0);
 }
 
 bool Point::Within(double d, const Point& p) const

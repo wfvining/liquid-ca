@@ -36,9 +36,13 @@ public:
    bool Within(double d, const Point& p) const;
 
    /**
-    * Test whether this point is north of some other point.
+    * Test whether this point is north/south/east/west of some other
+    * point.
     */
    bool NorthOf(const Point& p) const;
+   bool SouthOf(const Point& p) const;
+   bool EastOf (const Point& p) const;
+   bool WestOf (const Point& p) const;
 
    friend bool operator== (const Point& p, const Point& q);
    friend bool operator!= (const Point& p, const Point& q);
