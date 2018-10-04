@@ -17,6 +17,7 @@ Rule always_one;
 Rule always_zero;
 Rule majority_rule;
 Rule contrarian_rule;
-Rule gkl2d;
+Rule gkl2d_strict;
+Rule gkl2d_lax;
 
 #endif // _MOTION_CA_RULE_HPP

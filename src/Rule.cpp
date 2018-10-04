@@ -54,7 +54,7 @@ int contrarian_rule(int self, const Point& p, const std::vector<int>& neighbors,
    }
 }
 
-int gkl2d(int self, const Point& p, const std::vector<int>& neighbors, const std::vector<Point>& positions)
+int gkl2d_lax(int self, const Point& p, const std::vector<int>& neighbors, const std::vector<Point>& positions)
 {
    auto position_iter = positions.begin();
    auto neighbor_iter   = neighbors.begin();
@@ -75,6 +75,42 @@ int gkl2d(int self, const Point& p, const std::vector<int>& neighbors, const std
       }
    }
    
+   double majority = (double) sum / (double) count;
+   if(majority > 0.5)
+   {
+      return 1;
+   }
+   else if(majority == 0.5)
+   {
+      return 1 - self; // consistent with the implementation of majority rule above
+   }
+   else
+   {
+      return 0;
+   }
+}
+
+int gkl2d_strict(int self, const Point& p, const std::vector<int>& neighbors, const std::vector<Point>& positions)
+{
+   auto position_iter = positions.begin();
+   auto neighbor_iter   = neighbors.begin();
+   int sum = self;
+   int count = 1;
+
+   for( ; position_iter < positions.end(); ++position_iter, ++neighbor_iter)
+   {
+      if(self == 0 && (position_iter->DueNorthOf(p) || position_iter->DueEastOf(p)))
+      {
+         sum += *neighbor_iter;
+         count++;
+      }
+      else if(self == 1 && (position_iter->DueSouthOf(p) || position_iter->DueWestOf(p)))
+      {
+         sum += *neighbor_iter;
+         count++;
+      }
+   }
+
    double majority = (double) sum / (double) count;
    if(majority > 0.5)
    {

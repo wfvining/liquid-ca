@@ -71,7 +71,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 
       for(int step = 0; step < 5000; step++)
       {
-         m.Step(gkl2d);
+         m.Step(gkl2d_strict);
          if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
          {
             break; // done. no need to keep evaluating.

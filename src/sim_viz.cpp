@@ -16,11 +16,15 @@ int main(int argc, char** argv)
 
    sf::View centeredView;
    centeredView.setCenter(0,0);
-   centeredView.setSize(70,70);
+   centeredView.setSize(84,84);
    window.setView(centeredView);
 
-   Model m(67, 2, 4, atoi(argv[1]), 0.45, 2);
+   Model m(80, 512, 4, atoi(argv[1]), 0.45, 0.5);
    m.SetMovementRule(LevyWalk(2.0, 67));
+   std::cout << "initial majority: " << m.CurrentDensity();
+   std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;
+   int i = 0;
+   bool done = false;
    while(window.isOpen())
    {
       sf::Event event;
@@ -36,6 +40,12 @@ int main(int argc, char** argv)
       auto agents  = m.GetAgents();
       auto states  = m.GetStates();
       auto network = m.CurrentNetwork();
+      if(!done && (m.CurrentDensity() == 0 || m.CurrentDensity() == 1))
+      {
+         done = true;
+         std::cout << "converged at: " << i << std::endl;
+      }
+
       for(int i = 0; i < agents.size(); i++)
       {
          for(auto a : network->GetNeighbors(i))
@@ -67,6 +77,7 @@ int main(int argc, char** argv)
          window.draw(agent_shape);
       }
       window.display();
-      m.Step(gkl2d);
+      m.Step(gkl2d_strict);
+      i++;
    }
 }

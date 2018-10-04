@@ -44,6 +44,11 @@ public:
    bool EastOf (const Point& p) const;
    bool WestOf (const Point& p) const;
 
+   bool DueNorthOf(const Point& p) const;
+   bool DueSouthOf(const Point& p) const;
+   bool DueEastOf (const Point& p) const;
+   bool DueWestOf (const Point& p) const;
+
    friend bool operator== (const Point& p, const Point& q);
    friend bool operator!= (const Point& p, const Point& q);
    friend std::ostream& operator<< (std::ostream& out, const Point& p);
