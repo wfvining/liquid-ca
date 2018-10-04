@@ -94,7 +94,6 @@ private:
 
    double _communication_range;
 
-   std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
    int Noise(int i);
 
 public:
@@ -107,6 +106,8 @@ public:
     * states to white states).
     */
    double CurrentDensity() const;
+
+   std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
 
    /**
     * Get the density of the communication network.

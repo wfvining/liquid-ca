@@ -16,6 +16,7 @@ add_library(model SHARED
   src/MovementRule.cpp)
 
 find_package(Threads REQUIRED)
+find_package(SFML 2.4 COMPONENTS graphics window system REQUIRED)
 
 add_executable(one_d_lattice
   src/OneDLattice.cpp
