@@ -63,8 +63,12 @@ int gkl2d(int self, const Point& p, const std::vector<int>& neighbors, const std
 
    for( ; position_iter < positions.end(); ++position_iter, ++neighbor_iter)
    {
-      if((self == 0 && position_iter->NorthOf(p) || position_iter->EastOf(p))
-         || (self == 1 && position_iter->SouthOf(p) || position_iter->WestOf(p)))
+      if(self == 0 && (position_iter->NorthOf(p) || position_iter->EastOf(p)))
+      {
+         sum += *neighbor_iter;
+         count++;
+      }
+      else if(self == 1 && (position_iter->SouthOf(p) || position_iter->WestOf(p)))
       {
          sum += *neighbor_iter;
          count++;

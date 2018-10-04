@@ -31,12 +31,30 @@ bool in_range(double x, double min, double max)
    return x >= min && x < max;
 }
 
+#if 0
+bool Point::NorthEeastOf(const Point& p) const
+{
+   double adjusted_x = _x - p._x;
+   double adjusted_y = _y - p._y;
+   double theta = atan2(adjusted_y, adjusted_x);
+   return in_range(theta, M_PI/8.0, 3*M_PI/8.0);
+}
+
+bool Point::NorthWestOf(const Point& p) const
+{
+   double adjusted_x = _x - p._x;
+   double adjusted_y = _y - p._y;
+   double theta = atan2(adjusted_y, adjusted_x);
+   return in_range(theta, 5.0*M_PI/8.0, 7.0*M_PI/8.0);
+}
+#endif
+
 bool Point::NorthOf(const Point& p) const
 {
    double adjusted_x = _x - p._x;
    double adjusted_y = _y - p._y;
    double theta = atan2(adjusted_y, adjusted_x);
-   return in_range(theta, M_PI/4.0, 3*M_PI/4.0);
+   return in_range(theta, 3*M_PI/8.0, 5*M_PI/8.0);
 }
 
 bool Point::EastOf(const Point& p) const
@@ -44,7 +62,7 @@ bool Point::EastOf(const Point& p) const
    double adjusted_x = _x - p._x;
    double adjusted_y = _y - p._y;
    double theta = atan2(adjusted_y, adjusted_x);
-   return in_range(theta, -M_PI/4.0, M_PI/4.0);
+   return in_range(theta, -M_PI/8.0, M_PI/8.0);
 }
 
 bool Point::WestOf(const Point& p) const
@@ -56,7 +74,7 @@ bool Point::WestOf(const Point& p) const
    {
       theta = 2.0*M_PI + theta;
    }
-   return in_range(theta, 3.0*M_PI/4.0, 5.0*M_PI/4.0);
+   return in_range(theta, 7.0*M_PI/4.0, 9.0*M_PI/4.0);
 }
 
 bool Point::SouthOf(const Point& p) const
@@ -64,7 +82,7 @@ bool Point::SouthOf(const Point& p) const
    double adjusted_x = _x - p._x;
    double adjusted_y = _y - p._y;
    double theta = atan2(adjusted_y, adjusted_x);
-   return in_range(theta, -3.0*M_PI/4.0, -M_PI/4.0);
+   return in_range(theta, -5.0*M_PI/8.0, -3.0*M_PI/8.0);
 }
 
 bool Point::Within(double d, const Point& p) const
