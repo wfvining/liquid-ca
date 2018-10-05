@@ -23,6 +23,7 @@ struct model_config
    double mu;
    double speed;
    double num_iterations;
+   Rule*   rule;
 } model_config;
 
 std::mutex density_lock;
@@ -71,7 +72,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 
       for(int step = 0; step < 5000; step++)
       {
-         m.Step(gkl2d_strict);
+         m.Step(model_config.rule);
          if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
          {
             break; // done. no need to keep evaluating.
@@ -123,12 +124,13 @@ int main(int argc, char** argv)
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
+         {"rule",                required_argument, 0,            'R'},
          {0,0,0,0}
       };
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:R:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -159,6 +161,26 @@ int main(int argc, char** argv)
 
       case 'm':
          model_config.mu = atof(optarg);
+         break;
+
+      case 'R':
+         if(std::string(optarg) == "gkl")
+         {
+            model_config.rule = gkl2d_strict;
+         }
+         else if(std::string(optarg) == "gkl-lax")
+         {
+            model_config.rule = gkl2d_lax;
+         }
+         else if(std::string(optarg) == "majority")
+         {
+            model_config.rule = majority_rule;
+         }
+         else
+         {
+            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
+            exit(-1);
+         }
          break;
 
       case ':':
