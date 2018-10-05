@@ -110,7 +110,11 @@ bool Point::DueSouthOf(const Point& p) const
    double adjusted_x = _x - p._x;
    double adjusted_y = _y - p._y;
    double theta = atan2(adjusted_y, adjusted_x);
-   return in_range(theta, -5.0*M_PI/8.0, -3.0*M_PI/8.0);
+   if(theta < 0)
+   {
+      theta = 2*M_PI + theta;
+   }
+   return in_range(theta, (2*M_PI)-5.0*M_PI/8.0, (2*M_PI)-3.0*M_PI/8.0);
 }
 
 bool Point::SouthOf(const Point& p) const
@@ -118,7 +122,11 @@ bool Point::SouthOf(const Point& p) const
    double adjusted_x = _x - p._x;
    double adjusted_y = _y - p._y;
    double theta = atan2(adjusted_y, adjusted_x);
-   return in_range(theta, -3.0*M_PI/4.0, -M_PI/4.0);
+   if(theta < 0)
+   {
+      theta = 2*M_PI + theta;
+   }
+   return in_range(theta, (2*M_PI)-3.0*M_PI/4.0, (2*M_PI)-M_PI/4.0);
 }
 
 bool Point::Within(double d, const Point& p) const
