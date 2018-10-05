@@ -23,6 +23,7 @@ struct model_config
    double mu;
    double num_iterations;
    double noise;
+   Rule*  rule;
 } model_config;
 
 std::mutex speed_lock;
@@ -75,29 +76,14 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
 
       for(int step = 0; step < max_time; step++)
       {
-         if(!synchronization)
+         m.Step(model_config.rule);
+         if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
          {
-            m.Step(majority_rule);
-            if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
-            {
-               break; // done. no need to keep evaluating.
-            }
-         }
-         else
-         {
-            m.Step(contrarian_rule);
-            if(m.GetStats().IsSynchronized())
-            {
-               break;
-            }
+            break; // done. no need to keep evaluating.
          }
       }
 
-      if(!synchronization && m.GetStats().IsCorrect())
-      {
-         num_correct++;
-      }
-      else if(m.GetStats().IsSynchronized())
+      if(m.GetStats().IsCorrect())
       {
          num_correct++;
       }
@@ -133,6 +119,7 @@ int main(int argc, char** argv)
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
    model_config.noise               = 0.0;
+   model_config.rule                = majority_rule;
 
    static struct option long_options[] =
       {
@@ -146,12 +133,13 @@ int main(int argc, char** argv)
          {"noise",               required_argument, 0,            'N'},
          {"max-speed",           required_argument, 0,            'M'},
          {"max-time",            required_argument, 0,            't'},
+         {"rule",                required_argument, 0,            'R'},
          {0,0,0,0}
       };
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:S",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:SR:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -194,6 +182,26 @@ int main(int argc, char** argv)
 
       case 't':
          max_time = atoi(optarg);
+         break;
+
+      case 'R':
+         if(std::string(optarg) == "gkl")
+         {
+            model_config.rule = gkl2d_strict;
+         }
+         else if(std::string(optarg) == "gkl-lax")
+         {
+            model_config.rule = gkl2d_lax;
+         }
+         else if(std::string(optarg) == "majority")
+         {
+            model_config.rule = majority_rule;
+         }
+         else
+         {
+            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
+            exit(-1);
+         }
          break;
 
       case 'S':

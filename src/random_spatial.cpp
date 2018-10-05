@@ -22,6 +22,7 @@ struct model_config
    int    seed;
    double mu;
    int    num_iterations;
+   Rule*  rule;
 } model_config;
 
 std::mutex density_lock;
@@ -73,7 +74,7 @@ std::vector<int> eval_network(Rule* rule,
          neighbor_states.push_back(states[n]);
          neighbor_positions.push_back(agents[n].Position());
       }
-      new_states[a] = rule(states[a], agents[a].Position(), neighbor_states, neighbor_positions);
+      new_states[a] = model_config.rule(states[a], agents[a].Position(), neighbor_states, neighbor_positions);
    }
    return new_states;
 }
@@ -146,6 +147,7 @@ int main(int argc, char** argv)
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
+   model_config.rule                = majority_rule;
 
    static struct option long_options[] =
       {
@@ -155,6 +157,7 @@ int main(int argc, char** argv)
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
+         {"rule",                required_argument, 0,            'R'},
          {0,0,0,0}
       };
 
@@ -187,6 +190,26 @@ int main(int argc, char** argv)
 
       case 'i':
          model_config.num_iterations = atoi(optarg);
+         break;
+
+      case 'R':
+         if(std::string(optarg) == "gkl")
+         {
+            model_config.rule = gkl2d_strict;
+         }
+         else if(std::string(optarg) == "gkl-lax")
+         {
+            model_config.rule = gkl2d_lax;
+         }
+         else if(std::string(optarg) == "majority")
+         {
+            model_config.rule = majority_rule;
+         }
+         else
+         {
+            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
+            exit(-1);
+         }
          break;
 
       case ':':
