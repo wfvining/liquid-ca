@@ -197,6 +197,10 @@ int main(int argc, char** argv)
          {
             model_config.rule = majority_rule;
          }
+         else if(std::string(optarg) == "gkl-mode")
+         {
+            model_config.rule = gkl2d_mode;
+         }
          else
          {
             std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
