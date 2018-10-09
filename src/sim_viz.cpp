@@ -19,7 +19,7 @@ int main(int argc, char** argv)
    centeredView.setSize(84,84);
    window.setView(centeredView);
 
-   Model m(80, 512, 4, atoi(argv[1]), 0.45, 0.5);
+   Model m(80, 8186, 2, atoi(argv[1]), 0.45, 0);
    m.SetMovementRule(RandomWalk());
    std::cout << "initial majority: " << m.CurrentDensity();
    std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;

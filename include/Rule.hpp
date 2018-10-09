@@ -19,5 +19,6 @@ Rule majority_rule;
 Rule contrarian_rule;
 Rule gkl2d_strict;
 Rule gkl2d_lax;
+Rule gkl2d_mode;
 
 #endif // _MOTION_CA_RULE_HPP
