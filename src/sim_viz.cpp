@@ -3,23 +3,110 @@
 #include "Model.hpp"
 #include "Rule.hpp"
 
+#include <getopt.h>
+
 int main(int argc, char** argv)
 {
+   double communication_range = 5;
+   int    num_agents          = 100;
+   double arena_size          = 100;
+   int    seed                = 1234;
+   double initial_density     = 0.5;
+   Rule*  rule                = majority_rule;
+
    unsigned int frameRate = 4;
-   if(argc > 2)
+
+   static struct option long_options[] =
+      {
+         {"initial-density",     required_argument, 0,            'd'},
+         {"communication-range", required_argument, 0,            'r'},
+         {"num-agents",          required_argument, 0,            'n'},
+         {"arena-size",          required_argument, 0,            'a'},
+         {"seed",                required_argument, 0,            's'},
+         {"mu",                  required_argument, 0,            'm'},
+         {"rule",                required_argument, 0,            'R'},
+         {"frame-rate",          required_argument, 0,            'f'},
+         {0,0,0,0}
+      };
+
+   int option_index = 0;
+   int opt_char;
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:R:",
+                                 long_options, &option_index)) != -1)
    {
-      frameRate = atoi(argv[2]);
+      switch(opt_char)
+      {
+      case 'd':
+         initial_density = atof(optarg);
+         break;
+
+      case 'r':
+         communication_range = atof(optarg);
+         break;
+
+      case 'n':
+         num_agents = atoi(optarg);
+         break;
+
+      case 'a':
+         arena_size = atof(optarg);
+         break;
+
+      case 's':
+         seed = atoi(optarg);
+         break;
+
+      case 'f':
+         frameRate = atoi(optarg);
+         break;
+
+      case 'R':
+         if(std::string(optarg) == "gkl")
+         {
+            std::cout << "gkl-strict" << std::endl;
+            rule = gkl2d_strict;
+         }
+         else if(std::string(optarg) == "gkl-lax")
+         {
+            rule = gkl2d_lax;
+         }
+         else if(std::string(optarg) == "majority")
+         {
+            rule = majority_rule;
+         }
+         else
+         {
+            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
+            exit(-1);
+         }
+         break;
+
+      case ':':
+         std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
+         exit(-1);
+         break;
+
+      case '?':
+         std::cout << "unrecognized option" << std::endl;
+         exit(-1);
+      }
    }
+
+   if(optind >= argc)
+   {
+      std::cout << "missing required argument <agent-speed>" << std::endl;
+   }
+   double speed = atof(argv[optind]);
    
    sf::RenderWindow window(sf::VideoMode(600,600), "Motion-CA");
    window.setFramerateLimit(frameRate);
 
    sf::View centeredView;
    centeredView.setCenter(0,0);
-   centeredView.setSize(84,84);
+   centeredView.setSize(arena_size+4,arena_size+4);
    window.setView(centeredView);
 
-   Model m(80, 512, 4, atoi(argv[1]), 0.45, 0.5);
+   Model m(arena_size, num_agents, communication_range, seed, initial_density, speed);
    m.SetMovementRule(RandomWalk());
    std::cout << "initial majority: " << m.CurrentDensity();
    std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;
@@ -77,7 +164,7 @@ int main(int argc, char** argv)
          window.draw(agent_shape);
       }
       window.display();
-      m.Step(gkl2d_strict);
+      m.Step(rule);
       i++;
    }
 }
