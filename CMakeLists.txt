@@ -16,6 +16,8 @@ add_library(model SHARED
   src/MovementRule.cpp)
 
 find_package(Threads REQUIRED)
+set(CMAKE_MODULE_PATH "/usr/share/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
+find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
 
 add_executable(one_d_lattice
   src/OneDLattice.cpp
@@ -71,6 +73,10 @@ target_link_libraries(density_history model)
 add_executable(synchronization
   src/synchronization.cpp)
 target_link_libraries(synchronization model pthread)
+
+add_executable(sim_viz
+  src/sim_viz.cpp)
+target_link_libraries(sim_viz model sfml-graphics sfml-window sfml-system)
 
 configure_file(
   scripts/levy_ca_experiment.sh.in

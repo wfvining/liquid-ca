@@ -16,34 +16,34 @@ public:
 
 TEST_F(RuleTest, slimMajorityWithSelf)
 {
-   EXPECT_EQ(1, majority_rule(1, half_ones));
-   EXPECT_EQ(0, majority_rule(0, half_ones));
+   EXPECT_EQ(1, majority_rule(1, Point(0,0), half_ones, {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(0, majority_rule(0, Point(0,0), half_ones, {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
 }
 
 TEST_F(RuleTest, slimMajorityAgainstSelf)
 {
-   EXPECT_EQ(1, majority_rule(0, slim_majority_ones));
-   EXPECT_EQ(0, majority_rule(1, slim_majority_zeros));
+   EXPECT_EQ(1, majority_rule(0, Point(0,0), slim_majority_ones , {}));
+   EXPECT_EQ(0, majority_rule(1, Point(0,0), slim_majority_zeros, {}));
 }
 
 TEST_F(RuleTest, absoluteMajority)
 {
-   EXPECT_EQ(1, majority_rule(1, all_ones));
-   EXPECT_EQ(1, majority_rule(0, all_ones));
-   EXPECT_EQ(0, majority_rule(0, all_zeros));
-   EXPECT_EQ(0, majority_rule(1, all_zeros));
+   EXPECT_EQ(1, majority_rule(1, Point(0,0), all_ones , {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(1, majority_rule(0, Point(0,0), all_ones , {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(0, majority_rule(0, Point(0,0), all_zeros, {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(0, majority_rule(1, Point(0,0), all_zeros, {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
 }
 
 TEST_F(RuleTest, contratian)
 {
-   EXPECT_EQ(0, contrarian_rule(0, all_ones));
-   EXPECT_EQ(0, contrarian_rule(1, all_ones));
-   EXPECT_EQ(1, contrarian_rule(0, all_zeros));
-   EXPECT_EQ(1, contrarian_rule(1, all_zeros));
+   EXPECT_EQ(0, contrarian_rule(0, Point(0,0), all_ones , {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(0, contrarian_rule(1, Point(0,0), all_ones , {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(1, contrarian_rule(0, Point(0,0), all_zeros, {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
+   EXPECT_EQ(1, contrarian_rule(1, Point(0,0), all_zeros, {Point(0,0), Point(0,0), Point(0,0), Point(0,0)}));
 
-   EXPECT_EQ(0, contrarian_rule(0, slim_majority_ones));
-   EXPECT_EQ(1, contrarian_rule(1, slim_majority_zeros));
+   EXPECT_EQ(0, contrarian_rule(0, Point(0,0), slim_majority_ones, {}));
+   EXPECT_EQ(1, contrarian_rule(1, Point(0,0), slim_majority_zeros,{}));
 
-   EXPECT_EQ(0, contrarian_rule(1, {}));
-   EXPECT_EQ(1, contrarian_rule(0, {}));
+   EXPECT_EQ(0, contrarian_rule(1, Point(0,0), {}, {}));
+   EXPECT_EQ(1, contrarian_rule(0, Point(0,0), {}, {}));
 }

@@ -94,7 +94,6 @@ private:
 
    double _communication_range;
 
-   std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
    int Noise(int i);
 
 public:
@@ -107,6 +106,8 @@ public:
     * states to white states).
     */
    double CurrentDensity() const;
+
+   std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
 
    /**
     * Get the density of the communication network.
@@ -127,6 +128,11 @@ public:
     * Get the agents from the model.
     */
    const std::vector<Agent>& GetAgents() const;
+
+   /**
+    * Get the current states of the agents
+    */
+   const std::vector<int>& GetStates() const;
 
    /**
     * Set the movement rule.
