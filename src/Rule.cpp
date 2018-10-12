@@ -225,3 +225,75 @@ int gkl2d_mode(int self, const Point& p, const std::vector<int>& neighbors, cons
       return majority(self, mode(neighbors_south), mode(neighbors_west));
    }
 }
+
+int gkl2d_closest(int self, const Point& p, const std::vector<int>& neighbors, const std::vector<Point>& positions)
+{
+   auto position_iter = positions.begin();
+   auto neighbor_iter   = neighbors.begin();
+   int sum = self;
+   int count = 1;
+   std::vector<int> neighbors_north;
+   std::vector<int> neighbors_south;
+   std::vector<int> neighbors_east;
+   std::vector<int> neighbors_west;
+
+   double closest_north = 10000;
+   double closest_south = 10000;
+   double closest_east  = 10000;
+   double closest_west  = 10000;
+
+   int closest_north_state = -1;
+   int closest_south_state = -1;
+   int closest_east_state  = -1;
+   int closest_west_state  = -1;
+   
+   // partition the neighbors
+   for( ; position_iter < positions.end(); ++position_iter, ++neighbor_iter)
+   {
+      if(position_iter->DueNorthOf(p))
+      {
+         neighbors_north.push_back(*neighbor_iter);
+         if(position_iter->Distance(p) < closest_north)
+         {
+            closest_north = position_iter->Distance(p);
+            closest_north_state = *neighbor_iter;
+         }
+      }
+      else if(position_iter->DueEastOf(p))
+      {
+         neighbors_east.push_back(*neighbor_iter);
+         if(position_iter->Distance(p) < closest_east)
+         {
+            closest_east = position_iter->Distance(p);
+            closest_east_state = *neighbor_iter;
+         }
+      }
+      else if(position_iter->DueSouthOf(p))
+      {
+         neighbors_south.push_back(*neighbor_iter);
+         if(position_iter->Distance(p) < closest_south)
+         {
+            closest_south = position_iter->Distance(p);
+            closest_south_state = *neighbor_iter;
+         }
+      }
+      else if(position_iter->DueWestOf(p))
+      {
+         neighbors_west.push_back(*neighbor_iter);
+         if(position_iter->Distance(p) < closest_west)
+         {
+            closest_west = position_iter->Distance(p);
+            closest_west_state = *neighbor_iter;
+         }
+      }
+   }
+
+   if(self == 0)
+   {
+      return majority(self, closest_north_state, closest_east_state);
+   }
+   else
+   {
+      return majority(self, closest_south_state, closest_west_state);
+   }
+}

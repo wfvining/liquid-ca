@@ -180,6 +180,10 @@ int main(int argc, char** argv)
          {
             model_config.rule = gkl2d_mode;
          }
+         else if(std::string(optarg) == "gkl-closest")
+         {
+            model_config.rule = gkl2d_closest;
+         }
          else
          {
             std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;

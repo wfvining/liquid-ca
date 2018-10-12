@@ -20,5 +20,6 @@ Rule contrarian_rule;
 Rule gkl2d_strict;
 Rule gkl2d_lax;
 Rule gkl2d_mode;
+Rule gkl2d_closest;
 
 #endif // _MOTION_CA_RULE_HPP
