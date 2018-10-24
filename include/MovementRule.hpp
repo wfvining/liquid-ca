@@ -55,6 +55,8 @@ public:
 
 class CorrelatedRandomWalk : public MovementRule
 {
+private:
+   double _sigma;
 public:
    CorrelatedRandomWalk(double sigma);
    ~CorrelatedRandomWalk();

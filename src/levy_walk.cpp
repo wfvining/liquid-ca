@@ -32,7 +32,7 @@ double evaluate_ca(int num_iterations, double initial_density)
               model_config.seed+iteration,
               initial_density);
 
-      m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
+      m.SetMovementRule(std::make_shared<LevyWalk>(model_config.mu, model_config.arena_size));
 
       for(int step = 0; step < 5000; step++)
       {

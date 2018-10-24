@@ -33,7 +33,7 @@ void network_statistics(int num_iterations, double speed)
            0.5,
            speed);
 
-   m.SetMovementRule(RandomWalk());
+   m.SetMovementRule(std::make_shared<RandomWalk>());
 
    std::vector<std::vector<unsigned int>> all_distributions(model_config.num_agents);
    double num_edges = 0.0;

@@ -23,6 +23,7 @@ struct model_config
    double mu;
    double num_iterations;
    double noise;
+   std::shared_ptr<MovementRule> movement_rule;
 } model_config;
 
 std::mutex speed_lock;
@@ -67,7 +68,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
               speed);
 
       // m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
-      m.SetMovementRule(RandomWalk());
+      m.SetMovementRule(model_config.movement_rule);
       m.RecordNetworkDensityOnly();
       m.SetNoise(model_config.noise);
 
@@ -116,6 +117,7 @@ int main(int argc, char** argv)
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
    model_config.noise               = 0.0;
+   model_config.movement_rule       = std::make_shared<RandomWalk>();
 
    static struct option long_options[] =
       {
@@ -126,6 +128,7 @@ int main(int argc, char** argv)
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
+         {"correlated",          required_argument, 0,            'c'},
          {"noise",               required_argument, 0,            'N'},
          {"max-speed",           required_argument, 0,            'M'},
          {"max-time",            required_argument, 0,            't'},
@@ -134,7 +137,7 @@ int main(int argc, char** argv)
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:c:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -178,7 +181,11 @@ int main(int argc, char** argv)
       case 't':
          max_time = atoi(optarg);
          break;
-         
+
+      case 'c':
+         model_config.movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
+         break;
+
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);

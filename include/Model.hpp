@@ -131,7 +131,7 @@ public:
    /**
     * Set the movement rule.
     */
-   void SetMovementRule(const MovementRule& rule);
+   void SetMovementRule(std::shared_ptr<MovementRule> rule);
 
    /**
     * Set the turn distribution.

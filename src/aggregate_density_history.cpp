@@ -22,7 +22,7 @@ void density_history()
            model_config.seed,
            0.5,
            model_config.speed);
-   m.SetMovementRule(RandomWalk());
+   m.SetMovementRule(std::make_shared<RandomWalk>());
 
    for(int i = 0l; i < 5000; i++)
    {
