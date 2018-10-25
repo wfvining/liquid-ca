@@ -119,7 +119,7 @@ public:
 TEST(ModelTest, agentsUpddate)
 {
    Model m(1000, 1, 1.0, 1234, 0.5);
-   m.SetMovementRule(ConstantHeading(M_PI));
+   m.SetMovementRule(std::make_shared<ConstantHeading>(M_PI));
    Heading initial_heading = m.GetAgents()[0].GetHeading();
    m.Step(majority_rule);
    EXPECT_EQ(initial_heading, m.GetAgents()[0].GetHeading());

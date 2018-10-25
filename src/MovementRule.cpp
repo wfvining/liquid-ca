@@ -56,3 +56,22 @@ std::shared_ptr<MovementRule> RandomWalk::Clone() const
 {
    return std::make_shared<RandomWalk>();
 }
+
+CorrelatedRandomWalk::CorrelatedRandomWalk(double sigma) :
+   _sigma(sigma)
+{}
+
+CorrelatedRandomWalk::~CorrelatedRandomWalk() {}
+
+Heading CorrelatedRandomWalk::Turn(const Point& current_position,
+                  const Heading& current_heading,
+                  std::mt19937_64& gen)
+{
+   std::normal_distribution<double> heading_rv(current_heading.Radians(), _sigma);
+   return Heading(heading_rv(gen));
+}
+
+std::shared_ptr<MovementRule> CorrelatedRandomWalk::Clone() const
+{
+   return std::make_shared<CorrelatedRandomWalk>(_sigma);
+}

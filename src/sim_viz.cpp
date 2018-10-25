@@ -13,6 +13,7 @@ int main(int argc, char** argv)
    int    seed                = 1234;
    double initial_density     = 0.5;
    Rule*  rule                = majority_rule;
+   std::shared_ptr<MovementRule> movement_rule = std::make_shared<RandomWalk>();
 
    unsigned int frameRate = 4;
 
@@ -26,12 +27,13 @@ int main(int argc, char** argv)
          {"mu",                  required_argument, 0,            'm'},
          {"rule",                required_argument, 0,            'R'},
          {"frame-rate",          required_argument, 0,            'f'},
+         {"correlated",          required_argument, 0,            'c'},
          {0,0,0,0}
       };
 
    int option_index = 0;
    int opt_char;
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:R:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:R:c:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -85,6 +87,10 @@ int main(int argc, char** argv)
          }
          break;
 
+      case 'c':
+         movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
+         break;
+
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);
@@ -111,7 +117,7 @@ int main(int argc, char** argv)
    window.setView(centeredView);
 
    Model m(arena_size, num_agents, communication_range, seed, initial_density, speed);
-   m.SetMovementRule(RandomWalk());
+   m.SetMovementRule(movement_rule);
    std::cout << "initial majority: " << m.CurrentDensity();
    std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;
    int i = 0;

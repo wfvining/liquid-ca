@@ -154,11 +154,11 @@ const std::vector<int>& Model::GetStates() const
    return _agent_states;
 }
 
-void Model::SetMovementRule(const MovementRule& rule)
+void Model::SetMovementRule(std::shared_ptr<MovementRule> rule)
 {
    for(auto& agent : _agents)
    {
-      agent.SetMovementRule(rule.Clone());
+      agent.SetMovementRule(rule->Clone());
    }
 }
 
