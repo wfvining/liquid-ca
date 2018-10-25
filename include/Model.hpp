@@ -72,6 +72,9 @@ public:
     * Return the number of timesteps that the model has run for.
     */
    unsigned int ElapsedTime() const;
+
+   double AverageAggregateDegree() const;
+   double AggregateDegreeStdDev() const;
 };
 
 /**

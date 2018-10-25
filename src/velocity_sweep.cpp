@@ -121,6 +121,7 @@ int main(int argc, char** argv)
    model_config.num_iterations      = 100;
    model_config.noise               = 0.0;
    model_config.movement_rule       = std::make_shared<RandomWalk>();
+   model_config.rule                = majority_rule;
 
    static struct option long_options[] =
       {

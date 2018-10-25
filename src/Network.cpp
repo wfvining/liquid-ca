@@ -54,6 +54,17 @@ double NetworkSnapshot::AverageDegree() const
    return total_degree / _num_vertices;
 }
 
+double NetworkSnapshot::DegreeVariance() const
+{
+   double avg = AverageDegree();
+   double variance = 0.0;
+   for(auto adjacencies : _adjacency_list)
+   {
+      variance += (avg - adjacencies.size())*(avg - adjacencies.size());
+   }
+   return variance/_num_vertices;
+}
+
 std::vector<unsigned int> NetworkSnapshot::DegreeDistribution() const
 {
    std::vector<unsigned int> degree_distribution(_num_vertices);

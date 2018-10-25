@@ -27,12 +27,15 @@ void density_history()
    for(int i = 0l; i < 5000; i++)
    {
       m.Step(majority_rule);
+      auto agg_degree = m.GetStats().AverageAggregateDegree();
+      auto agg_stddev = m.GetStats().AggregateDegreeStdDev();
+      std::cout << agg_degree << " " << agg_stddev << std::endl;
    }
 
-   for(auto d : m.GetStats().AggregateDensityHistory())
-   {
-      std::cout << d << std::endl;
-   }
+   // for(auto d : m.GetStats().AggregateDensityHistory())
+   // {
+   //    std::cout << d << std::endl;
+   // }
 }
 
 int main(int argc, char **argv)
