@@ -149,6 +149,11 @@ const std::vector<Agent>& Model::GetAgents() const
    return _agents;
 }
 
+const std::vector<int>& Model::GetStates() const
+{
+   return _agent_states;
+}
+
 void Model::SetMovementRule(const MovementRule& rule)
 {
    for(auto& agent : _agents)
@@ -188,20 +193,23 @@ void Model::Step(Rule* rule)
    {
       auto neighbors = current_network->GetNeighbors(a);
       std::vector<int> neighbor_states;
+      std::vector<Point> neighbor_positions;
       for(int n : neighbors)
       {
          if(_noise_probability < 0.0) {
             if(!_noise(_rng))
             {
                neighbor_states.push_back(_agent_states[n]);
+               neighbor_positions.push_back(_agents[n].Position());
             }
          }
          else
          {
             neighbor_states.push_back(Noise(_agent_states[n]));
+            neighbor_positions.push_back(_agents[n].Position());
          }
       }
-      new_states[a] = rule(_agent_states[a], neighbor_states);
+      new_states[a] = rule(_agent_states[a], _agents[a].Position(), neighbor_states, neighbor_positions);
    }
    _agent_states = new_states;
    _stats.PushState(CurrentDensity(), current_network);

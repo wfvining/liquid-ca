@@ -16,6 +16,8 @@ add_library(model SHARED
   src/MovementRule.cpp)
 
 find_package(Threads REQUIRED)
+set(CMAKE_MODULE_PATH "/usr/share/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
+find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
 
 add_executable(one_d_lattice
   src/OneDLattice.cpp

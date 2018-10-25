@@ -12,6 +12,7 @@ struct model_config
    double speed;
    double num_iterations;
    double initial_density;
+   std::shared_ptr<MovementRule> movement_rule;
 } model_config;
 
 void density_history()
@@ -22,7 +23,7 @@ void density_history()
            model_config.seed,
            model_config.initial_density,
            model_config.speed);
-   m.SetMovementRule(RandomWalk());
+   m.SetMovementRule(model_config.movement_rule);
 
    for(int i = 0; i < 1000; i++)
    {
@@ -45,6 +46,7 @@ int main(int argc, char **argv)
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
    model_config.initial_density     = 0.5;
+   model_config.movement_rule       = std::make_shared<RandomWalk>();
 
    static struct option long_options[] =
       {
@@ -53,6 +55,7 @@ int main(int argc, char **argv)
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
          {"initial-density",     required_argument, 0,            'i'},
+         {"correlated",          required_argument, 0,            'c'},
          {0,0,0,0}
       };
 
@@ -81,6 +84,10 @@ int main(int argc, char **argv)
 
       case 'i':
          model_config.initial_density = atof(optarg);
+         break;
+
+      case 'c':
+         model_config.movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
          break;
          
       case ':':
