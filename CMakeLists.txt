@@ -72,6 +72,14 @@ add_executable(synchronization
   src/synchronization.cpp)
 target_link_libraries(synchronization model pthread)
 
+add_executable(majority_history
+  src/majority_history.cpp)
+target_link_libraries(majority_history model)
+
+add_executable(sim_viz
+  src/sim_viz.cpp)
+target_link_libraries(sim_viz model sfml-graphics sfml-window sfml-system)
+
 configure_file(
   scripts/levy_ca_experiment.sh.in
   scripts/levy_ca_experiment.sh @ONLY)
