@@ -23,6 +23,7 @@ struct model_config
    double mu;
    double speed;
    double num_iterations;
+   std::shared_ptr<MovementRule> movement_rule;
 } model_config;
 
 std::mutex density_lock;
@@ -66,7 +67,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
               speed);
 
       // m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
-      m.SetMovementRule(std::make_shared<RandomWalk>());
+      m.SetMovementRule(model_config.movement_rule);
       m.RecordNetworkDensityOnly();
 
       for(int step = 0; step < 5000; step++)
@@ -113,6 +114,7 @@ int main(int argc, char** argv)
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
+   model_config.movement_rule       = std::make_shared<RandomWalk>();
 
    static struct option long_options[] =
       {
@@ -123,12 +125,13 @@ int main(int argc, char** argv)
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
+         {"correlated",          required_argument, 0,            'c'},
          {0,0,0,0}
       };
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:c:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -159,6 +162,10 @@ int main(int argc, char** argv)
 
       case 'm':
          model_config.mu = atof(optarg);
+         break;
+
+      case 'c':
+         model_config.movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
          break;
 
       case ':':
