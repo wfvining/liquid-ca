@@ -167,9 +167,9 @@ int main(int argc, char** argv)
 
       for(int i = 0; i < agents.size(); i++)
       {
-         sf::CircleShape agent_shape(0.75);
+         sf::CircleShape agent_shape(0.8);
          agent_shape.setOutlineColor(sf::Color::Black);
-         agent_shape.setOutlineThickness(0.1);
+         agent_shape.setOutlineThickness(0.18);
          if(states[i] == 1)
          {
             agent_shape.setFillColor(sf::Color::White);
