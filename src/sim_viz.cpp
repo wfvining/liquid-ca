@@ -149,16 +149,16 @@ int main(int argc, char** argv)
          {
             sf::VertexArray lines(sf::Lines, 2);
             lines[0].position = sf::Vector2f(agents[i].Position().GetX()-0.5, agents[i].Position().GetY()-0.5);
-            lines[0].color    = sf::Color(0,0,0,32);
+            lines[0].color    = sf::Color(0,0,0,128);
             lines[1].position = sf::Vector2f(agents[a].Position().GetX()-0.5, agents[a].Position().GetY()-0.5);
-            lines[1].color    = sf::Color(0,0,0,32);
+            lines[1].color    = sf::Color(0,0,0,128);
             window.draw(lines);
          }
       }
 
       for(int i = 0; i < agents.size(); i++)
       {
-         sf::CircleShape agent_shape(0.5);
+         sf::CircleShape agent_shape(0.75);
          agent_shape.setOutlineColor(sf::Color::Black);
          agent_shape.setOutlineThickness(0.1);
          if(states[i] == 1)
