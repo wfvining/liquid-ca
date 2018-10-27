@@ -72,6 +72,9 @@ public:
     * Return the number of timesteps that the model has run for.
     */
    unsigned int ElapsedTime() const;
+
+   double AverageAggregateDegree() const;
+   double AggregateDegreeStdDev() const;
 };
 
 /**
@@ -137,7 +140,7 @@ public:
    /**
     * Set the movement rule.
     */
-   void SetMovementRule(const MovementRule& rule);
+   void SetMovementRule(std::shared_ptr<MovementRule> rule);
 
    /**
     * Set the turn distribution.

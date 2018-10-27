@@ -9,9 +9,10 @@ struct model_config
    double communication_range;
    int    arena_size;
    int    seed;
-   double mu;
    double speed;
    double num_iterations;
+   double initial_density;
+   std::shared_ptr<MovementRule> movement_rule;
 } model_config;
 
 void density_history()
@@ -20,22 +21,15 @@ void density_history()
            model_config.num_agents,
            model_config.communication_range,
            model_config.seed,
-           0.5,
+           model_config.initial_density,
            model_config.speed);
-   m.SetMovementRule(std::make_shared<RandomWalk>());
+   m.SetMovementRule(model_config.movement_rule);
 
-   for(int i = 0l; i < 5000; i++)
+   for(int i = 0; i < 1000; i++)
    {
+      std::cout << i << " " << m.CurrentDensity() << std::endl;
       m.Step(majority_rule);
-      auto agg_degree = m.GetStats().AverageAggregateDegree();
-      auto agg_stddev = m.GetStats().AggregateDegreeStdDev();
-      std::cout << agg_degree << " " << agg_stddev << std::endl;
    }
-
-   // for(auto d : m.GetStats().AggregateDensityHistory())
-   // {
-   //    std::cout << d << std::endl;
-   // }
 }
 
 int main(int argc, char **argv)
@@ -51,7 +45,8 @@ int main(int argc, char **argv)
    model_config.num_agents          = 100;
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
-   model_config.mu                  = 1.2;
+   model_config.initial_density     = 0.5;
+   model_config.movement_rule       = std::make_shared<RandomWalk>();
 
    static struct option long_options[] =
       {
@@ -59,12 +54,14 @@ int main(int argc, char **argv)
          {"num-agents",          required_argument, 0,            'n'},
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
+         {"initial-density",     required_argument, 0,            'i'},
+         {"correlated",          required_argument, 0,            'c'},
          {0,0,0,0}
       };
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+   while((opt_char = getopt_long(argc, argv, "r:n:a:s:i:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -85,6 +82,14 @@ int main(int argc, char **argv)
          model_config.seed = atoi(optarg);
          break;
 
+      case 'i':
+         model_config.initial_density = atof(optarg);
+         break;
+
+      case 'c':
+         model_config.movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
+         break;
+         
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);

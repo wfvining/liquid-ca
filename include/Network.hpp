@@ -41,6 +41,11 @@ public:
    double AverageDegree() const;
 
    /**
+    * return the variance in the degree of each agent
+    */
+   double DegreeVariance() const;
+
+   /**
     * Return the degree distribution in a vector.
     */
    std::vector<unsigned int> DegreeDistribution() const;

@@ -33,7 +33,7 @@ void network_statistics(int num_iterations, double speed)
            0.5,
            speed);
 
-   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
+   m.SetMovementRule(std::make_shared<LevyWalk>(model_config.mu, model_config.arena_size/speed));
 
    for(int step = 0; step < 5000; step++)
    {

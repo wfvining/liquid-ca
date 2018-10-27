@@ -38,7 +38,7 @@ void evaluate_ca(double initial_density)
            model_config.speed);
 
 //   m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size));
-   m.SetMovementRule(RandomWalk());
+   m.SetMovementRule(std::make_shared<CorrelatedRandomWalk>(model_config.mu));
    
    for(int step = 0; step < 2000; step++)
    {
