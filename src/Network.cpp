@@ -51,7 +51,7 @@ double NetworkSnapshot::AverageDegree() const
    {
       total_degree += adjacencies.size();
    }
-   return total_degree / _num_vertices;
+   return (double)total_degree / _num_vertices;
 }
 
 double NetworkSnapshot::DegreeVariance() const
