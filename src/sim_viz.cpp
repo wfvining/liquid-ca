@@ -1,5 +1,8 @@
 #include <SFML/Graphics.hpp>
 
+#include <sstream>
+#include <string>
+
 #include "Model.hpp"
 #include "Rule.hpp"
 
@@ -19,7 +22,7 @@ int main(int argc, char** argv)
    centeredView.setSize(84,84);
    window.setView(centeredView);
 
-   Model m(80, 8186, 2, atoi(argv[1]), 0.45, 0);
+   Model m(80, 255, 8, atoi(argv[1]), 0.5, 1);
    m.SetMovementRule(RandomWalk());
    std::cout << "initial majority: " << m.CurrentDensity();
    std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;
@@ -77,7 +80,13 @@ int main(int argc, char** argv)
          window.draw(agent_shape);
       }
       window.display();
-      m.Step(gkl2d_strict);
+      if((i % 10) == 0) {
+         auto frame = window.capture();
+         std::stringstream fname;
+         fname << "frame"<<i<<".png";
+         frame.saveToFile(fname.str());
+      }
+      m.Step(majority_rule);
       i++;
    }
 }
