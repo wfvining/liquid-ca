@@ -97,6 +97,10 @@ private:
 
    double _communication_range;
 
+   double _small_worldness;
+   int    _small_world_seed;
+   double _speed;
+
    int Noise(int i);
 
 public:
@@ -166,6 +170,9 @@ public:
     * Set the communication range of the agents.
     */
    void SetCommunicationRange(double range);
+
+   void SmallWorldness(double p);
+   std::shared_ptr<NetworkSnapshot> Rewire(std::shared_ptr<NetworkSnapshot> snapshot) const;
 };
 
 #endif // _MOTION_CA_MODEL_HPP

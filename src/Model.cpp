@@ -94,7 +94,9 @@ Model::Model(double arena_size,
    _communication_range(communication_range),
    _rng(seed),
    _stats(num_agents),
-   _noise(0.0)
+   _noise(0.0),
+   _speed(agent_speed),
+   _small_worldness(0.0)
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -128,6 +130,48 @@ void Model::RecordNetworkDensityOnly()
    _stats.NetworkSummaryOnly();
 }
 
+void Model::SmallWorldness(double p)
+{
+   _small_worldness = p;
+   _small_world_seed = std::uniform_int_distribution<int>(0,999999999)(_rng);
+}
+
+std::shared_ptr<NetworkSnapshot> Model::Rewire(std::shared_ptr<NetworkSnapshot> snapshot) const
+{
+   if(_small_worldness == 0.0)
+   {
+      return snapshot;
+   }
+   else
+   {
+      std::mt19937_64 gen(_small_world_seed);
+      std::uniform_real_distribution<double> uniform01(0,1);
+      std::uniform_int_distribution<int> uniformAgents(0, _agents.size());
+      std::shared_ptr<NetworkSnapshot> rewired_snapshot = std::make_shared<NetworkSnapshot>(_agents.size());
+      for(int i = 0; i < _agents.size(); i++)
+      {
+         for(int j = i+1; j < _agents.size(); j++)
+         {
+            if(_agents[i].Position().Within(_communication_range, _agents[j].Position()))
+            {
+               if(uniform01(gen) < _small_worldness)
+               {
+                  rewired_snapshot->AddEdge(i, j);
+               }
+               else
+               {
+                  int a;
+                  while((a = uniformAgents(gen)) == i)
+                     continue;
+                  rewired_snapshot->AddEdge(i, a);
+               }
+            }
+         }
+      }
+      return rewired_snapshot;
+   }
+}
+
 double Model::CurrentDensity() const
 {
    return std::accumulate(_agent_states.begin(), _agent_states.end(), 0.0) / _agent_states.size();
@@ -146,7 +190,7 @@ std::shared_ptr<NetworkSnapshot> Model::CurrentNetwork() const
          }
       }
    }
-   return snapshot;
+   return Rewire(snapshot);
 }
 
 const ModelStats& Model::GetStats() const
