@@ -21,37 +21,85 @@ struct model_config
    int    arena_size;
    int    seed;
    double mu;
+   double speed;
+   double num_iterations;
+   Rule*  rule;
+   std::shared_ptr<MovementRule> movement_rule;
+   int    max_time;
 } model_config;
 
-double evaluate_ca(int num_iterations, double speed, double initial_density)
+std::mutex results_lock;
+std::vector<int> results;
+
+std::mutex seed_lock;
+int seed = 0;
+
+int next_seed()
 {
-   std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
+   int s;
+   seed_lock.lock();
+   s = seed;
+   seed++;
+   seed_lock.unlock();
+   return s;
+}
+
+void record_result(int t)
+{
+   results_lock.lock();
+   results.push_back(t);
+   results_lock.unlock();
+}
+
+int evaluate_ca(int num_iterations, double speed, double initial_density)
+{
    int num_correct = 0;
-   int time = 0;
-   for(int iteration = 0; iteration < num_iterations; iteration++)
+
+   Model m(model_config.arena_size,
+           model_config.num_agents,
+           model_config.communication_range,
+           model_config.seed+next_seed(),
+           initial_density,
+           speed);
+
+   m.SetMovementRule(model_config.movement_rule);
+   m.RecordNetworkDensityOnly();
+
+   int step;
+   for(step = 0; step < model_config.max_time; step++)
    {
-      Model m(model_config.arena_size,
-              model_config.num_agents,
-              model_config.communication_range,
-              model_config.seed+iteration,
-              initial_density,
-              speed);
-
-      m.SetMovementRule(std::make_shared<LevyWalk>(model_config.mu, model_config.arena_size/speed));
-
-      for(int step = 0; step < 5000; step++)
+      m.Step(model_config.rule);
+      if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
       {
-         m.Step(majority_rule);
-         if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
-         {
-            time += m.GetStats().ElapsedTime();
-            num_correct++;
-            break; // done. no need to keep evaluating.
-         }
+         break; // done. no need to keep evaluating.
       }
    }
 
-   return (double) time / num_iterations;
+   if(step < model_config.max_time)
+   {
+      return step;
+   }
+   else return -1;
+}
+
+void thread_main()
+{
+   int correct_count = 0;
+   while(correct_count < 10)
+   {
+      int t = evaluate_ca(model_config.num_iterations,
+                          model_config.speed,
+                          0.5);
+      if(t < 0)
+      {
+         continue;
+      }
+      else
+      {
+         record_result(t);
+         correct_count++;
+      }
+   }
 }
 
 int main(int argc, char** argv)
@@ -60,7 +108,6 @@ int main(int argc, char** argv)
    int    sweep_density   = 0;
    double density_step    = 0.01;
    double initial_density = 0.0;
-   int    num_iterations  = 1;
    int    save_state      = 0;
 
    model_config.communication_range = 5;
@@ -68,6 +115,10 @@ int main(int argc, char** argv)
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
+   model_config.num_iterations      = 100;
+   model_config.movement_rule       = std::make_shared<RandomWalk>();
+   model_config.rule                = majority_rule;
+   model_config.max_time            = 5000;
 
    static struct option long_options[] =
       {
@@ -78,12 +129,15 @@ int main(int argc, char** argv)
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
+         {"rule",                required_argument, 0,            'R'},
+         {"correlated",          required_argument, 0,            'c'},
+         {"max-time",            required_argument, 0,            'T'},
          {0,0,0,0}
       };
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:c:R:T:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
@@ -109,11 +163,43 @@ int main(int argc, char** argv)
          break;
 
       case 'i':
-         num_iterations = atoi(optarg);
+         model_config.num_iterations = atoi(optarg);
          break;
 
       case 'm':
          model_config.mu = atof(optarg);
+         break;
+
+      case 'T':
+         model_config.max_time = atoi(optarg);
+         break;
+
+      case 'R':
+         if(std::string(optarg) == "gkl")
+         {
+            model_config.rule = gkl2d_strict;
+         }
+         else if(std::string(optarg) == "gkl-lax")
+         {
+            model_config.rule = gkl2d_lax;
+         }
+         else if(std::string(optarg) == "majority")
+         {
+            model_config.rule = majority_rule;
+         }
+         else if(std::string(optarg) == "gkl-mode")
+         {
+            model_config.rule = gkl2d_mode;
+         }
+         else
+         {
+            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
+            exit(-1);
+         }
+         break;
+
+      case 'c':
+         model_config.movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
          break;
 
       case ':':
@@ -132,57 +218,25 @@ int main(int argc, char** argv)
       std::cout << "missing required argument <agent-speed>" << std::endl;
    }
 
-   double speed = atof(argv[optind]);
+   model_config.speed = atof(argv[optind]);
 
-   std::map<double, double> results;
-   std::vector<std::pair<double, std::future<double>>> work;
-   int max_threads = std::thread::hardware_concurrency();
+   //int max_threads = std::thread::hardware_concurrency();
+   int max_threads = 10;
+   std::vector<std::thread> threads;
 
-   // If the network snapshots are expected to be very dense, then
-   // scale back some to keep memory usage under control
-   if(model_config.communication_range > model_config.arena_size / 4)
+   for(int i = 0; i < max_threads; i++)
    {
-      max_threads /= 2;
+      threads.push_back(std::thread(thread_main));
    }
 
-   while(initial_density <= 1.001)
+   for(auto& thread : threads)
    {
-      if(work.size() >= max_threads)
-      {
-         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-         auto work_iter = work.begin();
-         while(work_iter != work.end())
-         {
-            if(work_iter->second.wait_for(std::chrono::milliseconds(0))
-               == std::future_status::ready)
-            {
-               results.emplace(work_iter->first, work_iter->second.get());
-               work_iter = work.erase(work_iter);
-            }
-            else
-            {
-               work_iter++;
-            }
-         }
-      }
-      else
-      {
-         work.push_back(std::make_pair(initial_density,
-                                       std::async(std::launch::async | std::launch::deferred,
-                                                  evaluate_ca, num_iterations, speed, initial_density)));
-         initial_density += density_step;
-      }
-   }
-
-   // Finish up.
-   for(auto& w : work)
-   {
-      results.emplace(w.first, w.second.get());
+      thread.join();
    }
 
    // print the results
    for(auto result : results)
    {
-      std::cout << result.first << " " << result.second << std::endl;
+      std::cout << result << std::endl;
    }
 }
