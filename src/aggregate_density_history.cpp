@@ -12,6 +12,7 @@ struct model_config
    double mu;
    double speed;
    double num_iterations;
+   std::shared_ptr<MovementRule> movement_rule;
 } model_config;
 
 void density_history()
@@ -22,7 +23,7 @@ void density_history()
            model_config.seed,
            0.5,
            model_config.speed);
-   m.SetMovementRule(std::make_shared<RandomWalk>());
+   m.SetMovementRule(model_config.movement_rule);
 
    for(int i = 0l; i < 5000; i++)
    {
@@ -52,6 +53,7 @@ int main(int argc, char **argv)
    model_config.arena_size          = 100;
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
+   model_config.movement_rule       = std::make_shared<RandomWalk>();
 
    static struct option long_options[] =
       {
@@ -59,6 +61,7 @@ int main(int argc, char **argv)
          {"num-agents",          required_argument, 0,            'n'},
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
+         {"correlated",          required_argument, 0,            'c'},
          {0,0,0,0}
       };
 
@@ -85,6 +88,10 @@ int main(int argc, char **argv)
          model_config.seed = atoi(optarg);
          break;
 
+      case 'c':
+         model_config.movement_rule = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
+         break;
+         
       case ':':
          std::cout << "option " << long_options[option_index].name << "requires an argument" << std::endl;
          exit(-1);

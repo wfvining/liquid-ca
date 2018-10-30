@@ -26,6 +26,7 @@ struct model_config
    Rule*  rule;
    std::shared_ptr<MovementRule> movement_rule;
    int    max_time;
+   double small_worldness;
 } model_config;
 
 std::mutex density_lock;
@@ -71,6 +72,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
       // m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
       m.SetMovementRule(model_config.movement_rule);
       m.RecordNetworkDensityOnly();
+      m.SmallWorldness(model_config.small_worldness);
 
       for(int step = 0; step < model_config.max_time; step++)
       {
@@ -119,6 +121,7 @@ int main(int argc, char** argv)
    model_config.movement_rule       = std::make_shared<RandomWalk>();
    model_config.rule                = majority_rule;
    model_config.max_time            = 5000;
+   model_config.small_worldness     = 0;
 
    static struct option long_options[] =
       {
@@ -132,16 +135,21 @@ int main(int argc, char** argv)
          {"rule",                required_argument, 0,            'R'},
          {"correlated",          required_argument, 0,            'c'},
          {"max-time",            required_argument, 0,            'T'},
+         {"small-worldness",     required_argument, 0,            'w'},
          {0,0,0,0}
       };
 
    int option_index = 0;
 
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:c:R:T:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:c:R:T:w:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
       {
+      case 'w':
+         model_config.small_worldness = atof(optarg);
+         break;
+         
       case 'd':
          initial_density = atof(optarg);
          break;

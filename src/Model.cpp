@@ -146,7 +146,7 @@ std::shared_ptr<NetworkSnapshot> Model::Rewire(std::shared_ptr<NetworkSnapshot> 
    {
       std::mt19937_64 gen(_small_world_seed);
       std::uniform_real_distribution<double> uniform01(0,1);
-      std::uniform_int_distribution<int> uniformAgents(0, _agents.size());
+      std::uniform_int_distribution<int> uniformAgents(0, _agents.size()-1);
       std::shared_ptr<NetworkSnapshot> rewired_snapshot = std::make_shared<NetworkSnapshot>(_agents.size());
       for(int i = 0; i < _agents.size(); i++)
       {
@@ -154,7 +154,7 @@ std::shared_ptr<NetworkSnapshot> Model::Rewire(std::shared_ptr<NetworkSnapshot> 
          {
             if(_agents[i].Position().Within(_communication_range, _agents[j].Position()))
             {
-               if(uniform01(gen) < _small_worldness)
+               if(uniform01(gen) > _small_worldness)
                {
                   rewired_snapshot->AddEdge(i, j);
                }

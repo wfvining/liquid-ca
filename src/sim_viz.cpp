@@ -17,6 +17,7 @@ int main(int argc, char** argv)
    double initial_density     = 0.5;
    Rule*  rule                = majority_rule;
    std::shared_ptr<MovementRule> movement_rule = std::make_shared<RandomWalk>();
+   double small_worldness     = 0;
 
    unsigned int frameRate = 4;
 
@@ -31,16 +32,21 @@ int main(int argc, char** argv)
          {"rule",                required_argument, 0,            'R'},
          {"frame-rate",          required_argument, 0,            'f'},
          {"correlated",          required_argument, 0,            'c'},
+         {"small-worldness",     required_argument, 0,            'w'},
          {0,0,0,0}
       };
 
    int option_index = 0;
    int opt_char;
-   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:R:c:",
+   while((opt_char = getopt_long(argc, argv, "m:d:r:n:a:s:i:R:c:w:",
                                  long_options, &option_index)) != -1)
    {
       switch(opt_char)
       {
+      case 'w':
+         small_worldness = atof(optarg);
+         break;
+
       case 'd':
          initial_density = atof(optarg);
          break;
@@ -121,6 +127,7 @@ int main(int argc, char** argv)
 
    Model m(arena_size, num_agents, communication_range, seed, initial_density, speed);
    m.SetMovementRule(movement_rule);
+   m.SmallWorldness(small_worldness);
    std::cout << "initial majority: " << m.CurrentDensity();
    std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;
    int i = 0;
