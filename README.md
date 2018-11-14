@@ -10,7 +10,7 @@ automaton.
 * pthreads
 
 The code has been built and tested with the viz on Ubuntu 16.05,
-18.04, FreeBSD 11.2. It has been built on OSX as well.
+18.04, and FreeBSD 11.2. It has been built on OSX without the viz.
 
 ## Build
 ```bash
@@ -33,7 +33,6 @@ following standard options:
 | `--communication-range <r>` | r                                |
 | `--max-time <T>`            | T                                |
 | `--correlated <sigma>`      | use CRW with sigma std. dev.     |
-| `--iterations <n>`          | replicas to run for each density |
 | `--seed <seed>`             | random seed                      |
 
 Some experiments take additional options.
@@ -43,6 +42,9 @@ Basic experiment that evaluates the performance of the LCA for initial
 densities in the range [0,1].
 
 `$ ./velocity_experiment <speed> [options listed above]`
+
+Takes the additional option
+* `--iterations <n>`: evaluate each initial density with n independent random initial conditions
 
 Outputs the fraction of correctly classified initial conditions for
 each initial density.
