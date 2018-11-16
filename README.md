@@ -3,6 +3,8 @@
 Implements the density classification task in a liquid cellular
 automaton.
 
+An example of the simulation running is [here](https://youtu.be/Cbwa5ovKSgU).
+
 ## Dependencies
 
 * [SFML](https://www.sfml-dev.org/) is used for the visualization and
