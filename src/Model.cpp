@@ -126,7 +126,7 @@ Model::~Model() {}
 
 void Model::SetPositionalState(double initial_density)
 {
-   double x_threshold = -((_arena_size/2.0) * initial_density);
+   double x_threshold = (_arena_size / 2.0) - (_arena_size * (1.0 - initial_density));
    _stats = ModelStats(_agents.size());
    for(int i = 0; i < _agents.size(); i++)
    {

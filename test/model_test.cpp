@@ -38,6 +38,17 @@ TEST(ModelTest, densityExtremes)
    EXPECT_EQ(m1.CurrentDensity(), 1.0);
 }
 
+TEST(ModelTest, positionalDensityExtremes)
+{
+   Model m0(100, 255, 5.0, 12345, 1.0);
+   m0.SetPositionalState(0.0);
+   EXPECT_EQ(m0.CurrentDensity(), 0.0);
+
+   Model m1(100, 255, 5.0, 12334, 0.0);
+   m1.SetPositionalState(1.0);
+   EXPECT_EQ(m1.CurrentDensity(), 1.0);
+}
+
 TEST(ModelTest, differentSeedDifferentDensity)
 {
    Model m1(100, 128, 5.0, 1337, 0.5);
