@@ -26,6 +26,7 @@ struct model_config
    Rule*  rule;
    std::shared_ptr<MovementRule> movement_rule;
    int    max_time;
+   int    by_position;
 } model_config;
 
 std::mutex density_lock;
@@ -67,6 +68,10 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
               model_config.seed+iteration,
               initial_density,
               speed);
+      if(model_config.by_position)
+      {
+         m.SetPositionalState(initial_density);
+      }
 
       // m.SetMovementRule(LevyWalk(model_config.mu, model_config.arena_size/speed));
       m.SetMovementRule(model_config.movement_rule);
@@ -119,6 +124,7 @@ int main(int argc, char** argv)
    model_config.movement_rule       = std::make_shared<RandomWalk>();
    model_config.rule                = majority_rule;
    model_config.max_time            = 5000;
+   model_config.by_position         = 0;
 
    static struct option long_options[] =
       {
@@ -132,6 +138,7 @@ int main(int argc, char** argv)
          {"rule",                required_argument, 0,            'R'},
          {"correlated",          required_argument, 0,            'c'},
          {"max-time",            required_argument, 0,            'T'},
+         {"by-position", no_argument,  &model_config.by_position, 'p'},
          {0,0,0,0}
       };
 

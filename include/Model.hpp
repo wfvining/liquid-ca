@@ -88,6 +88,7 @@ private:
    std::vector<Agent> _agents;
    std::vector<int>   _agent_states;
    int                _steps;
+   double             _arena_size;
 
    std::mt19937_64 _rng;
    std::function<double(std::mt19937_64&)> _turn_distribution;
@@ -104,6 +105,14 @@ public:
          int seed, double initial_density, double agent_speed = 1.0);
    ~Model();
 
+   /**
+    * Reinitialize the model with states set according to x-coordinate
+    * of each agent. Any agent to the left of x = 0 -
+    * initial_density*(arena_size/2) will be in state 1; all agents to
+    * the right will be in state 0.
+    */
+   void SetPositionalState(double initial_density);
+   
    /**
     * Get the current density of the model (ie. proportion of black
     * states to white states).

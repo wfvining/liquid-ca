@@ -4,6 +4,8 @@ project(motion-ca)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(BUILD_VIZ "build the visualization (requires SFML)" ON)
+
 include_directories(include)
 
 add_library(model SHARED
@@ -16,8 +18,6 @@ add_library(model SHARED
   src/MovementRule.cpp)
 
 find_package(Threads REQUIRED)
-set(CMAKE_MODULE_PATH "/usr/share/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
-find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
 
 add_executable(one_d_lattice
   src/OneDLattice.cpp
@@ -78,9 +78,14 @@ add_executable(majority_history
   src/majority_history.cpp)
 target_link_libraries(majority_history model)
 
-add_executable(sim_viz
-  src/sim_viz.cpp)
-target_link_libraries(sim_viz model sfml-graphics sfml-window sfml-system)
+
+if(BUILD_VIZ)
+  set(CMAKE_MODULE_PATH "/usr/share/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
+  find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
+  add_executable(sim_viz
+    src/sim_viz.cpp)
+  target_link_libraries(sim_viz model sfml-graphics sfml-window sfml-system)
+endif(BUILD_VIZ)
 
 configure_file(
   scripts/levy_ca_experiment.sh.in
