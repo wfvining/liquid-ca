@@ -49,6 +49,14 @@ TEST(ModelTest, positionalDensityExtremes)
    EXPECT_EQ(m1.CurrentDensity(), 1.0);
 }
 
+TEST(ModelTest, positionalInitialStats)
+{
+   Model m0(100, 255, 5.0, 1234, 0.9);
+   m0.SetPositionalState(0.1);
+   ASSERT_EQ(m0.GetStats().GetDensityHistory().size(), 1);
+   ASSERT_LT(m0.GetStats().GetDensityHistory()[0], 0.3);
+}
+
 TEST(ModelTest, differentSeedDifferentDensity)
 {
    Model m1(100, 128, 5.0, 1337, 0.5);
