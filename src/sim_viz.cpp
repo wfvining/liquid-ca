@@ -19,6 +19,7 @@ int main(int argc, char** argv)
    std::shared_ptr<MovementRule> movement_rule = std::make_shared<RandomWalk>();
 
    unsigned int frameRate = 4;
+   int by_position = 0;
 
    static struct option long_options[] =
       {
@@ -31,6 +32,7 @@ int main(int argc, char** argv)
          {"rule",                required_argument, 0,            'R'},
          {"frame-rate",          required_argument, 0,            'f'},
          {"correlated",          required_argument, 0,            'c'},
+         {"by-position",         no_argument,       &by_position, 'p'},
          {0,0,0,0}
       };
 
@@ -120,6 +122,10 @@ int main(int argc, char** argv)
    window.setView(centeredView);
 
    Model m(arena_size, num_agents, communication_range, seed, initial_density, speed);
+   if(by_position != 0)
+   {
+      m.SetPositionalState(initial_density);
+   }
    m.SetMovementRule(movement_rule);
    std::cout << "initial majority: " << m.CurrentDensity();
    std::cout << " (" << (m.CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;

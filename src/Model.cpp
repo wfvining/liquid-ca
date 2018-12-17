@@ -94,7 +94,8 @@ Model::Model(double arena_size,
    _communication_range(communication_range),
    _rng(seed),
    _stats(num_agents),
-   _noise(0.0)
+   _noise(0.0),
+   _arena_size(arena_size)
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -122,6 +123,24 @@ Model::Model(double arena_size,
 }
 
 Model::~Model() {}
+
+void Model::SetPositionalState(double initial_density)
+{
+   double x_threshold = -((_arena_size/2.0) * initial_density);
+   _stats = ModelStats(_agents.size());
+   for(int i = 0; i < _agents.size(); i++)
+   {
+      if(_agents[i].Position().GetX() <= x_threshold)
+      {
+         _agent_states[i] = 1;
+      }
+      else
+      {
+         _agent_states[i] = 0;
+      }
+   }
+   _stats.PushState(CurrentDensity(), CurrentNetwork());
+}
 
 void Model::RecordNetworkDensityOnly()
 {
