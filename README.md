@@ -1,5 +1,7 @@
 # Liquid Cellular Automata
 
+[![Build Status](https://travis-ci.com/wfvining/liquid-ca.svg?branch=master)](https://travis-ci.com/wfvining/liquid-ca)
+
 Implements the density classification task in a liquid cellular
 automaton.
 
