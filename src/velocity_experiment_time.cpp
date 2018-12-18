@@ -85,7 +85,7 @@ int evaluate_ca(int num_iterations, double speed, double initial_density)
 void thread_main()
 {
    int correct_count = 0;
-   while(correct_count < 10)
+   while(correct_count < 100)
    {
       int t = evaluate_ca(model_config.num_iterations,
                           model_config.speed,
