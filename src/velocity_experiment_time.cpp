@@ -28,8 +28,15 @@ struct model_config
    int    max_time;
 } model_config;
 
+struct result
+{
+   int t;
+   double avg_degree;
+   double std_dev;
+};
+
 std::mutex results_lock;
-std::vector<int> results;
+std::vector<result> results;
 
 std::mutex seed_lock;
 int seed = 0;
@@ -44,14 +51,14 @@ int next_seed()
    return s;
 }
 
-void record_result(int t)
+void record_result(result result)
 {
    results_lock.lock();
-   results.push_back(t);
+   results.push_back(result);
    results_lock.unlock();
 }
 
-int evaluate_ca(int num_iterations, double speed, double initial_density)
+result evaluate_ca(int num_iterations, double speed, double initial_density)
 {
    int num_correct = 0;
 
@@ -77,28 +84,28 @@ int evaluate_ca(int num_iterations, double speed, double initial_density)
 
    if(step < model_config.max_time)
    {
-      return step;
+      auto stats = m.GetStats();
+      return result { step,
+            stats.AverageAggregateDegree(),
+            stats.AggregateDegreeStdDev()
+            };
    }
-   else return -1;
+   else return result {-1, 0, 0};
 }
 
 void thread_main()
 {
-   int correct_count = 0;
-   while(correct_count < 10)
+   int total_iterations = 0;
+   while(total_iterations < 10) // XXX: assumes there are exactly 10 threads
    {
-      int t = evaluate_ca(model_config.num_iterations,
-                          model_config.speed,
-                          0.5);
-      if(t < 0)
+      result r = evaluate_ca(model_config.num_iterations,
+                             model_config.speed,
+                             0.5);
+      if(r.t >= 0)
       {
-         continue;
+         record_result(r);
       }
-      else
-      {
-         record_result(t);
-         correct_count++;
-      }
+      total_iterations++;
    }
 }
 
@@ -237,6 +244,6 @@ int main(int argc, char** argv)
    // print the results
    for(auto result : results)
    {
-      std::cout << result << std::endl;
+      std::cout << result.t << " " << result.avg_degree << " " << result.std_dev << std::endl;
    }
 }
