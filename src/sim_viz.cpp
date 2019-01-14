@@ -15,7 +15,7 @@ int main(int argc, char** argv)
    double arena_size          = 100;
    int    seed                = 1234;
    double initial_density     = 0.5;
-   Rule*  rule                = majority_rule;
+   Rule*  rule                = new MajorityRule();
    std::shared_ptr<MovementRule> movement_rule = std::make_shared<RandomWalk>();
 
    unsigned int frameRate = 4;
@@ -68,22 +68,10 @@ int main(int argc, char** argv)
          break;
 
       case 'R':
-         if(std::string(optarg) == "gkl")
+         if(std::string(optarg) == "majority")
          {
-            std::cout << "gkl-strict" << std::endl;
-            rule = gkl2d_strict;
-         }
-         else if(std::string(optarg) == "gkl-lax")
-         {
-            rule = gkl2d_lax;
-         }
-         else if(std::string(optarg) == "majority")
-         {
-            rule = majority_rule;
-         }
-         else if(std::string(optarg) == "gkl-mode")
-         {
-            rule = gkl2d_mode;
+            delete (MajorityRule*)rule;
+            rule = new MajorityRule();
          }
          else
          {

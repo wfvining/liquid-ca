@@ -21,6 +21,8 @@ struct model_config
    double speed;
 } model_config;
 
+MajorityRule majority_rule;
+
 double heading(std::mt19937_64& gen)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -42,7 +44,7 @@ void evaluate_ca(double initial_density)
    
    for(int step = 0; step < 2000; step++)
    {
-      m.Step(majority_rule);
+      m.Step(&majority_rule);
       for(auto agent : m.GetAgents())
       {
          std::cout << agent.Position().GetX() << " " << agent.Position().GetY() << " ";

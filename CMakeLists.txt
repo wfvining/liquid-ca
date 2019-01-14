@@ -25,10 +25,6 @@ add_executable(one_d_lattice
 
 target_link_libraries(one_d_lattice model pthread)
 
-add_executable(levy_walk
-  src/levy_walk.cpp)
-target_link_libraries(levy_walk model pthread)
-
 add_executable(velocity_experiment
   src/velocity_experiment.cpp)
 target_link_libraries(velocity_experiment model pthread)
@@ -44,10 +40,6 @@ target_link_libraries(levy_viz model)
 add_executable(network_statistics
   src/network_statistics.cpp)
 target_link_libraries(network_statistics model)
-
-add_executable(aggregate_to_dot
-  src/aggregate_to_dot.cpp)
-target_link_libraries(aggregate_to_dot model)
 
 add_executable(random_spatial
   src/random_spatial.cpp)

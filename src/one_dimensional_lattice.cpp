@@ -12,6 +12,8 @@ int num_agents;
 double density_step;
 int seed;
 
+MajorityRule majority_rule;
+
 bool evaluate_ca(OneDLattice& lattice)
 {
    double initial_density = lattice.GetDensity();

@@ -122,7 +122,7 @@ int main(int argc, char** argv)
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
    model_config.movement_rule       = std::make_shared<RandomWalk>();
-   model_config.rule                = majority_rule;
+   model_config.rule                = new MajorityRule();
    model_config.max_time            = 5000;
    model_config.by_position         = 0;
 
@@ -182,21 +182,10 @@ int main(int argc, char** argv)
          break;
 
       case 'R':
-         if(std::string(optarg) == "gkl")
+         if(std::string(optarg) == "majority")
          {
-            model_config.rule = gkl2d_strict;
-         }
-         else if(std::string(optarg) == "gkl-lax")
-         {
-            model_config.rule = gkl2d_lax;
-         }
-         else if(std::string(optarg) == "majority")
-         {
-            model_config.rule = majority_rule;
-         }
-         else if(std::string(optarg) == "gkl-mode")
-         {
-            model_config.rule = gkl2d_mode;
+            // nothing to be done
+            // model_config.rule = majority_rule;
          }
          else
          {

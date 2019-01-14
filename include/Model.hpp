@@ -174,7 +174,7 @@ public:
    /**
     * Evaluate the model for one time-step.
     */
-   void Step(Rule* rule);
+   void Step(const Rule* rule);
 
    /**
     * Set the communication range of the agents.

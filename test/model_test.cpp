@@ -1,8 +1,20 @@
 #include <gmock/gmock.h>
 
 #include "Model.hpp"
+#include "Rule.hpp"
 
-TEST(ModelTest, expectedDensityIsCorrect)
+class ModelTest : public ::testing::Test
+{
+public:
+   Identity     identity_rule;
+   MajorityRule majority_rule;
+   Constant     always_one;
+   Constant     always_zero;
+   ModelTest() : always_one(1), always_zero(0) {}
+   ~ModelTest() {}
+};
+
+TEST_F(ModelTest, expectedDensityIsCorrect)
 {
    double sum = 0;
    for(int i = 0; i < 100; i++)
@@ -29,7 +41,7 @@ TEST(ModelTest, expectedDensityIsCorrect)
    EXPECT_THAT(sum/100.0, ::testing::DoubleNear(0.75, 0.01));
 }
 
-TEST(ModelTest, densityExtremes)
+TEST_F(ModelTest, densityExtremes)
 {
    Model m0(100, 256, 5.0, 12345, 0.0);
    Model m1(100, 256, 5.0, 12345, 1.0);
@@ -38,7 +50,7 @@ TEST(ModelTest, densityExtremes)
    EXPECT_EQ(m1.CurrentDensity(), 1.0);
 }
 
-TEST(ModelTest, positionalDensityExtremes)
+TEST_F(ModelTest, positionalDensityExtremes)
 {
    Model m0(100, 255, 5.0, 12345, 1.0);
    m0.SetPositionalState(0.0);
@@ -49,7 +61,7 @@ TEST(ModelTest, positionalDensityExtremes)
    EXPECT_EQ(m1.CurrentDensity(), 1.0);
 }
 
-TEST(ModelTest, positionalInitialStats)
+TEST_F(ModelTest, positionalInitialStats)
 {
    Model m0(100, 255, 5.0, 1234, 0.9);
    m0.SetPositionalState(0.1);
@@ -57,7 +69,7 @@ TEST(ModelTest, positionalInitialStats)
    ASSERT_LT(m0.GetStats().GetDensityHistory()[0], 0.3);
 }
 
-TEST(ModelTest, differentSeedDifferentDensity)
+TEST_F(ModelTest, differentSeedDifferentDensity)
 {
    Model m1(100, 128, 5.0, 1337, 0.5);
    Model m2(100, 128, 5.0, 1338, 0.5);
@@ -65,12 +77,12 @@ TEST(ModelTest, differentSeedDifferentDensity)
    EXPECT_NE(m1.CurrentDensity(), m2.CurrentDensity());
 }
 
-TEST(ModelTest, extremelySmallArena)
+TEST_F(ModelTest, extremelySmallArena)
 {
    Model m1(0.25, 32, 5.0, 123, 0.5);
 }
 
-TEST(ModelTest, networkChanges)
+TEST_F(ModelTest, networkChanges)
 {
    Model m(50, 128, 5.0, 1337, 0.5);
    for(int i = 0; i < 25; i++)
@@ -82,7 +94,7 @@ TEST(ModelTest, networkChanges)
    EXPECT_FALSE(network.GetSnapshot(0) == network.GetSnapshot(24));
 }
 
-TEST(ModelTest, identityRuleUpdate)
+TEST_F(ModelTest, identityRuleUpdate)
 {
    Model m(10, 25, 1.0, 1234, 0.5);
    double initial_density = m.CurrentDensity();
@@ -93,22 +105,22 @@ TEST(ModelTest, identityRuleUpdate)
    }
 }
 
-TEST(ModelTest, majorityRuleUnderFullyConnectedGraph)
+TEST_F(ModelTest, majorityRuleUnderFullyConnectedGraph)
 {
    Model m(10, 50, 20, 1234, 0.7);
    double initial_density = m.CurrentDensity();
-   m.Step(majority_rule);
+   m.Step(&majority_rule);
    EXPECT_EQ(1.0, m.CurrentDensity());
 }
 
-TEST(ModelTest, alwaysOneRule)
+TEST_F(ModelTest, alwaysOneRule)
 {
    Model m(10, 25, 1.0, 1234, 0.5);
    m.Step(&always_one);
    EXPECT_EQ(m.CurrentDensity(), 1.0);
 }
 
-TEST(ModelTest, alwaysZeroRule)
+TEST_F(ModelTest, alwaysZeroRule)
 {
    Model m(10, 25, 1.0, 1234, 0.5);
    m.Step(&always_zero);
@@ -135,33 +147,33 @@ public:
       }
 };
 
-TEST(ModelTest, agentsUpddate)
+TEST_F(ModelTest, agentsUpddate)
 {
    Model m(1000, 1, 1.0, 1234, 0.5);
    m.SetMovementRule(std::make_shared<ConstantHeading>(M_PI));
    Heading initial_heading = m.GetAgents()[0].GetHeading();
-   m.Step(majority_rule);
+   m.Step(&majority_rule);
    EXPECT_EQ(initial_heading, m.GetAgents()[0].GetHeading());
-   m.Step(majority_rule);
+   m.Step(&majority_rule);
    EXPECT_EQ(Heading(M_PI), m.GetAgents()[0].GetHeading());
 }
 
-TEST(ModelTest, agentSpeedZero)
+TEST_F(ModelTest, agentSpeedZero)
 {
    Model m(100, 10, 1.0, 1234, 0.5, 0.0);
    auto agents = m.GetAgents();
-   m.Step(identity_rule);
+   m.Step(&identity_rule);
    for(int i = 0; i < agents.size(); i++)
    {
       ASSERT_EQ(agents[i].Position(), m.GetAgents()[i].Position());
    }
 }
 
-TEST(ModelTest, agentSpeedOneHalf)
+TEST_F(ModelTest, agentSpeedOneHalf)
 {
    Model m(100, 10, 1.0, 1234, 0.5, 0.5);
    auto agents = m.GetAgents();
-   m.Step(identity_rule);
+   m.Step(&identity_rule);
    for(int i = 0; i < agents.size(); i++)
    {
       ASSERT_THAT(agents[i].Position().Distance(m.GetAgents()[i].Position()),
@@ -169,12 +181,12 @@ TEST(ModelTest, agentSpeedOneHalf)
    }
 }
 
-TEST(ModelTest, agentSpeedHigh)
+TEST_F(ModelTest, agentSpeedHigh)
 {
    Model m(100, 10, 1.0, 1234, 0.5, 200);
    for(int i = 0; i < 1000; i++)
    {
-      m.Step(identity_rule);
+      m.Step(&identity_rule);
       auto agents = m.GetAgents();
       for(auto& agent : agents)
       {

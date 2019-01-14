@@ -214,7 +214,7 @@ int Model::Noise(int i)
    }
 }
 
-void Model::Step(Rule* rule)
+void Model::Step(const Rule* rule)
 {
    for(Agent& agent : _agents)
    {
@@ -243,7 +243,7 @@ void Model::Step(Rule* rule)
             neighbor_positions.push_back(_agents[n].Position());
          }
       }
-      new_states[a] = rule(_agent_states[a], _agents[a].Position(), neighbor_states, neighbor_positions);
+      new_states[a] = rule->Apply(_agent_states[a], neighbor_states);
    }
    _agent_states = new_states;
    _stats.PushState(CurrentDensity(), current_network);
