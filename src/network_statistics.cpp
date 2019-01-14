@@ -21,6 +21,8 @@ struct model_config
    double mu;
 } model_config;
 
+MajorityRule majority_rule;
+
 void network_statistics(int num_iterations, double speed)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -39,7 +41,7 @@ void network_statistics(int num_iterations, double speed)
    double num_edges = 0.0;
    for(int step = 0; step < 5000; step++)
    {
-      m.Step(majority_rule);
+      m.Step(&majority_rule);
       auto snapshot_dist = m.GetStats()
          .GetNetwork()
          .GetSnapshot(step+1)

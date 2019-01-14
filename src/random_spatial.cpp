@@ -57,7 +57,7 @@ std::shared_ptr<Model> make_spatial(int seed)
                                   seed, 0.0);
 }
 
-std::vector<int> eval_network(Rule* rule,
+std::vector<int> eval_network(const Rule& rule,
                               std::shared_ptr<Model> m,
                               const std::vector<int>& states)
 {
@@ -74,7 +74,7 @@ std::vector<int> eval_network(Rule* rule,
          neighbor_states.push_back(states[n]);
          neighbor_positions.push_back(agents[n].Position());
       }
-      new_states[a] = model_config.rule(states[a], agents[a].Position(), neighbor_states, neighbor_positions);
+      new_states[a] = rule.Apply(states[a], neighbor_states);
    }
    return new_states;
 }
@@ -105,7 +105,7 @@ bool evaluate_ca(int seed, double initial_density)
    for(int i = 0; i < 5000; i++)
    {
       auto network = make_spatial(u(gen));
-      agent_states = eval_network(majority_rule, network, agent_states);
+      agent_states = eval_network(MajorityRule(), network, agent_states);
       double current_density = density(agent_states);
       if(current_density == 1 || current_density == 0)
       {
@@ -147,7 +147,6 @@ int main(int argc, char** argv)
    model_config.seed                = 1234;
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
-   model_config.rule                = majority_rule;
 
    static struct option long_options[] =
       {
@@ -157,7 +156,6 @@ int main(int argc, char** argv)
          {"arena-size",          required_argument, 0,            'a'},
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
-         {"rule",                required_argument, 0,            'R'},
          {0,0,0,0}
       };
 
@@ -190,26 +188,6 @@ int main(int argc, char** argv)
 
       case 'i':
          model_config.num_iterations = atoi(optarg);
-         break;
-
-      case 'R':
-         if(std::string(optarg) == "gkl")
-         {
-            model_config.rule = gkl2d_strict;
-         }
-         else if(std::string(optarg) == "gkl-lax")
-         {
-            model_config.rule = gkl2d_lax;
-         }
-         else if(std::string(optarg) == "majority")
-         {
-            model_config.rule = majority_rule;
-         }
-         else
-         {
-            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
-            exit(-1);
-         }
          break;
 
       case ':':

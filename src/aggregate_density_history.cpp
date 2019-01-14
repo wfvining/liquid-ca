@@ -14,6 +14,8 @@ struct model_config
    double num_iterations;
 } model_config;
 
+MajorityRule majority_rule;
+
 void density_history()
 {
    Model m(model_config.arena_size,
@@ -26,7 +28,7 @@ void density_history()
 
    for(int i = 0l; i < 5000; i++)
    {
-      m.Step(majority_rule);
+      m.Step(&majority_rule);
       auto agg_degree = m.GetStats().AverageAggregateDegree();
       auto agg_stddev = m.GetStats().AggregateDegreeStdDev();
       std::cout << agg_degree << " " << agg_stddev << std::endl;

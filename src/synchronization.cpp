@@ -25,6 +25,19 @@ struct model_config
    double num_iterations;
 } model_config;
 
+// XXX: quick and dirty implementation of Contrarian
+class ContrarianRule : public Rule {
+private:
+   MajorityRule majority;
+public:
+   ContrarianRule() {}
+   ~ContrarianRule() {}
+   int Apply(int self, const std::vector<int>& neighbors) const override
+      {
+         return 1 - majority.Apply(self, neighbors);
+      }
+} contrarian_rule;
+
 std::mutex density_lock;
 double density = 0.0;
 
@@ -70,7 +83,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density)
       m.RecordNetworkDensityOnly();
       for(int step = 0; step < 5000; step++)
       {
-         m.Step(contrarian_rule);
+         m.Step(&contrarian_rule);
          if(m.GetStats().IsSynchronized())
          {
             break; // done. no need to keep evaluating.
