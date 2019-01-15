@@ -83,6 +83,11 @@ double ModelStats::AggregateDegreeStdDev() const
    return sqrt(_aggregate_network.DegreeVariance());
 }
 
+double ModelStats::MedianAggregateDegree() const
+{
+   return _aggregate_network.MedianDegree();
+}
+
 /// Model functions
 
 Model::Model(double arena_size,

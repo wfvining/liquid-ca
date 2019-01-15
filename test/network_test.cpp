@@ -105,6 +105,43 @@ TEST_F(NetworkTest, averageDegree)
    EXPECT_EQ(9, fully_connected_snapshot.AverageDegree());
 }
 
+TEST_F(NetworkTest, medianDegreeEmpty)
+{
+   EXPECT_EQ(0.0, fully_disconnected_snapshot.MedianDegree());
+}
+
+TEST_F(NetworkTest, medianDegreeFull)
+{
+   EXPECT_EQ(9.0, fully_connected_snapshot.MedianDegree());
+}
+
+TEST_F(NetworkTest, medianDegreeEvenNumberOfNodes)
+{
+   NetworkSnapshot n(4);
+   EXPECT_EQ(0.0, n.MedianDegree());
+   n.AddEdge(0,1);
+   EXPECT_EQ(0.5, n.MedianDegree());
+   n.AddEdge(1,2);
+   EXPECT_EQ(1.0, n.MedianDegree());
+   n.AddEdge(2,3);
+   EXPECT_EQ(1.5, n.MedianDegree());
+}
+
+TEST_F(NetworkTest, medianDegreeOddNumberOfNodes)
+{
+   NetworkSnapshot n(5);
+   EXPECT_EQ(0.0, n.MedianDegree());
+   n.AddEdge(0,1);
+   EXPECT_EQ(0.0, n.MedianDegree());
+   n.AddEdge(1,2);
+   EXPECT_EQ(1.0, n.MedianDegree());
+   n.AddEdge(1,3);
+   n.AddEdge(1,4);
+   EXPECT_EQ(1.0, n.MedianDegree());
+   n.AddEdge(4,0);
+   EXPECT_EQ(2.0, n.MedianDegree());
+}
+
 TEST_F(NetworkTest, degreeDistribution1)
 {
    NetworkSnapshot d1(6);

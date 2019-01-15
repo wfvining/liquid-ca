@@ -75,6 +75,11 @@ public:
 
    double AverageAggregateDegree() const;
    double AggregateDegreeStdDev() const;
+
+   /**
+    * Get the median aggregate degree over all nodes.
+    */
+   double MedianAggregateDegree() const;
 };
 
 /**

@@ -65,6 +65,26 @@ double NetworkSnapshot::DegreeVariance() const
    return variance/_num_vertices;
 }
 
+double NetworkSnapshot::MedianDegree() const
+{
+   std::vector<unsigned int> degrees;
+   for(auto adjacencies : _adjacency_list)
+   {
+      degrees.push_back(adjacencies.size());
+   }
+   std::sort(degrees.begin(), degrees.end());
+
+   if(_num_vertices % 2 == 0)
+   {
+      // then sum the middle two and divide by 2.
+      return (double)(degrees[_num_vertices/2] + degrees[_num_vertices/2 - 1]) / 2.0;
+   }
+   else
+   {
+      return (double)degrees[_num_vertices/2];
+   }
+}
+
 std::vector<unsigned int> NetworkSnapshot::DegreeDistribution() const
 {
    std::vector<unsigned int> degree_distribution(_num_vertices);
