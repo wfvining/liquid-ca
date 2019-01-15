@@ -33,6 +33,7 @@ struct result
    int t;
    double avg_degree;
    double std_dev;
+   double median_degree;
 };
 
 std::mutex results_lock;
@@ -87,10 +88,11 @@ result evaluate_ca(int num_iterations, double speed, double initial_density)
       auto stats = m.GetStats();
       return result { step,
             stats.AverageAggregateDegree(),
-            stats.AggregateDegreeStdDev()
+            stats.AggregateDegreeStdDev(),
+            stats.MedianAggregateDegree()
             };
    }
-   else return result {-1, 0, 0};
+   else return result {-1, 0, 0, 0};
 }
 
 void thread_main()
@@ -244,6 +246,10 @@ int main(int argc, char** argv)
    // print the results
    for(auto result : results)
    {
-      std::cout << result.t << " " << result.avg_degree << " " << result.std_dev << std::endl;
+      std::cout << result.t          << " "
+                << result.avg_degree << " "
+                << result.std_dev    << " "
+                << result.median_degree
+                << std::endl;
    }
 }
