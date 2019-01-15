@@ -56,6 +56,11 @@ public:
    std::vector<double> NormalizedDegreeDistribution() const;
 
    /**
+    * Get the median degree.
+    */
+   double MedianDegree() const;
+
+   /**
     * Get the total number of edges (undirected)
     */
    int EdgeCount() const;

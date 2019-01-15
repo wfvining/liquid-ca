@@ -115,3 +115,8 @@ TEST_F(ModelStatsTest, synchronizedTest)
    EXPECT_TRUE(stats_synchronized.IsSynchronized());
    EXPECT_FALSE(stats_dense.IsSynchronized());
 }
+
+TEST_F(ModelStatsTest, medianAggregateDegreeNoEdges)
+{
+   EXPECT_EQ(0.0, empty.MedianAggregateDegree());
+}
