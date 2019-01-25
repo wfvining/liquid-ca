@@ -23,6 +23,7 @@ void density_history()
            0.5,
            model_config.speed);
    m.SetMovementRule(std::make_shared<RandomWalk>());
+   m.RecordNetworkDensityOnly();
 
    for(int i = 0l; i < 5000; i++)
    {
