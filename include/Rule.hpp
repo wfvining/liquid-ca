@@ -10,7 +10,8 @@ public:
    ~Rule() {}
 
    /**
-    *
+    * Apply the rule to the current state and neighbor's state
+    * yeilding the new state.
     */
    virtual int Apply(int self, const std::vector<int>& neighbors) const = 0;
 };
@@ -47,9 +48,12 @@ public:
  */
 class SingleThreshold : public Rule {
 public:
-   SingleThreshold(double threshold);
-    ~SingleThreshold();
+   SingleThreshold(double threshold, int above);
+   ~SingleThreshold() {}
    int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   double threshold;
+   int    above;
 };
 
 /**
@@ -61,9 +65,16 @@ public:
  * 3. total > high
  */
 class DoubleThreshold : public Rule {
-   DoubleThreshold(double low, double high);
-   ~DoubleThreshold();
+public:
+   DoubleThreshold(double low, double high, int above, int between, int below);
+   ~DoubleThreshold() {}
    int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   double high;
+   double low;
+   int    above;
+   int    between;
+   int    below;
 };
 
 #endif // _MOTION_CA_RULE_HPP
