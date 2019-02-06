@@ -30,14 +30,15 @@ To run tests do `make test`
 In general every experiment is its own executable they take the
 following standard options:
 
-| Option                      | Model parameter                  |
-| --------------------------- | -------------------------------- |
-| `--num-agents <N>`          | N                                |
-| `--arena-size <L>`          | L                                |
-| `--communication-range <r>` | r                                |
-| `--max-time <T>`            | T                                |
-| `--correlated <sigma>`      | use CRW with sigma std. dev.     |
-| `--seed <seed>`             | random seed                      |
+| Option                      | Model parameter                      |
+| --------------------------- | ------------------------------------ |
+| `--num-agents <N>`          | N                                    |
+| `--arena-size <L>`          | L                                    |
+| `--communication-range <r>` | r                                    |
+| `--max-time <T>`            | T                                    |
+| `--correlated <sigma>`      | use CRW with sigma std. dev.         |
+| `--seed <seed>`             | random seed                          |
+| `--by-position`             | initialize agent state by x position |
 
 Some experiments take additional options.
 
@@ -52,6 +53,12 @@ Takes the additional option
 
 Outputs the fraction of correctly classified initial conditions for
 each initial density.
+
+### Time
+`velocity_experiment_time` outputs information about the time to reach
+consensus and the mean/median cumulative degree at the moment consensus is
+reached. It does *not* take the `--iterations` option, instead it always 
+runs 100 iterations.
 
 ### Visualization
 Currently will output a png of the viz every 10 time steps (sorry, I
