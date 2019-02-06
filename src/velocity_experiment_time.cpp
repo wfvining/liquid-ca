@@ -28,9 +28,18 @@ struct model_config
    int    max_time;
 } model_config;
 
+struct partial_result
+{
+   int t;
+   double median_degree;
+};
+
 struct result
 {
    int t;
+   partial_result eighty_percent;
+   partial_result ninty_percent;
+   partial_result nintyfive_percent;
    double avg_degree;
    double std_dev;
    double median_degree;
@@ -73,6 +82,11 @@ result evaluate_ca(int num_iterations, double speed, double initial_density)
    m.SetMovementRule(model_config.movement_rule);
    m.RecordNetworkDensityOnly();
 
+   result r;
+   r.eighty_percent.t    = -1;
+   r.ninty_percent.t     = -1;
+   r.nintyfive_percent.t = -1;
+
    int step;
    for(step = 0; step < model_config.max_time; step++)
    {
@@ -81,18 +95,33 @@ result evaluate_ca(int num_iterations, double speed, double initial_density)
       {
          break; // done. no need to keep evaluating.
       }
+      else if(r.eighty_percent.t == -1 && m.CurrentDensity() >= 0.8)
+      {
+         r.eighty_percent.t = step;
+         r.eighty_percent.median_degree = m.GetStats().MedianAggregateDegree();
+      }
+      else if(r.ninty_percent.t == -1 && m.CurrentDensity() >= 0.90)
+      {
+         r.ninty_percent.t = step;
+         r.ninty_percent.median_degree = m.GetStats().MedianAggregateDegree();
+      }
+      else if(r.nintyfive_percent.t == -1 && m.CurrentDensity() >= 0.95)
+      {
+         r.nintyfive_percent.t = step;
+         r.nintyfive_percent.median_degree = m.GetStats().MedianAggregateDegree();
+      }
    }
 
    if(step < model_config.max_time)
    {
       auto stats = m.GetStats();
-      return result { step,
-            stats.AverageAggregateDegree(),
-            stats.AggregateDegreeStdDev(),
-            stats.MedianAggregateDegree()
-            };
+      r.avg_degree    = stats.AverageAggregateDegree();
+      r.std_dev       = stats.AggregateDegreeStdDev();
+      r.median_degree = stats.MedianAggregateDegree();
+      r.t = step;
+      return r;
    }
-   else return result {-1, 0, 0, 0};
+   else return result {-1, {-1, 0}, {-1, 0}, {-1, 0}, 0, 0, 0};
 }
 
 void thread_main()
@@ -242,14 +271,24 @@ int main(int argc, char** argv)
    {
       thread.join();
    }
-
+   std::cout << "# t avg-degree std-dev median-degree "
+             << "80%-t 80%-median-degree "
+             << "90%-t 90%-median-degree "
+             << "95%-t 95%-median-degree"
+             << std::endl;
    // print the results
    for(auto result : results)
    {
       std::cout << result.t          << " "
                 << result.avg_degree << " "
                 << result.std_dev    << " "
-                << result.median_degree
+                << result.median_degree << " "
+                << result.eighty_percent.t << " "
+                << result.eighty_percent.median_degree << " "
+                << result.ninty_percent.t << " "
+                << result.ninty_percent.median_degree << " "
+                << result.nintyfive_percent.t << " "
+                << result.nintyfive_percent.median_degree
                 << std::endl;
    }
 }
