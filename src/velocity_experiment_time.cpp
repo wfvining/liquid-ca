@@ -54,18 +54,14 @@ int seed = 0;
 int next_seed()
 {
    int s;
-   seed_lock.lock();
    s = seed;
    seed++;
-   seed_lock.unlock();
    return s;
 }
 
 void record_result(result result)
 {
-   results_lock.lock();
    results.push_back(result);
-   results_lock.unlock();
 }
 
 result evaluate_ca(int num_iterations, double speed, double initial_density)
@@ -127,7 +123,7 @@ result evaluate_ca(int num_iterations, double speed, double initial_density)
 void thread_main()
 {
    int total_iterations = 0;
-   while(total_iterations < 10) // XXX: assumes there are exactly 10 threads
+   while(total_iterations < 100)
    {
       result r = evaluate_ca(model_config.num_iterations,
                              model_config.speed,
@@ -258,19 +254,8 @@ int main(int argc, char** argv)
 
    model_config.speed = atof(argv[optind]);
 
-   //int max_threads = std::thread::hardware_concurrency();
-   int max_threads = 10;
-   std::vector<std::thread> threads;
+   thread_main();
 
-   for(int i = 0; i < max_threads; i++)
-   {
-      threads.push_back(std::thread(thread_main));
-   }
-
-   for(auto& thread : threads)
-   {
-      thread.join();
-   }
    std::cout << "# t avg-degree std-dev median-degree "
              << "80%-t 80%-median-degree "
              << "90%-t 90%-median-degree "
