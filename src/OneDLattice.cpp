@@ -63,7 +63,7 @@ double OneDLattice::GetDensity() const
    return (double)std::accumulate(_states.begin(), _states.end(), 0) / (double)_states.size();
 }
 
-void OneDLattice::Step(Rule* rule)
+void OneDLattice::Step(const Rule& rule)
 {
    // XXX: This is (almost) duplicate code from Model::Step
    //      - should refactor!
@@ -88,7 +88,7 @@ void OneDLattice::Step(Rule* rule)
             neighbor_positions.push_back(Point(1, 0));
          }
       }
-      new_states[i] = rule(_states[i], Point(0,0), neighbor_states, neighbor_positions);
+      new_states[i] = rule.Apply(_states[i], neighbor_states);
    }
    _old_states = _states;
    _states = new_states;

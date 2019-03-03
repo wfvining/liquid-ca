@@ -29,6 +29,8 @@ const double MAX_DENSITY  = 4.0;
 
 std::mutex output_lock;
 
+MajorityRule majority_rule;
+
 double evaluate_ca(int num_iterations, double speed, double initial_density, int arena_size)
 {
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
@@ -47,7 +49,7 @@ double evaluate_ca(int num_iterations, double speed, double initial_density, int
 
       for(int step = 0; step < 2500; step++)
       {
-         m.Step(majority_rule);
+         m.Step(&majority_rule);
          if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
          {
             break; // done. no need to keep evaluating.

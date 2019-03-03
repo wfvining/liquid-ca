@@ -4,21 +4,77 @@
 #include <vector>
 #include "Point.hpp"
 
-typedef int Rule(int, const Point&, const std::vector<int>&, const std::vector<Point>&);
+class Rule {
+public:
+   Rule() {}
+   ~Rule() {}
 
-// int identity_rule(int self, const std::vector<int>& neighbors);
-// int always_one(int self, const std::vector<int>& neighbors);
-// int always_zero(int self, const std::vector<int>& neighbors);
-// int majority_rule(int self, const std::vector<int>& neighbors);
-// int contrarian_rule(int self, const std::vector<int>& neighbors);
+   /**
+    * Apply the rule to the current state and neighbor's state
+    * yeilding the new state.
+    */
+   virtual int Apply(int self, const std::vector<int>& neighbors) const = 0;
+};
 
-Rule identity_rule;
-Rule always_one;
-Rule always_zero;
-Rule majority_rule;
-Rule contrarian_rule;
-Rule gkl2d_strict;
-Rule gkl2d_lax;
-Rule gkl2d_mode;
+class Identity : public Rule {
+public:
+   Identity();
+   ~Identity();
+   int Apply(int self, const std::vector<int>& neighbors) const override;
+};
+
+class Constant : public Rule {
+public:
+   Constant(int c);
+   ~Constant();
+   int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   int state;
+};
+
+class MajorityRule : public Rule {
+public:
+   MajorityRule();
+   ~MajorityRule();
+   int Apply(int self, const std::vector<int>& neighbors) const override;
+};
+
+/**
+ * A totalisitc rule with a single threshold.
+ *
+ * Creates two transitions:
+ * 1. total <  threshold
+ * 2. total >= threshold
+ */
+class SingleThreshold : public Rule {
+public:
+   SingleThreshold(double threshold, int above);
+   ~SingleThreshold() {}
+   int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   double threshold;
+   int    above;
+};
+
+/**
+ * A totalistic rule with two thresholds.
+ *
+ * Creates three possible transitions:
+ * 1. total < low
+ * 2. low <= total <= high
+ * 3. total > high
+ */
+class DoubleThreshold : public Rule {
+public:
+   DoubleThreshold(double low, double high, int above, int between, int below);
+   ~DoubleThreshold() {}
+   int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   double high;
+   double low;
+   int    above;
+   int    between;
+   int    below;
+};
 
 #endif // _MOTION_CA_RULE_HPP

@@ -40,7 +40,7 @@ public:
    /**
     * Step the CA
     */
-   void Step(Rule* rule);
+   void Step(const Rule& rule);
 
    /**
     * Return true if the state vector is still changing.

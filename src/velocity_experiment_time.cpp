@@ -23,7 +23,6 @@ struct model_config
    double mu;
    double speed;
    double num_iterations;
-   Rule*  rule;
    std::shared_ptr<MovementRule> movement_rule;
    int    max_time;
 } model_config;
@@ -44,6 +43,8 @@ struct result
    double std_dev;
    double median_degree;
 };
+
+MajorityRule majority_rule;
 
 std::mutex results_lock;
 std::vector<result> results;
@@ -90,7 +91,7 @@ result evaluate_ca(int num_iterations, double speed, double initial_density)
    int step;
    for(step = 0; step < model_config.max_time; step++)
    {
-      m.Step(model_config.rule);
+      m.Step(&majority_rule);
       if(m.CurrentDensity() == 0 || m.CurrentDensity() == 1)
       {
          break; // done. no need to keep evaluating.
@@ -155,7 +156,6 @@ int main(int argc, char** argv)
    model_config.mu                  = 1.2;
    model_config.num_iterations      = 100;
    model_config.movement_rule       = std::make_shared<RandomWalk>();
-   model_config.rule                = majority_rule;
    model_config.max_time            = 5000;
 
    static struct option long_options[] =
@@ -167,7 +167,6 @@ int main(int argc, char** argv)
          {"seed",                required_argument, 0,            's'},
          {"iterations",          required_argument, 0,            'i'},
          {"mu",                  required_argument, 0,            'm'},
-         {"rule",                required_argument, 0,            'R'},
          {"correlated",          required_argument, 0,            'c'},
          {"max-time",            required_argument, 0,            'T'},
          {0,0,0,0}
@@ -210,30 +209,6 @@ int main(int argc, char** argv)
 
       case 'T':
          model_config.max_time = atoi(optarg);
-         break;
-
-      case 'R':
-         if(std::string(optarg) == "gkl")
-         {
-            model_config.rule = gkl2d_strict;
-         }
-         else if(std::string(optarg) == "gkl-lax")
-         {
-            model_config.rule = gkl2d_lax;
-         }
-         else if(std::string(optarg) == "majority")
-         {
-            model_config.rule = majority_rule;
-         }
-         else if(std::string(optarg) == "gkl-mode")
-         {
-            model_config.rule = gkl2d_mode;
-         }
-         else
-         {
-            std::cout << "invalid rule (" << std::string(optarg) << ")" << std::endl;
-            exit(-1);
-         }
          break;
 
       case 'c':

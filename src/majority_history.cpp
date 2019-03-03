@@ -15,6 +15,8 @@ struct model_config
    std::shared_ptr<MovementRule> movement_rule;
 } model_config;
 
+MajorityRule majority_rule;
+
 void density_history()
 {
    Model m(model_config.arena_size,
@@ -28,7 +30,7 @@ void density_history()
    for(int i = 0; i < 1000; i++)
    {
       std::cout << i << " " << m.CurrentDensity() << std::endl;
-      m.Step(majority_rule);
+      m.Step(&majority_rule);
    }
 }
 
