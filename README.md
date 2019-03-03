@@ -9,8 +9,8 @@ An example of the simulation running is [here](https://youtu.be/Cbwa5ovKSgU).
 
 ## Dependencies
 
-* [SFML](https://www.sfml-dev.org/) is used for the visualization and
-  must be installed to compile.
+* [SFML](https://www.sfml-dev.org/) is used for the visualization (viz can be disabled 
+  if you do not have this installed, spp below).
 * pthreads
 
 The code has been built and tested with the viz on Ubuntu 16.05,
@@ -23,6 +23,12 @@ $ mkdir build
 $ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Release .. && make
 ```
+
+### Build without vizualization
+
+To compile with no vizualization pass `-DBUILD_VIZ=Off` to `cmake`.
+
+### Tests
 
 To run tests do `make test`
 
