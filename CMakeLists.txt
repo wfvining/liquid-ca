@@ -12,6 +12,7 @@ add_library(model SHARED
   src/Point.cpp
   src/Heading.cpp
   src/Agent.cpp
+  src/ModelStats.cpp
   src/Model.cpp
   src/Network.cpp
   src/Rule.cpp
