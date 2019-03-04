@@ -46,7 +46,7 @@ public:
     * the right will be in state 0.
     */
    void SetPositionalState(double initial_density);
-   
+
    /**
     * Get the current density of the model (ie. proportion of black
     * states to white states).
@@ -99,7 +99,7 @@ public:
     * Set the amount of noise. p is a real number in [0,1].
     */
    void SetNoise(double p);
-   
+
    /**
     * Evaluate the model for one time-step.
     */
