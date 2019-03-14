@@ -2,7 +2,6 @@
 #define _MOTION_CA_RULE_HPP
 
 #include <vector>
-#include "Point.hpp"
 
 class Rule {
 public:
