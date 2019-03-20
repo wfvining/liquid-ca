@@ -22,11 +22,8 @@ private:
    std::vector<Agent> _agents;
    std::vector<int>   _agent_states;
    int                _steps;
-   double             _arena_size;
 
    std::mt19937_64 _rng;
-   std::function<double(std::mt19937_64&)> _turn_distribution;
-   std::function<int(std::mt19937_64&)>    _step_distribution;
    std::bernoulli_distribution             _noise;
    double                                  _noise_probability;
 
@@ -35,8 +32,9 @@ private:
    int Noise(int i);
 
 public:
-   Model(double arena_size, int num_agents, double communication_range,
-         int seed, double initial_density, double agent_speed = 1.0);
+   Model(int num_agents, double communication_range,
+         int seed, double initial_density, double agent_speed = 1.0,
+         std::unique_ptr<Surface> surface);
    ~Model();
 
    /**
