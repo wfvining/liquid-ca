@@ -1,4 +1,5 @@
 #include "OneDLattice.hpp"
+#include "Point.hpp"
 #include <algorithm>
 
 OneDLattice::OneDLattice(int num_cells, int radius) :

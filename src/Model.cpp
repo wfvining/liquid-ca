@@ -127,7 +127,7 @@ int Model::Noise(int i)
    }
 }
 
-void Model::Step(const Rule* rule)
+void Model::Step(const std::shared_ptr<Rule> rule)
 {
    for(Agent& agent : _agents)
    {

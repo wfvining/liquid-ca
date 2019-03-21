@@ -1,5 +1,8 @@
+#ifndef _LCA_FACTORY_HPP
+#define _LCA_FACTORY_HPP
+
 #include <memory>
-#include <thread>
+#include <mutex>
 
 #include "Rule.hpp"
 #include "MovementRule.hpp"
@@ -21,7 +24,7 @@ private:
    double                                      speed_;
    int                                         max_time_; /* max number of time steps to run */
    std::shared_ptr<MovementRule>               movement_rule_;
-   Rule                                        rule_; /* CA rule */
+   std::shared_ptr<Rule>                       rule_; /* CA rule */
    std::default_random_engine                  random_engine_;
    std::uniform_int_distribution<unsigned int> seed_distribution_;
 
@@ -36,6 +39,7 @@ private:
 public:
 
    LCAFactory();
+   ~LCAFactory() {}
 
    /**
     * Initialize the factory based on command line arguments.
@@ -48,7 +52,7 @@ public:
     * @param initial_density initial fraction of 'ones'
     * @return A new LCA instance
     */
-   std::unique_ptr<LCA> Create(double initial_density)
+   std::unique_ptr<LCA> Create(double initial_density);
 
    /**
     * Set the maximum time the simulation will run.
@@ -70,3 +74,5 @@ public:
     */
    void RecordStateHistory(bool record);
 };
+
+#endif // _LCA_FACTORY_HPP

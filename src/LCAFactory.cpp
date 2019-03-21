@@ -2,19 +2,20 @@
 
 #include <getopt.h>
 #include <limits>
+#include <sstream>
 
-LCAFactory::LCAFactory(int argc, char** argv) :
+LCAFactory::LCAFactory() :
    num_agents_(255),
    communication_range_(5),
    arena_size_(100),
    speed_(1),
    seed_(-1),
    max_time_(5000),
-   rule_(Identity()),
-   init_(Uniform),
+   init_(Uniform)
 {
-   movement_rule_ = std::make_unique<RandomWalk>();
-   seed_distribution_ = std::uniform_int_distribution<unsigned int>(numeric_limits<unsigned int>::max())
+   rule_ = std::make_unique<Identity>();
+   movement_rule_ = std::make_shared<RandomWalk>();
+   seed_distribution_ = std::uniform_int_distribution<unsigned int>(std::numeric_limits<unsigned int>::max());
 }
 
 void LCAFactory::Init(int argc, char** argv)
@@ -34,10 +35,11 @@ void LCAFactory::Init(int argc, char** argv)
          {0,0,0,0}
       };
    int option_index = 0;
-
+   char opt_char;
    while((opt_char = getopt_long(argc, argv, "r:n:a:s:S:i:c:R:T:",
                                  long_options, &option_index)) != -1)
    {
+      std::stringstream message;
       switch(opt_char)
       {
       case 'r':
@@ -74,7 +76,6 @@ void LCAFactory::Init(int argc, char** argv)
          else
          {
             // TODO: Implement additional rules
-            std::ostringstream message;
             message << "invalid LCA rule (" << std::string(optarg) << ")";
             throw std::invalid_argument(message.str());
          }
@@ -85,15 +86,12 @@ void LCAFactory::Init(int argc, char** argv)
          break;
 
       case ':':
-         std::ostringstream message;
          message << "option " << long_options[option_index].name << "requires an argument";
          throw std::invalid_argument(message.str());
          break;
 
       case '?':
-         std::ostringstream message;
-         message << "unrecognized option";
-         throw std::invalid_argument(message.str());
+         throw std::invalid_argument("unrecognized option");
          break;
       }
    }
@@ -115,18 +113,17 @@ std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
    // lock so multiple threads can produce new LCAs at once
    std::lock_guard<std::mutex> lock(new_lca_mutex_);
 
-   std::unique_ptr<Model> model = std::make_unique<Model>
-      (arena_size_,
-       num_agents_,
-       communication_range_,
-       seed_distribution_(random_engine_),
-       initial_density,
-       speed_);
+   Model model(arena_size_,
+               num_agents_,
+               communication_range_,
+               seed_distribution_(random_engine_),
+               initial_density,
+               speed_);
 
    if(init_ == ByPosition)
    {
-      model->SetPositionalState(initial_density);
+      model.SetPositionalState(initial_density);
    }
 
-   return std::make_unique<LCA>(model, max_time_);
+   return std::make_unique<LCA>(model, rule_, max_time_);
 }
