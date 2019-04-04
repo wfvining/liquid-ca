@@ -17,17 +17,16 @@ class LCAFactory
 private:
    std::mutex new_lca_mutex_; // mutex used when constructing new LCA instances
 
-   int                                         num_agents_;
-   double                                      communication_range_;
-   int                                         arena_size_;
-   int                                         seed_;
-   double                                      speed_;
-   int                                         max_time_; /* max number of time steps to run */
-   std::shared_ptr<MovementRule>               movement_rule_;
-   std::shared_ptr<Rule>                       rule_; /* CA rule */
-   std::default_random_engine                  random_engine_;
-   std::uniform_int_distribution<unsigned int> seed_distribution_;
-
+   int                                num_agents_;
+   double                             communication_range_;
+   int                                arena_size_;
+   int                                seed_;
+   double                             speed_;
+   int                                max_time_; /* max number of time steps to run */
+   std::shared_ptr<MovementRule>      movement_rule_;
+   std::shared_ptr<Rule>              rule_; /* CA rule */
+   std::default_random_engine         random_engine_;
+   std::uniform_int_distribution<int> seed_distribution_;
 
    enum InitializationMethod {
       Uniform,    // initialize states at random
@@ -36,6 +35,8 @@ private:
                   // the non-quiescent state.
    } init_;
 
+   void ParseRule(std::string rule_spec);
+
 public:
 
    LCAFactory();
@@ -43,10 +44,11 @@ public:
 
    /**
     * Initialize the factory based on command line arguments.
+    * @return the first index of any remaining args in argv
     */
-   void Init(int argc, char** argv);
+   int Init(int argc, char** argv);
 
-  /**
+   /**
     * Make a new LCA instance from the current factory settings. This
     * operation is thread safe.
     * @param initial_density initial fraction of 'ones'
@@ -73,6 +75,11 @@ public:
     * time step.
     */
    void RecordStateHistory(bool record);
+
+   /**
+    * Get the arena size used by the factory.
+    */
+   double ArenaSize() const;
 };
 
 #endif // _LCA_FACTORY_HPP

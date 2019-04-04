@@ -3,6 +3,7 @@
 #include <numeric> // std::accumulate
 
 MajorityRule::MajorityRule() {}
+MajorityRule::MajorityRule(bool f) : flip(f) {}
 MajorityRule::~MajorityRule() {}
 
 int MajorityRule::Apply(int self, const std::vector<int>& neighbors) const
@@ -14,7 +15,7 @@ int MajorityRule::Apply(int self, const std::vector<int>& neighbors) const
    }
    else if((double)n == (double)(neighbors.size()+1) / 2.0)
    {
-      return 1 - self;
+      return (flip ? 1 - self : self);
    }
    else
    {
@@ -83,5 +84,26 @@ int DoubleThreshold::Apply(int self, const std::vector<int>& neighbors) const
    else
    {
       return between;
+   }
+}
+
+Quorum::Quorum(double t) :
+   threshold(t)
+{}
+
+int Quorum::Apply(int self, const std::vector<int>& neighbors) const
+{
+   double local_density = density(self, neighbors);
+   if(local_density < (1 - threshold))
+   {
+      return 0;
+   }
+   else if(local_density > threshold)
+   {
+      return 1;
+   }
+   else
+   {
+      return self;
    }
 }

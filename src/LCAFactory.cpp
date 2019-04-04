@@ -15,10 +15,30 @@ LCAFactory::LCAFactory() :
 {
    rule_ = std::make_unique<Identity>();
    movement_rule_ = std::make_shared<RandomWalk>();
-   seed_distribution_ = std::uniform_int_distribution<unsigned int>(std::numeric_limits<unsigned int>::max());
+   seed_distribution_ = std::uniform_int_distribution<int>(0, std::numeric_limits<int>::max());
 }
 
-void LCAFactory::Init(int argc, char** argv)
+void LCAFactory::ParseRule(std::string rule_spec)
+{
+   if(rule_spec == "majority")
+   {
+      rule_ = std::make_shared<MajorityRule>();
+   }
+   else if(rule_spec == "majority-noswitch")
+   {
+      rule_ = std::make_shared<MajorityRule>(false);
+   }
+   else
+   {
+      std::stringstream message;
+      // TODO: Implement additional rules
+      message << "invalid LCA rule (" << std::string(optarg) << ")";
+      throw std::invalid_argument(message.str());
+   }
+
+}
+
+int LCAFactory::Init(int argc, char** argv)
 {
    int by_position = 0;
 
@@ -27,8 +47,10 @@ void LCAFactory::Init(int argc, char** argv)
          {"communication-range", required_argument, 0,            'r'},
          {"num-agents",          required_argument, 0,            'n'},
          {"arena-size",          required_argument, 0,            'a'},
-         {"seed",                required_argument, 0,            's'},
-         {"rule",                required_argument, 0,            'R'},
+         {"speed",               required_argument, 0,            's'},
+         {"seed",                required_argument, 0,            'S'},
+         {"majority",            required_argument, 0,            'm'},
+         {"quorum",              required_argument, 0,            'q'},
          {"correlated",          required_argument, 0,            'c'},
          {"max-time",            required_argument, 0,            'T'},
          {"by-position",         no_argument,       &by_position, 'p'},
@@ -36,7 +58,7 @@ void LCAFactory::Init(int argc, char** argv)
       };
    int option_index = 0;
    char opt_char;
-   while((opt_char = getopt_long(argc, argv, "r:n:a:s:S:i:c:R:T:",
+   while((opt_char = getopt_long(argc, argv, "r:n:a:s:S:i:c:R:T:m:q:",
                                  long_options, &option_index)) != -1)
    {
       std::stringstream message;
@@ -60,25 +82,25 @@ void LCAFactory::Init(int argc, char** argv)
 
       case 'S':
          seed_ = atoi(optarg);
-
          break;
 
       case 'T':
          max_time_ = atoi(optarg);
          break;
 
-      case 'R':
-         if(std::string(optarg) == "majority")
+      case 'm':
+         if(std::string(optarg) == "true")
          {
-            // nothing to be done
-            // Default is the majority rule
+            rule_ = std::make_shared<MajorityRule>(true);
          }
          else
          {
-            // TODO: Implement additional rules
-            message << "invalid LCA rule (" << std::string(optarg) << ")";
-            throw std::invalid_argument(message.str());
+            rule_ = std::make_shared<MajorityRule>(false);
          }
+         break;
+
+      case 'q':
+         rule_ = std::make_shared<Quorum>(atof(optarg));
          break;
 
       case 'c':
@@ -103,9 +125,15 @@ void LCAFactory::Init(int argc, char** argv)
 
    if(seed_ != -1)
    {
-      // then don't use an explicit seed
       random_engine_.seed(seed_);
    }
+   else
+   {
+      std::random_device rd;
+      random_engine_.seed(rd());
+   }
+
+   return optind;
 }
 
 std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
@@ -113,10 +141,12 @@ std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
    // lock so multiple threads can produce new LCAs at once
    std::lock_guard<std::mutex> lock(new_lca_mutex_);
 
+   int seed = seed_distribution_(random_engine_);
+
    Model model(arena_size_,
                num_agents_,
                communication_range_,
-               seed_distribution_(random_engine_),
+               seed,
                initial_density,
                speed_);
 
@@ -126,4 +156,9 @@ std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
    }
 
    return std::make_unique<LCA>(model, rule_, max_time_);
+}
+
+double LCAFactory::ArenaSize() const
+{
+   return arena_size_;
 }

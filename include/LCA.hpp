@@ -31,7 +31,19 @@ public:
     */
    void Run(std::function<bool(const ModelStats&)> early_stop);
 
+   /**
+    * Run the LCA simulation for the given number of time steps.
+    * @param k the number of steps to run.
+    */
+   void Run(int k);
+
    const ModelStats& GetStats() const;
+
+   const std::vector<Agent>& GetAgents() const;
+   const std::vector<int>&   GetStates() const;
+   std::shared_ptr<NetworkSnapshot> CurrentNetwork() const;
+   double CurrentDensity() const;
+   void MinimizeMemory();
 };
 
 #endif // _LCA_HPP

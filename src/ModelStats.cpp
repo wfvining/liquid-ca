@@ -84,3 +84,8 @@ double ModelStats::MedianAggregateDegree() const
 {
    return _aggregate_network.MedianDegree();
 }
+
+double ModelStats::CurrentCADensity() const
+{
+   return _ca_density.back();
+}
