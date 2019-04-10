@@ -149,6 +149,7 @@ std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
                seed,
                initial_density,
                speed_);
+   model.SetMovementRule(movement_rule_);
 
    if(init_ == ByPosition)
    {
