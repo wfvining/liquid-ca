@@ -22,7 +22,9 @@ int main(int argc, char** argv)
    std::unique_ptr<LCA> lca = factory.Create(initial_density);
 
    sf::RenderWindow window(sf::VideoMode(600,600), "Liquid-CA");
-   window.setFramerateLimit(10);
+
+   int frameRate = 10;
+   window.setFramerateLimit(frameRate);
 
    sf::View centeredView;
    centeredView.setCenter(0,0);
@@ -33,14 +35,37 @@ int main(int argc, char** argv)
    std::cout << " (" << (lca->CurrentDensity() > 0.5 ? "white" : "black") << ")" << std::endl;
    int i = 0;
    bool done = false;
+   bool run  = false;
    while(window.isOpen())
    {
       sf::Event event;
       while(window.pollEvent(event))
       {
-         if(event.type == sf::Event::Closed)
+         switch(event.type)
          {
+         case sf::Event::Closed:
             window.close();
+            break;
+
+         case sf::Event::KeyPressed:
+            if(event.key.code == sf::Keyboard::Space)
+            {
+               run = !run;
+            }
+            else if(event.key.code == sf::Keyboard::Up)
+            {
+               if(frameRate < 60) frameRate+=10;
+               std::cout << "frameRate: " << frameRate << std::endl;
+               window.setFramerateLimit(frameRate);
+            }
+            else if(event.key.code == sf::Keyboard::Down)
+            {
+               if(frameRate > 10) frameRate-=10;
+               std::cout << "frameRate: " << frameRate << std::endl;
+               window.setFramerateLimit(frameRate);
+            }
+
+            break;
          }
       }
 
@@ -85,13 +110,15 @@ int main(int argc, char** argv)
          window.draw(agent_shape);
       }
       window.display();
-      if((i % 10) == 0) {
-         auto frame = window.capture();
-         std::stringstream fname;
-         fname << "frame"<<i<<".png";
-         frame.saveToFile(fname.str());
+      // if((i % 10) == 0) {
+      //    auto frame = window.capture();
+      //    std::stringstream fname;
+      //    fname << "frame"<<i<<".png";
+      //    frame.saveToFile(fname.str());
+      // }
+      if(run) {
+         lca->Run(1);
+         i++;
       }
-      lca->Run(1);
-      i++;
    }
 }
