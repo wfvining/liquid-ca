@@ -7,6 +7,17 @@ automaton.
 
 An example of the simulation running is [here](https://youtu.be/Cbwa5ovKSgU).
 
+## Previous Versions
+
+For the version of this code used in the paper ["How does mobility
+help distributed systems
+compute?"](https://dx.doi.org/10.1098/rtsb.2018.0375) checkout
+`v0.1.1`.
+
+```
+$ git checkout v0.1.1
+```
+
 ## Dependencies
 
 * [SFML](https://www.sfml-dev.org/) is used for the visualization (viz can be disabled 
@@ -45,6 +56,7 @@ following standard options:
 | `--correlated <sigma>`      | use CRW with sigma std. dev.         |
 | `--seed <seed>`             | random seed                          |
 | `--by-position`             | initialize agent state by x position |
+| `--speed <s>`               | agent speed                          |
 
 Some experiments take additional options.
 
@@ -52,10 +64,10 @@ Some experiments take additional options.
 Basic experiment that evaluates the performance of the LCA for initial
 densities in the range [0,1].
 
-`$ ./velocity_experiment <speed> [options listed above]`
+`$ ./velocity_experiment <iterations> [options listed above]`
 
-Takes the additional option
-* `--iterations <n>`: evaluate each initial density with n independent random initial conditions
+Evaluates each initial density with `iterations` independent random
+initial conditions for each initial density.
 
 Outputs the fraction of correctly classified initial conditions for
 each initial density.
@@ -63,18 +75,10 @@ each initial density.
 ### Time
 `velocity_experiment_time` outputs information about the time to reach
 consensus and the mean/median cumulative degree at the moment consensus is
-reached. It does *not* take the `--iterations` option, instead it always 
-runs 100 iterations.
+reached. Always runs 100 iterations.
 
 ### Visualization
 Currently will output a png of the viz every 10 time steps (sorry, I
 should make that optional).
 
-`./sim_viz <speed> [optons from above]`
-
-Addtionally takes the following options
-
-* `--frame-rate <frames per second>`
-* `--initial-density <rho>`
-
-
+`./sim_viz <initial-density> [optons from above]`
