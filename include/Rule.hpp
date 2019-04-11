@@ -5,9 +5,6 @@
 
 class Rule {
 public:
-   Rule() {}
-   ~Rule() {}
-
    /**
     * Apply the rule to the current state and neighbor's state
     * yeilding the new state.
@@ -34,8 +31,11 @@ private:
 class MajorityRule : public Rule {
 public:
    MajorityRule();
+   MajorityRule(bool f);
    ~MajorityRule();
    int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   bool flip = true;
 };
 
 /**
@@ -74,6 +74,15 @@ private:
    int    above;
    int    between;
    int    below;
+};
+
+class Quorum : public Rule {
+public:
+   Quorum(double t);
+   ~Quorum() {}
+   int Apply(int self, const std::vector<int>& neighbors) const override;
+private:
+   double threshold;
 };
 
 #endif // _MOTION_CA_RULE_HPP

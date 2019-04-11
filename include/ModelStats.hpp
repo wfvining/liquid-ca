@@ -75,6 +75,8 @@ public:
     * Get the median aggregate degree over all nodes.
     */
    double MedianAggregateDegree() const;
+
+   double CurrentCADensity() const;
 };
 
 #endif // _MODEL_STATS_HPP

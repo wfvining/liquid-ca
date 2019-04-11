@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(motion-ca)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_VIZ "build the visualization (requires SFML)" ON)
@@ -16,60 +16,62 @@ add_library(model SHARED
   src/Model.cpp
   src/Network.cpp
   src/Rule.cpp
-  src/MovementRule.cpp)
+  src/MovementRule.cpp
+  src/LCA.cpp
+  src/LCAFactory.cpp)
 
 find_package(Threads REQUIRED)
 
-add_executable(one_d_lattice
-  src/OneDLattice.cpp
-  src/one_dimensional_lattice.cpp)
+# add_executable(one_d_lattice
+#   src/OneDLattice.cpp
+#   src/one_dimensional_lattice.cpp)
 
-target_link_libraries(one_d_lattice model pthread)
+# target_link_libraries(one_d_lattice model pthread)
 
 add_executable(velocity_experiment
   src/velocity_experiment.cpp)
 target_link_libraries(velocity_experiment model pthread)
 
-add_executable(velocity_experiment_time
-  src/velocity_experiment_time.cpp)
-target_link_libraries(velocity_experiment_time model pthread)
+# add_executable(velocity_experiment_time
+#   src/velocity_experiment_time.cpp)
+# target_link_libraries(velocity_experiment_time model pthread)
 
-add_executable(levy_viz
-  src/levy_viz.cpp)
-target_link_libraries(levy_viz model)
+# add_executable(levy_viz
+#   src/levy_viz.cpp)
+# target_link_libraries(levy_viz model)
 
-add_executable(network_statistics
-  src/network_statistics.cpp)
-target_link_libraries(network_statistics model)
+# add_executable(network_statistics
+#   src/network_statistics.cpp)
+# target_link_libraries(network_statistics model)
 
-add_executable(random_spatial
-  src/random_spatial.cpp)
-target_link_libraries(random_spatial model pthread)
+# add_executable(random_spatial
+#   src/random_spatial.cpp)
+# target_link_libraries(random_spatial model pthread)
 
-add_executable(random_regular
-  src/random_regular_networks.cpp
-  src/OneDLattice.cpp)
-target_link_libraries(random_regular model pthread)
+# add_executable(random_regular
+#   src/random_regular_networks.cpp
+#   src/OneDLattice.cpp)
+# target_link_libraries(random_regular model pthread)
 
-add_executable(density_sweep
-  src/density_sweep.cpp)
-target_link_libraries(density_sweep model pthread)
+# add_executable(density_sweep
+#   src/density_sweep.cpp)
+# target_link_libraries(density_sweep model pthread)
 
-add_executable(velocity_sweep
-  src/velocity_sweep.cpp)
-target_link_libraries(velocity_sweep model pthread)
+# add_executable(velocity_sweep
+#   src/velocity_sweep.cpp)
+# target_link_libraries(velocity_sweep model pthread)
 
-add_executable(density_history
-  src/aggregate_density_history.cpp)
-target_link_libraries(density_history model)
+# add_executable(density_history
+#   src/aggregate_density_history.cpp)
+# target_link_libraries(density_history model)
 
-add_executable(synchronization
-  src/synchronization.cpp)
-target_link_libraries(synchronization model pthread)
+# add_executable(synchronization
+#   src/synchronization.cpp)
+# target_link_libraries(synchronization model pthread)
 
-add_executable(majority_history
-  src/majority_history.cpp)
-target_link_libraries(majority_history model)
+# add_executable(majority_history
+#   src/majority_history.cpp)
+# target_link_libraries(majority_history model)
 
 
 if(BUILD_VIZ)
