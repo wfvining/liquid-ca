@@ -3,6 +3,10 @@
 #include <getopt.h>
 #include <limits>
 #include <sstream>
+#include <streambuf>
+#include <fstream>
+
+#include "TotalisticRule.hpp"
 
 LCAFactory::LCAFactory() :
    num_agents_(255),
@@ -18,26 +22,6 @@ LCAFactory::LCAFactory() :
    seed_distribution_ = std::uniform_int_distribution<int>(0, std::numeric_limits<int>::max());
 }
 
-void LCAFactory::ParseRule(std::string rule_spec)
-{
-   if(rule_spec == "majority")
-   {
-      rule_ = std::make_shared<MajorityRule>();
-   }
-   else if(rule_spec == "majority-noswitch")
-   {
-      rule_ = std::make_shared<MajorityRule>(false);
-   }
-   else
-   {
-      std::stringstream message;
-      // TODO: Implement additional rules
-      message << "invalid LCA rule (" << std::string(optarg) << ")";
-      throw std::invalid_argument(message.str());
-   }
-
-}
-
 int LCAFactory::Init(int argc, char** argv)
 {
    int by_position = 0;
@@ -49,16 +33,17 @@ int LCAFactory::Init(int argc, char** argv)
          {"arena-size",          required_argument, 0,            'a'},
          {"speed",               required_argument, 0,            's'},
          {"seed",                required_argument, 0,            'S'},
-         {"majority",            required_argument, 0,            'm'},
-         {"quorum",              required_argument, 0,            'q'},
          {"correlated",          required_argument, 0,            'c'},
          {"max-time",            required_argument, 0,            'T'},
          {"by-position",         no_argument,       &by_position, 'p'},
+         {"rule",                required_argument, 0,            'R'},
          {0,0,0,0}
       };
    int option_index = 0;
    char opt_char;
-   while((opt_char = getopt_long(argc, argv, "r:n:a:s:S:i:c:R:T:m:q:",
+   std::ifstream file;
+   TotalisticRule r;
+   while((opt_char = getopt_long(argc, argv, "r:n:a:s:S:c:R:T:",
                                  long_options, &option_index)) != -1)
    {
       std::stringstream message;
@@ -88,23 +73,16 @@ int LCAFactory::Init(int argc, char** argv)
          max_time_ = atoi(optarg);
          break;
 
-      case 'm':
-         if(std::string(optarg) == "true")
-         {
-            rule_ = std::make_shared<MajorityRule>(true);
-         }
-         else
-         {
-            rule_ = std::make_shared<MajorityRule>(false);
-         }
-         break;
-
-      case 'q':
-         rule_ = std::make_shared<Quorum>(atof(optarg));
-         break;
-
       case 'c':
          movement_rule_ = std::make_shared<CorrelatedRandomWalk>(atof(optarg));
+         break;
+
+      case 'R':
+         file = std::ifstream(std::string(optarg));
+         file >> r;
+
+         rule_ = std::make_shared<TotalisticRule>(r);
+
          break;
 
       case ':':

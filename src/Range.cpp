@@ -40,3 +40,8 @@ bool Range::Contains(double k) const
       return k < max_ && k > min_;
    }
 }
+
+std::ostream& operator<<(std::ostream& out, const Range& r)
+{
+   return out << (r.include_min_ ? "[" : "(") << r.min_ << "," << r.max_ << (r.include_max_ ? "]" : ")");
+}
