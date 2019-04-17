@@ -1,6 +1,8 @@
 #ifndef _LCA_RANGE_HPP
 #define _LCA_RANGE_HPP
 
+#include <iostream>
+
 class Range
 {
 private:
@@ -18,6 +20,8 @@ public:
    Range ExcludeMin() const;
 
    bool Contains(double k) const;
+
+   friend std::ostream& operator<< (std::ostream& out, const Range& r);
 };
 
 #endif // _LCA_RANGE_HPP

@@ -20,6 +20,7 @@ int main(int argc, char** argv)
    }
 
    std::unique_ptr<LCA> lca = factory.Create(initial_density);
+   lca->MinimizeMemory();
 
    sf::RenderWindow window(sf::VideoMode(600,600), "Liquid-CA");
 

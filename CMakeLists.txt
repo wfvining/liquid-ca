@@ -19,7 +19,9 @@ add_library(model SHARED
   src/MovementRule.cpp
   src/LCA.cpp
   src/LCAFactory.cpp
-  src/Range.cpp)
+  src/Range.cpp
+  src/transition_parser.cpp
+  src/TotalisticRule.cpp)
 
 find_package(Threads REQUIRED)
 
