@@ -7,6 +7,10 @@ automaton.
 
 An example of the simulation running is [here](https://youtu.be/Cbwa5ovKSgU).
 
+For more information look [here](https://www.cs.unm.edu/~wfvining/liquid-brains.html)
+
+The full paper is available [here](https://dx.doi.org/10.1098/rstb.2018.0375)
+
 ## Previous Versions
 
 For the version of this code used in the paper ["How does mobility
