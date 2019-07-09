@@ -6,8 +6,53 @@
 #include "Model.hpp"
 #include "Rule.hpp"
 #include "LCAFactory.hpp"
+#include "Heading.hpp"
 
 #include <getopt.h>
+
+sf::Color headingToColor(const Heading& heading, int state)
+{
+   double r, g, b;
+   double h = heading.Radians() / (2.0*M_PI);
+   double h_prime = h * 6;
+   double v = 0.6;
+   double s = 1.0 / (state+1);
+   double c = v * s;
+   double x = c * (1 - fabs(remainder(h_prime, 2.0) - 1));
+
+   if(h_prime <= 1) {
+      r = c;
+      g = x;
+      b = 0;
+   }
+   else if(h_prime <= 2) {
+      r = x;
+      g = c;
+      b = 0;
+   }
+   else if(h_prime <= 3) {
+      r = 0;
+      g = c;
+      b = x;
+   }
+   else if(h_prime <= 4) {
+      r = 0;
+      g = x;
+      b = c;
+   }
+   else if(h_prime <= 5) {
+      r = x;
+      g = 0;
+      b = c;
+   }
+   else if(h_prime <= 6) {
+      r = c;
+      g = 0;
+      b = x;
+   }
+
+   return sf::Color(r*255,g*255,b*255);
+}
 
 int main(int argc, char** argv)
 {
@@ -55,7 +100,7 @@ int main(int argc, char** argv)
             }
             else if(event.key.code == sf::Keyboard::Up)
             {
-               if(frameRate < 60) frameRate+=10;
+               /*if(frameRate < 120)*/ frameRate+=10;
                std::cout << "frameRate: " << frameRate << std::endl;
                window.setFramerateLimit(frameRate);
             }
@@ -64,6 +109,10 @@ int main(int argc, char** argv)
                if(frameRate > 10) frameRate-=10;
                std::cout << "frameRate: " << frameRate << std::endl;
                window.setFramerateLimit(frameRate);
+            }
+            else if(event.key.code == sf::Keyboard::Key::Q)
+            {
+               return 0;
             }
 
             break;
@@ -77,34 +126,48 @@ int main(int argc, char** argv)
       }
 
       window.clear(sf::Color::White);
-      auto agents  = lca->GetAgents();
-      auto states  = lca->GetStates();
+      const std::vector<Agent>& agents = lca->GetAgents();
+      const std::vector<int>& states  = lca->GetStates();
       auto network = lca->CurrentNetwork();
       for(int i = 0; i < agents.size(); i++)
       {
-         for(auto a : network->GetNeighbors(i))
+         Point agent_i_pos = agents[i].Position();
+         for(auto& a : network->GetNeighbors(i))
          {
+            Point agent_a_pos = agents[a].Position();
             sf::VertexArray lines(sf::Lines, 2);
-            lines[0].position = sf::Vector2f(agents[i].Position().GetX()-0.5, agents[i].Position().GetY()-0.5);
-            lines[0].color    = sf::Color(0,0,0,128);
-            lines[1].position = sf::Vector2f(agents[a].Position().GetX()-0.5, agents[a].Position().GetY()-0.5);
-            lines[1].color    = sf::Color(0,0,0,128);
+            lines[0].position = sf::Vector2f(agent_i_pos.GetX()-0.5, agent_i_pos.GetY()-0.5);
+            lines[0].color    = sf::Color(0,0,0,64);
+            lines[1].position = sf::Vector2f(agent_a_pos.GetX()-0.5, agent_a_pos.GetY()-0.5);
+            lines[1].color    = sf::Color(0,0,0,64);
             window.draw(lines);
          }
       }
 
       for(int i = 0; i < agents.size(); i++)
       {
-         sf::CircleShape agent_shape(0.8);
-         agent_shape.setOutlineColor(sf::Color::Black);
-         agent_shape.setOutlineThickness(0.18);
+         sf::CircleShape agent_shape(0.6);
+         // TODO: Add black/white option
+         // agent_shape.setOutlineColor(sf::Color::Black);
+         // agent_shape.setOutlineThickness(0.18);
+         // if(states[i] == 1)
+         // {
+         //    agent_shape.setFillColor(sf::Color::White);
+         // }
+         // else
+         // {
+         //    agent_shape.setFillColor(sf::Color::Black);
+         // }
+         sf::Color agent_color = headingToColor(agents[i].GetHeading(), states[i]);
+         agent_shape.setOutlineColor(agent_color);
+         agent_shape.setOutlineThickness(0.4);
          if(states[i] == 1)
          {
             agent_shape.setFillColor(sf::Color::White);
          }
          else
          {
-            agent_shape.setFillColor(sf::Color::Black);
+            agent_shape.setFillColor(agent_color);
          }
          agent_shape.setOrigin(1,1);
          agent_shape.setPosition(agents[i].Position().GetX(), agents[i].Position().GetY());

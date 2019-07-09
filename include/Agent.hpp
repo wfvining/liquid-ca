@@ -13,6 +13,7 @@ class Agent
 private:
    Point        _position;
    Heading      _heading;
+   Heading      _previous_heading;
    double       _speed;
    double       _arena_size;
    int _time;
@@ -41,6 +42,11 @@ public:
     * Get the current heading of the agent.
     */
    Heading GetHeading() const;
+
+   /**
+    * Get the heading of the last move made by the agent.
+    */
+   Heading GetPreviousHeading() const;
 
    /**
     * Set a new heading.

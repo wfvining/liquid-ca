@@ -7,6 +7,7 @@ Agent::Agent(Point p, Heading h, double speed, double arena_size, int seed) :
    _speed(speed),
    _arena_size(arena_size),
    _position(p),
+   _previous_heading(h + Heading(M_PI)),
    _heading(h),
    _gen(seed)
 {
@@ -23,6 +24,11 @@ Heading Agent::GetHeading() const
    return _heading;
 }
 
+Heading Agent::GetPreviousHeading() const
+{
+   return _previous_heading;
+}
+
 void Agent::SetHeading(Heading h)
 {
    _heading = h;
@@ -37,6 +43,7 @@ void Agent::Step()
    {
       _position = Reflect(_position);
    }
+   _previous_heading = _heading;
    _heading = _movement_rule->Turn(_position, _heading, _gen);
 }
 
