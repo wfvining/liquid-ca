@@ -9,21 +9,22 @@ public:
     * Apply the rule to the current state and neighbor's state
     * yeilding the new state.
     */
-   virtual int Apply(int self, const std::vector<int>& neighbors) const = 0;
+   virtual std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const = 0;
 };
+
 
 class Identity : public Rule {
 public:
    Identity();
    ~Identity();
-   int Apply(int self, const std::vector<int>& neighbors) const override;
+   std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const override;
 };
 
 class Constant : public Rule {
 public:
    Constant(int c);
    ~Constant();
-   int Apply(int self, const std::vector<int>& neighbors) const override;
+   std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const override;
 private:
    int state;
 };
@@ -33,10 +34,12 @@ public:
    MajorityRule();
    MajorityRule(bool f);
    ~MajorityRule();
-   int Apply(int self, const std::vector<int>& neighbors) const override;
+   std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const override;
 private:
    bool flip = true;
 };
+
+#if 0
 
 /**
  * A totalisitc rule with a single threshold.
@@ -84,5 +87,6 @@ public:
 private:
    double threshold;
 };
+#endif // 0
 
 #endif // _MOTION_CA_RULE_HPP

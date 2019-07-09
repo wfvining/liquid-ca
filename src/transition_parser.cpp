@@ -1,7 +1,9 @@
 #include "Transition.hpp"
 
+#include <cmath> // M_PI
 #include <sstream>
 #include <iostream>
+#include <utility>
 
 namespace parser {
    std::string trim_leading_space(const std::string& str)
@@ -21,8 +23,10 @@ namespace parser {
    void result(std::string& rule, Transition& t)
    {
       std::string result = trim_leading_space(rule.substr(rule.find("->") + 2, rule.length()));
-      result = result.substr(0,result.find_first_of(" #\t")-1);
-      if(result == "@")
+      std::string result_state = result.substr(0,result_state.find_first_of(" ,\t")-1);
+      std::cout << result_state << std::endl;
+
+      if(result_state == "@")
       {
          t.result_self = true;
       }
@@ -37,6 +41,20 @@ namespace parser {
             throw ParseException("invalid transition result");
          }
       }
+
+      std::string heading_change = trim_leading_space(result.substr(result.find(",") + 1, result.length()));
+      std::cout << heading_change << std::endl;
+      heading_change = heading_change.substr(0, heading_change.find_first_of(" #\t")-1);
+      try
+      {
+         t.heading_change = std::stod(heading_change) * M_PI/180.0;
+      }
+      catch(std::invalid_argument e)
+      {
+         throw ParseException("invalid transition heading change");
+      }
+
+      std::cout << "Heading_change: " << t.heading_change << std::endl;
    }
 
    void pre_state(std::string& pre, Transition& t)
@@ -149,7 +167,9 @@ namespace parser {
       return out << (t.any_state ? "@" : std::to_string(t.pre_state)) << " "
                  << (t.include_self ? "+" : "-") << " "
                  << t.range << " -> "
-                 << (t.result_self ? "@" : std::to_string(t.result_state)) << std::endl;
+                 << (t.result_self ? "@" : std::to_string(t.result_state))
+                 << ", " << t.heading_change
+                 << std::endl;
    }
 
    Transition parse_transition(std::string& str)

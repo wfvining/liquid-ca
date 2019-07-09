@@ -6,18 +6,20 @@
 
 struct Transition
 {
-   bool  any_state;
-   bool  include_self;
-   int   pre_state;
-   int   result_state;
-   bool  result_self;
-   Range range;
+   bool   any_state;
+   bool   include_self;
+   int    pre_state;
+   int    result_state;
+   double heading_change;
+   bool   result_self;
+   Range  range;
 
    Transition() :
       any_state(false),
       include_self(false),
       result_self(false),
-      range(0.0, 1.0)
+      range(0.0, 1.0),
+      heading_change(0.0)
       {}
 };
 

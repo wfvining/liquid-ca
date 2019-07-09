@@ -2,41 +2,41 @@
 
 #include <numeric> // std::accumulate
 
+Identity::Identity() {}
+Identity::~Identity() {}
+
+std::pair<int, double> Identity::Apply(int self, const std::vector<int>& neighbors) const
+{
+   return std::make_pair(self, 0);
+}
+
 MajorityRule::MajorityRule() {}
 MajorityRule::MajorityRule(bool f) : flip(f) {}
 MajorityRule::~MajorityRule() {}
 
-int MajorityRule::Apply(int self, const std::vector<int>& neighbors) const
+std::pair<int, double> MajorityRule::Apply(int self, const std::vector<int>& neighbors) const
 {
    int n = std::accumulate(neighbors.begin(), neighbors.end(), 0) + self;
    if((double)n > ((double)neighbors.size()+1) / 2.0)
    {
-      return 1;
+      return std::make_pair(1, 0);
    }
    else if((double)n == (double)(neighbors.size()+1) / 2.0)
    {
-      return (flip ? 1 - self : self);
+      return std::make_pair(flip ? 1 - self : self, 0);
    }
    else
    {
-      return 0;
+      return std::make_pair(0, 0);
    }
-}
-
-Identity::Identity() {}
-Identity::~Identity() {}
-
-int Identity::Apply(int self, const std::vector<int>& neighbors) const
-{
-   return self;
 }
 
 Constant::Constant(int c) : state(c) {}
 Constant::~Constant() {}
 
-int Constant::Apply(int self, const std::vector<int>& neighbors) const
+std::pair<int, double> Constant::Apply(int self, const std::vector<int>& neighbors) const
 {
-   return state;
+   return std::make_pair(state, 0);
 }
 
 /**
@@ -50,6 +50,8 @@ double density(int self, const std::vector<int>& neighbors)
                                    0) + self)
       / (1.0 + (double)neighbors.size());
 }
+
+#if 0
 
 SingleThreshold::SingleThreshold(double threshold, int above) :
    threshold(threshold),
@@ -107,3 +109,5 @@ int Quorum::Apply(int self, const std::vector<int>& neighbors) const
       return self;
    }
 }
+
+#endif // 0

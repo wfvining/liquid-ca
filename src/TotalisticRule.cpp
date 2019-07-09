@@ -3,6 +3,7 @@
 
 #include <numeric>
 #include <iostream>
+#include <utility>
 
 std::istream& operator>>(std::istream& stream, TotalisticRule& rule)
 {
@@ -57,13 +58,13 @@ bool matches(Transition& t, int self, const std::vector<int>& neighbors)
    return false;
 }
 
-int apply(Transition t, int self)
+std::pair<int, double> apply(Transition t, int self)
 {
-   if(t.result_self) return self;
-   else return t.result_state;
+   if(t.result_self) return std::make_pair(self, t.heading_change);
+   else return std::make_pair(t.result_state, t.heading_change);
 }
 
-int TotalisticRule::Apply(int self, const std::vector<int>& neighbors) const
+std::pair<int, double> TotalisticRule::Apply(int self, const std::vector<int>& neighbors) const
 {
    // Look for rules that match the current state
    // Apply the first rule that matches
@@ -76,5 +77,5 @@ int TotalisticRule::Apply(int self, const std::vector<int>& neighbors) const
    }
 
    // If no rule applies then state remains unchanged.
-   return self; // XXX: is this the right thing to do.
+   return std::make_pair(self, 0); // XXX: is this the right thing to do.
 }
