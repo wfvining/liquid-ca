@@ -158,11 +158,7 @@ void Model::Step(const Rule* rule)
       }
       std::pair<int, double> update = rule->Apply(_agent_states[a], neighbor_states);
       new_states[a] = update.first;
-      _agents[a].SetHeading(_agents[a].GetPreviousHeading() + Heading(update.second));
-      if(new_states[a] != _agent_states[a])
-      {
-         _agents[a].SetHeading(_agents[a].GetPreviousHeading() + Heading(update.second));
-      }
+      _agents[a].SetHeading(_agents[a].GetHeading() + Heading(update.second));
    }
    _agent_states = new_states;
    _stats.PushState(CurrentDensity(), current_network);

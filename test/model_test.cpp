@@ -147,7 +147,7 @@ public:
       }
 };
 
-TEST_F(ModelTest, agentsUpddate)
+TEST_F(ModelTest, agentsUpdate)
 {
    Model m(1000, 1, 1.0, 1234, 0.5);
    m.SetMovementRule(std::make_shared<ConstantHeading>(M_PI));
