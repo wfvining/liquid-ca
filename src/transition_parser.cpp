@@ -24,7 +24,6 @@ namespace parser {
    {
       std::string result = trim_leading_space(rule.substr(rule.find("->") + 2, rule.length()));
       std::string result_state = result.substr(0,result_state.find_first_of(" ,\t")-1);
-      std::cout << result_state << std::endl;
 
       if(result_state == "@")
       {
@@ -43,7 +42,6 @@ namespace parser {
       }
 
       std::string heading_change = trim_leading_space(result.substr(result.find(",") + 1, result.length()));
-      std::cout << heading_change << std::endl;
       heading_change = heading_change.substr(0, heading_change.find_first_of(" #\t")-1);
       try
       {
@@ -54,7 +52,6 @@ namespace parser {
          throw ParseException("invalid transition heading change");
       }
 
-      std::cout << "Heading_change: " << t.heading_change << std::endl;
    }
 
    void pre_state(std::string& pre, Transition& t)
