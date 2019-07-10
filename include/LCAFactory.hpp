@@ -69,6 +69,11 @@ public:
    void SetSpeed(double s);
 
    /**
+    * Set the LCA update rule.
+    */
+   void SetRule(std::shared_ptr<Rule> r);
+
+   /**
     * Set whether or not to record agent state history.
     *
     * @param record if true then save the agent state vector at each

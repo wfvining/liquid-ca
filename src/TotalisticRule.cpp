@@ -5,6 +5,8 @@
 #include <iostream>
 #include <utility>
 
+TotalisticRule::TotalisticRule(std::vector<Transition> transitions) : transition_table_(transitions) {}
+
 std::istream& operator>>(std::istream& stream, TotalisticRule& rule)
 {
    TotalisticRule temp;

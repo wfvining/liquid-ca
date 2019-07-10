@@ -22,6 +22,11 @@ LCAFactory::LCAFactory() :
    seed_distribution_ = std::uniform_int_distribution<int>(0, std::numeric_limits<int>::max());
 }
 
+void LCAFactory::SetRule(std::shared_ptr<Rule> r)
+{
+   rule_ = r;
+}
+
 int LCAFactory::Init(int argc, char** argv)
 {
    int by_position = 0;

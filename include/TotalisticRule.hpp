@@ -16,6 +16,7 @@ private:
 
 public:
    TotalisticRule() {}
+   TotalisticRule(std::vector<Transition> transitions);
    ~TotalisticRule() {}
 
    std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const override;
