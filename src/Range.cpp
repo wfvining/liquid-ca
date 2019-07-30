@@ -45,3 +45,13 @@ std::ostream& operator<<(std::ostream& out, const Range& r)
 {
    return out << (r.include_min_ ? "[" : "(") << r.min_ << "," << r.max_ << (r.include_max_ ? "]" : ")");
 }
+
+double Range::Min() const
+{
+   return min_;
+}
+
+double Range::Max() const
+{
+   return max_;
+}

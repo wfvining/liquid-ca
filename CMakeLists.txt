@@ -31,6 +31,10 @@ find_package(Threads REQUIRED)
 
 # target_link_libraries(one_d_lattice model pthread)
 
+add_executable(ga
+  ga/ga.cpp)
+target_link_libraries(ga model)
+
 add_executable(velocity_experiment
   src/velocity_experiment.cpp)
 target_link_libraries(velocity_experiment model pthread)

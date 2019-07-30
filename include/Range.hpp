@@ -19,6 +19,9 @@ public:
    Range ExcludeMax() const;
    Range ExcludeMin() const;
 
+   double Min() const;
+   double Max() const;
+
    bool Contains(double k) const;
 
    friend std::ostream& operator<< (std::ostream& out, const Range& r);

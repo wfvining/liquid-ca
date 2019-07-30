@@ -159,16 +159,6 @@ namespace parser {
       return r;
    }
 
-   std::ostream& operator<<(std::ostream& out, const Transition& t)
-   {
-      return out << (t.any_state ? "@" : std::to_string(t.pre_state)) << " "
-                 << (t.include_self ? "+" : "-") << " "
-                 << t.range << " -> "
-                 << (t.result_self ? "@" : std::to_string(t.result_state))
-                 << ", " << t.heading_change
-                 << std::endl;
-   }
-
    Transition parse_transition(std::string& str)
    {
       Transition t;
@@ -182,4 +172,14 @@ namespace parser {
 
       return t;
    }
+}
+
+std::ostream& operator<<(std::ostream& out, const Transition& t)
+{
+   return out << (t.any_state ? "@" : std::to_string(t.pre_state)) << " "
+              << (t.include_self ? "+" : "-") << " "
+              << t.range << " -> "
+              << (t.result_self ? "@" : std::to_string(t.result_state))
+              << ", " << t.heading_change
+              << std::endl;
 }

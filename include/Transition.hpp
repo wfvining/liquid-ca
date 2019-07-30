@@ -21,6 +21,8 @@ struct Transition
       range(0.0, 1.0),
       heading_change(0.0)
       {}
+
+   friend std::ostream& operator<<(std::ostream& str, const Transition& tr);
 };
 
 namespace parser

@@ -22,6 +22,7 @@ public:
    std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const override;
 
    friend std::istream& operator>>(std::istream& str, TotalisticRule& rule);
+   friend std::ostream& operator<<(std::ostream& str, const TotalisticRule& rule);
 };
 
 #endif // _TOTALISTIC_RULE_HPP

@@ -6,8 +6,8 @@
 #include "Transition.hpp"
 
 struct Genotype {
-   std::vector<Transition> from_one;
-   std::vector<Transition> from_zero;
+   std::vector<Transition> one_transitions;
+   std::vector<Transition> zero_transitions;
 };
 
 #endif // _LCA_GA_HPP

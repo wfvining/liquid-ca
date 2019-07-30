@@ -31,6 +31,16 @@ std::istream& operator>>(std::istream& stream, TotalisticRule& rule)
    return stream;
 }
 
+std::ostream& operator<<(std::ostream& stream, const TotalisticRule& rule)
+{
+   for(const Transition& t : rule.transition_table_)
+   {
+      stream << t << std::endl;
+   }
+
+   return stream;
+}
+
 double density(const std::vector<int>& neighborhood)
 {
    return ((double)std::accumulate(neighborhood.begin(), neighborhood.end(), 0)
