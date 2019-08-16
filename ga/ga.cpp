@@ -3,6 +3,10 @@
 #include <vector>
 #include <utility>
 #include <set>
+#include <fstream>
+#include <sstream>
+#include <sys/stat.h>
+#include <thread>
 
 #include "ga.hpp"
 #include "TotalisticRule.hpp"
@@ -85,24 +89,24 @@ std::vector<Genotype> initialize_population(int pop_size)
       g.one_transitions.push_back(t1);
 
       Transition t0;
-      t1.include_self = true;
+      t0.include_self = true;
       t0.pre_state = 0;
       t0.heading_change = heading_distribution(rng);
       t0.result_state = state_distribution(rng);
       g.zero_transitions.push_back(t0);
 
-      for(int t = 1; t < zero_transitions-1; t++)
+      for(double x = 0.125; x < 1.0; x += 0.125)
       {
-         g.zero_transitions = split_at(partition_distribution(rng),
+         g.zero_transitions = split_at(x,
                                        g.zero_transitions,
                                        coin(rng),
                                        state_distribution(rng),
                                        heading_distribution(rng));
       }
 
-      for(int t = 1; t < one_transitions-1; t++)
+      for(double x = 0.125; x < 1.0; x += 0.125)
       {
-         g.one_transitions = split_at(partition_distribution(rng),
+         g.one_transitions = split_at(x,
                                       g.one_transitions,
                                       coin(rng),
                                       state_distribution(rng),
@@ -113,24 +117,63 @@ std::vector<Genotype> initialize_population(int pop_size)
    return pop;
 }
 
-double evaluate_rule(LCAFactory& factory, int samples)
+std::vector<std::unique_ptr<LCA>> lcas;
+int lca_i;
+std::mutex lcas_lock;
+
+int thread_main()
 {
-   std::uniform_real_distribution<double> density_distribution(0.0,1.0);
-   int num_correct = 0;
-
-   for(int i = 0; i < samples; i++)
+   lcas_lock.lock();
+   while(lca_i < lcas.size())
    {
-      std::unique_ptr<LCA> lca = factory.Create(density_distribution(rng));
-      lca->MinimizeMemory();
-      lca->Run([](const ModelStats& s) { return (s.CurrentCADensity() == 0.0 || s.CurrentCADensity() == 1.0); });
+      int i = lca_i++;
+      lcas_lock.unlock();
+      lcas[i]->MinimizeMemory();
+      lcas[i]->Run([](const ModelStats& s) { return (s.CurrentCADensity() == 0.0 || s.CurrentCADensity() == 1.0); });
+      lcas_lock.lock();
+   }
+   lcas_lock.unlock();
+   return 0;
+}
 
-      if(lca->GetStats().IsCorrect())
+double evaluate_rule(LCAFactory& factory)
+{
+   int num_correct = 0;
+   lcas_lock.lock();
+   lca_i = 0;
+   lcas.clear();
+   for(double i = 0.1; i < 1.0; i+=0.1)
+   {
+      if(i == 0.5) continue;
+      lcas.push_back(factory.Create(i));
+   }
+   for(int i = 0; i < 15; i++)
+   {
+      lcas.push_back(factory.Create(0.45));
+      lcas.push_back(factory.Create(0.55));
+   }
+   lcas_lock.unlock();
+
+   // start all threads
+   std::vector<std::thread> threads;
+   for(int i = 0; i < std::thread::hardware_concurrency(); i++)
+   {
+      threads.push_back(std::thread(thread_main));
+   }
+   // wait for all threads to finish
+   for(std::thread& t : threads)
+   {
+      t.join();
+   }
+
+   for(int i = 0; i < lcas.size(); i++)
+   {
+      if(lcas[i]->GetStats().IsCorrect())
       {
          num_correct++;
       }
    }
-
-   return (double)num_correct / (double)samples;
+   return (double)num_correct / (double)lcas.size();
 }
 
 Genotype tournament(int k, std::vector<std::pair<Genotype, double>>& population)
@@ -161,8 +204,8 @@ Genotype tournament(int k, std::vector<std::pair<Genotype, double>>& population)
 
 std::pair<Genotype, Genotype> select(std::vector<std::pair<Genotype, double>>& population)
 {
-   Genotype parent_a = tournament(4, population);
-   Genotype parent_b = tournament(4, population);
+   Genotype parent_a = tournament(10, population);
+   Genotype parent_b = tournament(10, population);
    return std::make_pair(parent_a, parent_b);
 }
 
@@ -224,20 +267,19 @@ std::vector<Transition> merge_at(double x,
 
 Genotype xover(std::pair<Genotype, Genotype> parents)
 {
-   std::uniform_real_distribution<double> xover_point_distribution(0,1);
+   std::uniform_int_distribution<int> xover_point_distribution(0,8);
    Genotype child;
 
-   child.zero_transitions = merge_at(xover_point_distribution(rng),
+   child.zero_transitions = merge_at(xover_point_distribution(rng)*0.125,
                                      parents.first.zero_transitions,
                                      parents.second.zero_transitions);
-   child.one_transitions = merge_at(xover_point_distribution(rng),
+   child.one_transitions = merge_at(xover_point_distribution(rng)*0.125,
                                     parents.first.one_transitions,
                                     parents.second.one_transitions);
 
    return child;
 }
 
-// TODO
 Genotype mutate(Genotype g)
 {
    // - The xover process will likely create many small intervals (so
@@ -250,7 +292,7 @@ Genotype mutate(Genotype g)
    //   1. a "DELETE" mutation which removes a transition (growing the
    //   adjacent transitions to fill the gap)
    //
-   //   2. a "RESIZE" mutation which incrementally grows/shrinks the
+   //   2. a "RESIZE" mutation which incrementally grows/shrinks the               <------
    //   transition interval (taking range away from adjacent intervals)
    //
    //   3. a "MERGE" mutation which combines two adjacent transitions
@@ -258,40 +300,49 @@ Genotype mutate(Genotype g)
    //   heading change of the two original transitions.
 
    std::uniform_real_distribution<double> p(0,1);
-   std::uniform_int_distribution<int>
-      index_distribution(0, g.zero_transitions.size() + g.one_transitions.size() - 1);
    std::normal_distribution<double> heading_change(0, 1.0);
 
-   // with a very small probability flip the result state of a transition
-   if(p(rng) < 0.01)
+   for(int i = 0; i < g.zero_transitions.size(); i++)
    {
-      int i = index_distribution(rng);
-      if(i < g.zero_transitions.size())
+      if(p(rng) < 0.025)
       {
          g.zero_transitions[i].result_state = 1-g.zero_transitions[i].result_state;
       }
-      else
+
+      if(p(rng) < 0.025)
       {
-         i = i - g.zero_transitions.size();
          g.one_transitions[i].result_state = 1-g.one_transitions[i].result_state;
       }
-   }
 
-   // with a less small probability select a heading change and add a small value to it.
-   if(p(rng) < 0.05)
-   {
-      int i = index_distribution(rng);
-      if(i < g.zero_transitions.size())
+      if(p(rng) < 0.1)
       {
          g.zero_transitions[i].heading_change += heading_change(rng);
       }
-      else
+
+      if(p(rng) < 0.1)
       {
-         i = i - g.zero_transitions.size();
          g.one_transitions[i].heading_change += heading_change(rng);
       }
    }
 
+   return g;
+}
+
+Genotype rule_to_genotype(TotalisticRule& r)
+{
+   Genotype g;
+   std::vector<Transition> transitions = r.GetTransitions();
+   for(Transition& t : r.GetTransitions())
+   {
+      if(t.pre_state == 0)
+      {
+         g.zero_transitions.push_back(t);
+      }
+      else
+      {
+         g.one_transitions.push_back(t);
+      }
+   }
    return g;
 }
 
@@ -304,6 +355,18 @@ std::vector<Genotype> run_ga(LCAFactory& factory,
    {
       std::vector<std::pair<Genotype, double>> population_fitness;
 
+      // 0. Save all genotyes into a file
+      std::ostringstream dir;
+      dir << "generation" << generation;
+      mkdir(dir.str().c_str(), 0777);
+      for(int i = 0; i < current_population.size(); i++)
+      {
+         std::ostringstream f;
+         f << dir.str() << "/genome_" << i;
+         std::ofstream out(f.str(), std::ofstream::out|std::ofstream::trunc);
+         out << *genotype_to_phenotype(current_population[i]);
+      }
+
       // 1. evaluate each member of the population K times on K different
       // initial conditions.
       double best_fitness = 0;
@@ -311,7 +374,7 @@ std::vector<Genotype> run_ga(LCAFactory& factory,
       for(Genotype g : current_population)
       {
          factory.SetRule(genotype_to_phenotype(g));
-         double fitness = evaluate_rule(factory, NUM_SAMPLES);
+         double fitness = evaluate_rule(factory);
          population_fitness.push_back(std::make_pair(g, fitness));
          if(fitness > best_fitness)
          {

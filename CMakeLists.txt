@@ -33,7 +33,7 @@ find_package(Threads REQUIRED)
 
 add_executable(ga
   ga/ga.cpp)
-target_link_libraries(ga model)
+target_link_libraries(ga model pthread)
 
 add_executable(velocity_experiment
   src/velocity_experiment.cpp)

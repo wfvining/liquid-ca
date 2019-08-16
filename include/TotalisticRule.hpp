@@ -20,6 +20,7 @@ public:
    ~TotalisticRule() {}
 
    std::pair<int, double> Apply(int self, const std::vector<int>& neighbors) const override;
+   std::vector<Transition> GetTransitions() const { return transition_table_; }
 
    friend std::istream& operator>>(std::istream& str, TotalisticRule& rule);
    friend std::ostream& operator<<(std::ostream& str, const TotalisticRule& rule);
