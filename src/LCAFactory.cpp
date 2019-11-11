@@ -37,6 +37,8 @@ int LCAFactory::Init(int argc, char** argv)
          {"max-time",            required_argument, 0,            'T'},
          {"by-position",         no_argument,       &by_position, 'p'},
          {"rule",                required_argument, 0,            'R'},
+         {"pdark",               required_argument, 0,            'd'},
+         {"pinteractive",        required_argument, 0,            'i'},
          {0,0,0,0}
       };
    int option_index = 0;
@@ -49,6 +51,14 @@ int LCAFactory::Init(int argc, char** argv)
       std::stringstream message;
       switch(opt_char)
       {
+      case 'd':
+         pdark_ = atof(optarg);
+         break;
+
+      case 'i':
+         pinteractive_ = atof(optarg);
+         break;
+
       case 'r':
          communication_range_ = atof(optarg);
          break;
@@ -128,6 +138,8 @@ std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
                initial_density,
                speed_);
    model.SetMovementRule(movement_rule_);
+   model.SetPDark(pdark_);
+   model.SetPInteractive(pinteractive_);
 
    if(init_ == ByPosition)
    {

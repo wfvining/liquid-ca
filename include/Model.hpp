@@ -28,6 +28,8 @@ private:
    std::function<double(std::mt19937_64&)> _turn_distribution;
    std::function<int(std::mt19937_64&)>    _step_distribution;
    std::bernoulli_distribution             _noise;
+   std::bernoulli_distribution             go_dark_;
+   std::bernoulli_distribution             go_interactive_;
    double                                  _noise_probability;
 
    double _communication_range;
@@ -99,6 +101,16 @@ public:
     * Set the amount of noise. p is a real number in [0,1].
     */
    void SetNoise(double p);
+
+   /**
+    * Set the probability of going dark.
+    */
+   void SetPDark(double p);
+
+   /**
+    * Set the probability of becoming interactive again.
+    */
+   void SetPInteractive(double p);
 
    /**
     * Evaluate the model for one time-step.

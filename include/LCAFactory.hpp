@@ -27,6 +27,8 @@ private:
    std::shared_ptr<Rule>              rule_; /* CA rule */
    std::default_random_engine         random_engine_;
    std::uniform_int_distribution<int> seed_distribution_;
+   double                             pdark_ = 0;
+   double                             pinteractive_ = 1;
 
    enum InitializationMethod {
       Uniform,    // initialize states at random

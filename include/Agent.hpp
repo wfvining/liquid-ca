@@ -18,6 +18,8 @@ private:
    double       _arena_size;
    int _time;
    int _next_update;
+   bool         dark_ = false;
+   std::bernoulli_distribution go_dark_;
 
    std::shared_ptr<MovementRule> _movement_rule;
 
@@ -73,6 +75,20 @@ public:
     * Returns true if the update interval has elapsed.
     */
    bool ShouldTurn() const;
+
+   /**
+    * Put the agent in to the "dark" non-interactive state.
+    */
+   void GoDark();
+
+   /**
+    * Put the agent in to the "interactive" state.
+    */
+   void GoInteractive();
+
+   bool IsDark();
+
+   bool IsInteractive();
 };
 
 #endif // _AGENT_HPP

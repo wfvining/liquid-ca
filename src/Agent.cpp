@@ -44,7 +44,32 @@ void Agent::Step()
       _position = Reflect(_position);
    }
    _previous_heading = _heading;
-   _heading = _movement_rule->Turn(_position, _heading, _gen);
+
+   if(!dark_)
+   {
+      // only turn if in interactive mode.
+      _heading = _movement_rule->Turn(_position, _heading, _gen);
+   }
+}
+
+void Agent::GoDark()
+{
+   dark_ = true;
+}
+
+void Agent::GoInteractive()
+{
+   dark_ = false;
+}
+
+bool Agent::IsDark()
+{
+   return dark_;
+}
+
+bool Agent::IsInteractive()
+{
+   return !IsDark();
 }
 
 void Agent::SetMovementRule(std::shared_ptr<MovementRule> rule)

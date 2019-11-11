@@ -115,6 +115,24 @@ void Model::SetNoise(double p)
    _noise = std::bernoulli_distribution(fabs(p));
 }
 
+void Model::SetPDark(double p)
+{
+   go_dark_ = std::bernoulli_distribution(fabs(p));
+
+   for(auto& agent : _agents)
+   {
+      if(go_dark_(_rng))
+      {
+         agent.GoDark();
+      }
+   }
+}
+
+void Model::SetPInteractive(double p)
+{
+   go_interactive_ = std::bernoulli_distribution(fabs(p));
+}
+
 int Model::Noise(int i)
 {
    if(_noise(_rng))
@@ -132,33 +150,48 @@ void Model::Step(const Rule* rule)
    for(Agent& agent : _agents)
    {
       agent.Step();
+      if(agent.IsInteractive() && go_dark_(_rng))
+      {
+         agent.GoDark();
+      }
+      else if(agent.IsDark() && go_interactive_(_rng))
+      {
+         agent.GoInteractive();
+      }
    }
 
    std::shared_ptr<NetworkSnapshot> current_network = CurrentNetwork();
    std::vector<int> new_states(_agents.size());
    for(int a = 0; a < _agent_states.size(); a++)
    {
-      auto neighbors = current_network->GetNeighbors(a);
-      std::vector<int> neighbor_states;
-      std::vector<Point> neighbor_positions;
-      for(int n : neighbors)
+      if(_agents[a].IsInteractive())
       {
-         if(_noise_probability < 0.0) {
-            if(!_noise(_rng))
+         auto neighbors = current_network->GetNeighbors(a);
+         std::vector<int> neighbor_states;
+         for(int n : neighbors)
+         {
+            if(_agents[n].IsInteractive())
             {
-               neighbor_states.push_back(_agent_states[n]);
-               neighbor_positions.push_back(_agents[n].Position());
+               if(_noise_probability < 0.0) {
+                  if(!_noise(_rng))
+                  {
+                     neighbor_states.push_back(_agent_states[n]);
+                  }
+               }
+               else
+               {
+                  neighbor_states.push_back(Noise(_agent_states[n]));
+               }
             }
          }
-         else
-         {
-            neighbor_states.push_back(Noise(_agent_states[n]));
-            neighbor_positions.push_back(_agents[n].Position());
-         }
+         std::pair<int, double> update = rule->Apply(_agent_states[a], neighbor_states);
+         new_states[a] = update.first;
+         _agents[a].SetHeading(_agents[a].GetHeading() + Heading(update.second));
       }
-      std::pair<int, double> update = rule->Apply(_agent_states[a], neighbor_states);
-      new_states[a] = update.first;
-      _agents[a].SetHeading(_agents[a].GetHeading() + Heading(update.second));
+      else
+      {
+         new_states[a] = _agent_states[a];
+      }
    }
    _agent_states = new_states;
    _stats.PushState(CurrentDensity(), current_network);
