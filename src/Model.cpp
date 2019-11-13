@@ -13,7 +13,9 @@ Model::Model(double arena_size,
    _rng(seed),
    _stats(num_agents),
    _noise(0.0),
-   _arena_size(arena_size)
+   _arena_size(arena_size),
+   go_interactive_(1.0),
+   go_dark_(0.0)
 {
    std::uniform_real_distribution<double> coordinate_distribution(-arena_size/2, arena_size/2);
    std::uniform_real_distribution<double> heading_distribution(0, 2*M_PI);
