@@ -35,6 +35,9 @@ add_executable(velocity_experiment
   src/velocity_experiment.cpp)
 target_link_libraries(velocity_experiment model pthread)
 
+add_executable(eval_at src/eval_at.cpp)
+target_link_libraries(eval_at model)
+
 # add_executable(velocity_experiment_time
 #   src/velocity_experiment_time.cpp)
 # target_link_libraries(velocity_experiment_time model pthread)
