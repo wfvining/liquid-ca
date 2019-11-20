@@ -16,14 +16,16 @@ void LCA::Run()
    }
 }
 
-void LCA::Run(std::function<bool(const ModelStats&)> early_stop)
+int LCA::Run(std::function<bool(const ModelStats&)> early_stop)
 {
    for(int i = 0; i < max_time_; i++)
    {
       if(early_stop(GetStats()))
-         return;
+         return i;
       model_->Step(update_rule_.get());
    }
+
+   return max_time_;
 }
 
 void LCA::Run(int k)

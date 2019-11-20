@@ -28,8 +28,9 @@ public:
     * Run the LCA Simulation for 'max_time_' or until the early_stop
     * predicate returns true.
     * @param early_stop early termination predicate.
+    * @return the number of steps before termination.
     */
-   void Run(std::function<bool(const ModelStats&)> early_stop);
+   int Run(std::function<bool(const ModelStats&)> early_stop);
 
    /**
     * Run the LCA simulation for the given number of time steps.
