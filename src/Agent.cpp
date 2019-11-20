@@ -62,12 +62,12 @@ void Agent::GoInteractive()
    dark_ = false;
 }
 
-bool Agent::IsDark()
+bool Agent::IsDark() const
 {
    return dark_;
 }
 
-bool Agent::IsInteractive()
+bool Agent::IsInteractive() const
 {
    return !IsDark();
 }

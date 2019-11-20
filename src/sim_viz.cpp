@@ -159,6 +159,8 @@ int main(int argc, char** argv)
          //    agent_shape.setFillColor(sf::Color::Black);
          // }
          sf::Color agent_color = sf::Color::Black; // headingToColor(agents[i].GetHeading(), states[i]);
+         if(agents[i].IsDark())
+            agent_color = sf::Color(120, 120, 120);
          agent_shape.setOutlineColor(agent_color);
          agent_shape.setOutlineThickness(0.4);
          if(states[i] == 1)

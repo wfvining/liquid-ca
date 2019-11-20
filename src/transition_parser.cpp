@@ -178,8 +178,6 @@ namespace parser {
       t.range = pre_range(precondition);
       result(str, t);
 
-      std::cout << "parsed rule: " << t << std::endl;
-
       return t;
    }
 }

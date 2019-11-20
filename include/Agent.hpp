@@ -86,9 +86,9 @@ public:
     */
    void GoInteractive();
 
-   bool IsDark();
+   bool IsDark() const;
 
-   bool IsInteractive();
+   bool IsInteractive() const;
 };
 
 #endif // _AGENT_HPP
