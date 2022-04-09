@@ -26,6 +26,7 @@ $ git checkout v0.1.1
 
 * [SFML](https://www.sfml-dev.org/) is used for the visualization (viz can be disabled 
   if you do not have this installed, spp below).
+  `sudo apt install libsfml-dev`
 * pthreads
 
 The code has been built and tested with the viz on Ubuntu 16.05,
