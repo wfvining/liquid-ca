@@ -86,3 +86,5 @@ Currently will output a png of the viz every 10 time steps (sorry, I
 should make that optional).
 
 `./sim_viz <initial-density> [optons from above]`
+
+To start the sim press the `spacebar`, to speed up/down press the corresponding `arrow key` and to quit press `q`
