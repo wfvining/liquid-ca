@@ -23,7 +23,7 @@ namespace parser {
    void result(std::string& rule, Transition& t)
    {
       std::string result = trim_leading_space(rule.substr(rule.find("->") + 2, rule.length()));
-      std::string result_state = result.substr(0,result_state.find_first_of(" ,\t")-1);
+      std::string result_state = result.substr(0, result.find_first_of(" ,\t")-1);
 
       if(result_state == "@")
       {
